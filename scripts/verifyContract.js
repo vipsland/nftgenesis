@@ -10,7 +10,7 @@
  async function main() {
    
    await hre.run('verify:verify', {
-     address: '0x983D21A856f620CC5b94A523B56fD6a862246e92', // Deployed contract address
+     address: '0x76BB82DC49899B6a22F49E2838179080989Da484', // you can also verify with remix plugin
      constructorArguments: []
    })
  }

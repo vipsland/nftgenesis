@@ -1,8 +1,8 @@
 import { init, useConnectWallet } from '@web3-onboard/react'
 import injectedModule from '@web3-onboard/injected-wallets'
-const {apiKey, PK, etherscanApiKey} = require('../secrets.json')
+// const {apiKey, PK, etherscanApiKey} = require('../secrets.json')
 import { Network, Alchemy } from 'alchemy-sdk';
-import { TASK_COMPILE_SOLIDITY_COMPILE } from 'hardhat/builtin-tasks/task-names';
+// import { TASK_COMPILE_SOLIDITY_COMPILE } from 'hardhat/builtin-tasks/task-names';
 
 const eth_goerli_settings = {
     apiKey: "da4QudLrjNs6-NR8EurK-N0ikxP6ZTVR",
@@ -41,7 +41,8 @@ const initOnboard = init({
       token: 'gETH',
       label: 'Ethereum Goerli Testnet',
       rpcUrl: GOERLI_RPC_URL
-    }
+    },
+
     // {
     //   id: '0x89',
     //   token: 'MATIC',

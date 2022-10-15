@@ -8,7 +8,8 @@ import {
   getMaxSupply,
   isPreSaleState,
   buyPRT,
-  mintNFT
+  mintNFT,
+  getPerAccountPRT
 } from '../utils/interact'
 
 import { ethers } from 'ethers'
@@ -28,6 +29,9 @@ export default function Mint() {
 
 
   const [maxSupply, setMaxSupply] = useState(0)
+  const [perAccountPRT, setPerAccountPRT] = useState(0)
+  
+
   const [totalSoldPRT, setTotalSoldPRT] = useState(0)
   const [maxPRTAmount, setMaxPRTAmount] = useState(0)
   const [isPreSale, setIsPreSale] = useState(false)
@@ -73,9 +77,22 @@ export default function Mint() {
     }
   }, [onboard, connect])
 
+  
+
+
+  useEffect(() => {
+    const _setPerAccountPRT = async () => {
+      setPerAccountPRT(await getPerAccountPRT())
+    }
+    if (wallet && window?.ethereum?.selectedAddress) {
+      _setPerAccountPRT()
+    }
+  }, [connectedWallets, wallet])
+
   useEffect(() => {
     const init = async () => {
       setMaxSupply(await getMaxSupply())
+      setPerAccountPRT(await getPerAccountPRT())
       setTotalSoldPRT(await getTotalPRT())
 
       const isPreSale = await isPreSaleState()
@@ -103,10 +120,10 @@ export default function Mint() {
   }
 
   const buyPRTHandler = async () => {
+    setStatus(null)
     setIsPRTing(true)
 
     const { success, status } = await buyPRT(prtAmount)
-    console.log({success, status})
 
     setStatus({
       success,
@@ -114,7 +131,10 @@ export default function Mint() {
     })
 
     setIsPRTing(false)
+    setTotalSoldPRT(await getTotalPRT())
+    setPerAccountPRT(await getPerAccountPRT())
   }
+  
   const mintNFTHandler = async () => {
     setIsPRTing(true)
 
@@ -166,7 +186,8 @@ export default function Mint() {
             </div>
 
             <div className="flex flex-col items-center w-full px-4 mt-16 md:mt-0">
-              <div className="font-coiny flex items-center justify-between w-full">
+              
+              {wallet ?  <div className="font-coiny flex items-center justify-between w-full">
                 <button
                   className="w-14 h-10 md:w-16 md:h-12 flex items-center justify-center text-brand-background hover:shadow-lg bg-gray-300 font-bold rounded-md"
                   onClick={incrementPRTAmount}
@@ -211,12 +232,13 @@ export default function Mint() {
                   </svg>
                 </button>
               </div>
-
+: null}
+              
               <p className="text-sm text-pink-200 tracking-widest mt-3">
-                Max Mint Amount: {maxPRTAmount}
+                {wallet ? <>PRT amount possible to buy: {Number(maxPRTAmount-perAccountPRT)}</> : ''}
               </p>
 
-              <div className="border-t border-b py-4 mt-16 w-full">
+              {wallet ?  <div className="border-t border-b py-4 mt-16 w-full">
                 <div className="w-full text-xl font-coiny flex items-center justify-between text-brand-yellow">
                   <p>Total</p>
 
@@ -230,7 +252,8 @@ export default function Mint() {
                     <span className="text-gray-400">+ GAS</span>
                   </div>
                 </div>
-              </div>
+              </div> : null}
+             
 
               {/* Mint Button && Connect Wallet Button */}
               {wallet ? (
@@ -245,7 +268,7 @@ export default function Mint() {
                 disabled={isPRTing}
                 onClick={buyPRTHandler}
               >
-                {isPRTing ? 'PRTs buying process is started...' : 'Buy PRTs'}
+                {isPRTing ? <span className='animate-pulse'>PRTs buying process is started...</span> : 'Buy PRTs'}
               </button> :
               null
              
@@ -253,7 +276,7 @@ export default function Mint() {
 
 
                 <button
-              className="mt-4 right-4 bg-indigo-600 transition duration-200 ease-in-out font-chalk border-2 border-[rgba(0,0,0,1)] shadow-[0px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-none px-4 py-2 rounded-md text-sm text-white tracking-wide uppercase"
+              className="mt-4 right-4 bg-indigo-600 transition duration-200 ease-in-out font-chalk shadow-lg hover:shadow-black active:shadow-none px-4 py-2 rounded-md text-sm text-white tracking-wide uppercase"
               onClick={() => (wallet ? disconnect({
                   label: wallet.label
                 }) : connect())}
@@ -267,7 +290,7 @@ export default function Mint() {
                   className="font-coiny mt-12 w-full bg-gradient-to-br from-brand-purple to-brand-pink shadow-lg px-6 py-3 rounded-md text-2xl text-white hover:shadow-pink-400/50 mx-4 tracking-wide uppercase"
                   onClick={() => (wallet ? disconnect() : connect())}
                 >
-                  {connecting ? 'connecting' : 'connect'}
+                  {connecting ? 'connecting' : 'connect wallet'}
                 </button>
 
               )}
@@ -298,7 +321,7 @@ export default function Mint() {
                 Contract Address
               </h3>
               <a
-                href={`https://rinkeby.etherscan.io/address/${config.contractAddress}#readContract`}
+                href={`https://goerli.etherscan.io/address/${config.contractAddress}#readContract`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 mt-4"

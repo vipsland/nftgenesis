@@ -63,8 +63,6 @@ contract PRT is Ownable, ReentrancyGuard {
     event EmitPresalepPRTDone(string msg);
     
 
-    
-
 
     // ---modifiers--- do not remove this function
     modifier isValidMerkleProof(bytes32[] calldata _proof) {//we need this magic to be sure accounts is holder of PRT
@@ -186,6 +184,9 @@ contract PRT is Ownable, ReentrancyGuard {
     
     }
 
+     function perAccountPRT (address account) public view returns(uint)  {
+        return uint8(userPRTs[account].length);
+    }
 
      function buyPRT (address account, uint8 _amount_wanted_able_to_get) external payable onlyAccounts presalePRTIsActiveAndNotOver nonReentrant {
         require(account != owner(), "Owner of contract can not buy PRT");
@@ -208,7 +209,7 @@ contract PRT is Ownable, ReentrancyGuard {
 
         uint weiBalanceWallet = msg.value;
 
-        require(weiBalanceWallet > PRICE_PRT, "Min 0.01 ether");
+        require(weiBalanceWallet >= PRICE_PRT, "Min 0.01 ether");
 
         require(PRICE_PRT * _amount_wanted_able_to_get <= weiBalanceWallet, "Insufficient funds");
 
