@@ -54,36 +54,34 @@ export const getPrice = async () => {
   return price
 }
 
-export const getPerAccountPRT = async () => {
-  if (!window.ethereum.selectedAddress) {
+export const getPerAccountPRT = async (wallet) => {
+  if (!wallet?.accounts[0]?.address) {
     return 0
   }
 
-  const perAccountPRT = await prtContract.methods.perAccountPRT(window.ethereum.selectedAddress).call()
+  const perAccountPRT = await prtContract.methods.perAccountPRT(wallet?.accounts[0]?.address).call()
   return perAccountPRT
 }
 
 
-export const buyPRT = async (prtAmount) => {
+export const buyPRT = async (prtAmount, wallet) => {
+  
+  
+
   if (!window.ethereum.selectedAddress) {
     return {
       success: false,
-      status: 'To be able to buy, you need to connect your wallet'
+      status: 'To be able to buy, you need to connect your wallet.'
     }
   }
 
-  // const leaf = keccak256(window.ethereum.selectedAddress)
-  // const proof = merkleTree.getHexProof(leaf)
+  if (window.ethereum.selectedAddress !== wallet?.accounts[0]?.address) {
+    return {
+      success: false,
+      status: 'Select correct account in metamask.'
+    }
+  }
 
-  // Verify Merkle Proof
-  // const isValid = merkleTree.verify(proof, leaf, root)
-
-  // if (!isValid) {
-  //   return {
-  //     success: false,
-  //     status: 'Invalid Merkle Proof - You are not on the whitelist'
-  //   }
-  // }
 
   const nonce = await web3.eth.getTransactionCount(
     window.ethereum.selectedAddress,

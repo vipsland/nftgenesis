@@ -19,14 +19,6 @@ export default function Mint() {
   const [{ chains, connectedChain, settingChain }, setChain] = useSetChain()
   const connectedWallets = useWallets()
 
-  // create an ethers provider
-  let ethersProvider
-
-  if (wallet) {
-    ethersProvider = new ethers.providers.Web3Provider(wallet.provider, 'any')
-  }
-  console.log({ethersProvider})
-
 
   const [maxSupply, setMaxSupply] = useState(0)
   const [perAccountPRT, setPerAccountPRT] = useState(0)
@@ -40,10 +32,12 @@ export default function Mint() {
   const [prtAmount, setPRTAmount] = useState(1)
   const [isPRTing, setIsPRTing] = useState(false)
   const [onboard, setOnboard] = useState(null)
-  console.log({onboard})
 
   
-  
+  useEffect(() => {
+    setOnboard(initOnboard)
+  }, [])
+
   useEffect(() => {
     if (!connectedWallets.length) return
 
@@ -78,21 +72,32 @@ export default function Mint() {
   }, [onboard, connect])
 
   
-
-
   useEffect(() => {
-    const _setPerAccountPRT = async () => {
-      setPerAccountPRT(await getPerAccountPRT())
+    const requestAccount = async (wallet) => {
+
+      await window.ethereum.request({
+        method: "wallet_requestPermissions",
+        params: [
+          {
+            eth_accounts: {}
+          }
+        ]
+      });
+
+      //update value
+      setPerAccountPRT(await getPerAccountPRT(wallet))
     }
-    if (wallet && window?.ethereum?.selectedAddress) {
-      _setPerAccountPRT()
+    if (wallet?.accounts[0]?.address) {
+
+      requestAccount(wallet)
+    
     }
-  }, [connectedWallets, wallet])
+  }, [wallet?.accounts[0]?.address])
 
   useEffect(() => {
     const init = async () => {
       setMaxSupply(await getMaxSupply())
-      setPerAccountPRT(await getPerAccountPRT())
+      setPerAccountPRT(await getPerAccountPRT(wallet))
       setTotalSoldPRT(await getTotalPRT())
 
       const isPreSale = await isPreSaleState()
@@ -105,7 +110,7 @@ export default function Mint() {
     }
 
     init()
-  }, [])
+  }, [wallet])
 
   const incrementPRTAmount = () => {
     if (prtAmount < maxPRTAmount) {
@@ -123,7 +128,7 @@ export default function Mint() {
     setStatus(null)
     setIsPRTing(true)
 
-    const { success, status } = await buyPRT(prtAmount)
+    const { success, status } = await buyPRT(prtAmount, wallet)
 
     setStatus({
       success,
@@ -132,7 +137,7 @@ export default function Mint() {
 
     setIsPRTing(false)
     setTotalSoldPRT(await getTotalPRT())
-    setPerAccountPRT(await getPerAccountPRT())
+    setPerAccountPRT(await getPerAccountPRT(wallet))
   }
   
   const mintNFTHandler = async () => {

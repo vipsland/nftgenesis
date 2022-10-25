@@ -10,3 +10,5 @@ coverage.json
 .DS_Store
 .next/
 contracts/scenario.json
+accounts-ganache-cli
+contracts/example.sol

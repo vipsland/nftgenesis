@@ -3,7 +3,7 @@ require('@nomiclabs/hardhat-waffle');
 require('hardhat-contract-sizer');
 require('solidity-coverage');
 
-const {apiKey, PK, etherscanApiKey} = require('./secrets.json')
+const {apiKey, PK, etherscanApiKey, mnemonic} = require('./secrets.json')
 
 const eth_goerli_settings = {
   apiKey: "da4QudLrjNs6-NR8EurK-N0ikxP6ZTVR",
@@ -44,6 +44,9 @@ module.exports = {
     hardhat: {
       blockGasLimit: 35000000,
       accounts: {
+        mnemonic,
+        path: "m/44'/60'/0'/0/",
+        initialIndex: 0,
         count: 1601,
       }
   },

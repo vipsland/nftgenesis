@@ -196,7 +196,7 @@ contract PRT is Ownable, ReentrancyGuard {
         uint8 _presaleClaimedAmount = uint8(userPRTs[account].length);
 
         if (_presaleClaimedAmount == 0) {
-            require(_amount_wanted_able_to_get <= MAX_BUYABLE_AMOUNT, "You can't mint so much tokens");
+            require(_amount_wanted_able_to_get <= MAX_BUYABLE_AMOUNT, "You can't buy so much tokens");
         }
        
         require(_presaleClaimedAmount < MAX_BUYABLE_AMOUNT, "You have exceeded 100 raffle tickets limit");
@@ -269,10 +269,10 @@ contract PRT is Ownable, ReentrancyGuard {
         return msg.value;
     }
 
-     function withdraw () public payable onlyOwner {
-         payable(msg.sender).transfer(address(this).balance);//This function allows the owner to withdraw from the contract
+    function withdraw () public payable onlyOwner {
+        payable(msg.sender).transfer(address(this).balance);//This function allows the owner to withdraw from the contract
 
-     }
+    }
      
 
 }
