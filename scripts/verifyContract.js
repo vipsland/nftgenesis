@@ -5,16 +5,17 @@
 
  require('@nomiclabs/hardhat-etherscan')
  const hre = require('hardhat')
- 
+ const proxyRegistryAddressGoerli = '0xC6CD41b08DC8f9124933d377431480c69F1e1C9f'
+
  
  async function main() {
    
-   await hre.run('verify:verify', {
-     address: '0x76BB82DC49899B6a22F49E2838179080989Da484', // you can also verify with remix plugin
-     constructorArguments: []
+   await hre.run('verify:verify', { 
+     address: '0x8B74A330169734d036A18D4d66af8C01355eF09d', // you can also verify with remix plugin
+     constructorArguments: [proxyRegistryAddressGoerli]
    })
  }
- 
+ //latest https://goerli.etherscan.io/address/0x74a29C3E63459F3B7CC64a48E515EFB144313021#code
  // We recommend this pattern to be able to use async/await everywhere
  // and properly handle errors.
  main()

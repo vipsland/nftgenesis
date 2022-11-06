@@ -11,17 +11,21 @@ import "@openzeppelin/contracts/finance/PaymentSplitter.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
+import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
-contract PRT is Ownable, ReentrancyGuard {
+contract PRT is ERC1155, Ownable, ReentrancyGuard {
 
-    using Strings for uint256;
+    using SafeMath for uint256;
     
     using Counters for Counters.Counter;
+
     Counters.Counter public _tokenPRTID_index;
     Counters.Counter public _win_counter;
+    Counters.Counter public _tokenIdCounter;
 
+    address proxyRegistryAddress;
 
     uint256 public constant NUM_TOTAL = 1000;
     uint256 public constant MAX_SUPPLY_FOR_TOKEN = 20000;
@@ -33,25 +37,51 @@ contract PRT is Ownable, ReentrancyGuard {
     uint256 public constant MAX_SUPPLY_PRT = 160000;
 
     uint public constant PRICE_PRT = 0.01 ether;//(uint): number of wei sent with the message
+    uint256 _price = 0; // 0.00 ETH
 
     bool public presalePRT = false;
-    bool public presalepPRTDone = false;
+    bool public mintIsOpen = false;
 
     uint public idx = 0;
 
     bytes32 public root;
     
+    uint256 public counterTokenID;
+    mapping(address => uint256) userBalances;
+    mapping (uint256 => string) private _uris;
+
+    // Mapping from token ID to account balances
+    mapping(address => uint256) private _balancesnft;
+ 
+
 
     // Public Raffles Ticket (PRT) : 160,000
     // ID #20,001 to ID #180,000
-    mapping(address => uint256[]) private userPRTs;
-    mapping(uint => address) private prtPerAddress;
+    mapping(address => uint256[]) public userPRTs;
+    mapping(uint => address) public prtPerAddress;
+    mapping(address => bool) public winners;
+    
     
     uint16[] public intArr;
 
-    constructor() {
-        intArr = new uint16[](MAX_SUPPLY_FOR_TOKEN/NUM_TOTAL); //intArr[20]
+    constructor(address _proxyRegistryAddress) // 0xC6CD41b08DC8f9124933d377431480c69F1e1C9f
+        ERC1155(
+            "ipfs://QmU5rGmMp93x6wAZctKiiTxiVbVoQ5h72R9e9SHgQqv6Up/nft/collections/genesis/json/{id}.json" //default way
+        ) ReentrancyGuard() // A modifier that can prevent reentrancy during certain functions
+    {
+
+        intArr = new uint16[](MAX_SUPPLY_FOR_TOKEN/NUM_TOTAL);
         intArr[0]=4;
+        proxyRegistryAddress = _proxyRegistryAddress;
+    }
+
+   function uri(uint256 tokenId) override public view returns (string memory) {
+        return(_uris[tokenId]);
+    }
+    
+    function setTokenUri(uint256 tokenId, string memory uri_to_update) public onlyOwner {
+        require(bytes(_uris[tokenId]).length == 0, "Cannot set uri twice"); //can do it once once
+        _uris[tokenId] = uri_to_update; 
     }
 
 
@@ -60,8 +90,9 @@ contract PRT is Ownable, ReentrancyGuard {
     event TransferFromToContract(address from, uint amount);
     event RTWinnerAddress(address winner, uint winnerTokenPRTID);
     event LastIntArrStore(uint index, uint indexArr);
-    event EmitPresalepPRTDone(string msg);
-    
+    event EmitmintIsOpen(string msg);
+    event Minter(address indexed from, uint256 tokenID, uint256 counterTokenID, uint price); /* This is an event */
+
 
 
     // ---modifiers--- do not remove this function
@@ -79,15 +110,15 @@ contract PRT is Ownable, ReentrancyGuard {
         _;
     }
     
-    modifier presalePRTIsDone () {
-        require(presalepPRTDone, "Sale PRT is Not Done");
+    modifier mintIsOpenModifier () {
+        require(mintIsOpen, "Mint is not open");
         _;
     }
 
 
     modifier presalePRTIsActiveAndNotOver () {
         require(presalePRT, "Presale PRT is not open.");//needs be true, is active (not paused)
-        require(!presalepPRTDone, "Presale PRT is done."); //is not over
+        require(!mintIsOpen, "Presale PRT is done."); //is not over
         _;
     }
 
@@ -95,11 +126,13 @@ contract PRT is Ownable, ReentrancyGuard {
         presalePRT = !presalePRT;
     }
 
-
-    function togglePresalepPRTDone() public onlyOwner {
-        presalepPRTDone = !presalepPRTDone; //only owner can toggle presale
+    function toggleMintIsOpen() public onlyOwner {
+        mintIsOpen = !mintIsOpen; //only owner can toggle presale
     }
 
+    function setWinnerToggle(address addr) public onlyOwner {
+        winners[addr] = !winners[addr];
+    }
 
 
     function createXRAND(uint number)  internal view returns(uint)  {
@@ -113,11 +146,13 @@ contract PRT is Ownable, ReentrancyGuard {
 
     
     function getTotalPRT() public view returns(uint){
-        // return uint(keccak256(abi.encodePacked(block.timestamp,block.difficulty,  
-        // msg.sender))) % number;
         return _tokenPRTID_index.current();
     }
     
+    function getTotalMinted() public view returns(uint){
+        return _tokenIdCounter.current();
+    }
+
 
     function random(uint number) public view returns(uint){
         // return uint(keccak256(abi.encodePacked(block.timestamp,block.difficulty,  
@@ -125,8 +160,71 @@ contract PRT is Ownable, ReentrancyGuard {
         return uint(blockhash(block.number-1)) % number;
     }
 
+    function isWinner(address addr) public view onlyAccounts returns(bool){
+        return winners[addr];
+    }
 
-    function raffle1stStage() public payable returns(uint256){
+
+    function publicSaleMint() external payable onlyAccounts {
+
+        require(msg.sender != address(0), "Sender is not exist");
+        
+        require(winners[msg.sender] == true, "You are not a winner");
+
+        counterTokenID = _tokenIdCounter.current();
+
+        require(counterTokenID >= 0 && counterTokenID < NUM_TOTAL*10, "Error: exceeded max supply 10000");
+
+        uint256 tokenID = raffle1stStage();
+
+        require(tokenID >= 5 && tokenID <= MAX_SUPPLY_FOR_TOKEN, "Error: tokenID < 5 OR tokenID > MAX_SUPPLY_FOR_TOKEN");
+        // require(getTokenID(msg.sender) == 0, "This address already own token");
+
+        if (counterTokenID < 1000) {
+            mintFree(tokenID);
+        } else {
+            uint weiPrice = 20987550000000; //0.00002098755 eth;
+            mintPayable(tokenID, weiPrice);
+        }
+        _tokenIdCounter.increment();
+
+    }
+
+    function mintFree(uint256 tokenID) internal onlyAccounts nonReentrant {
+        _mint(msg.sender, tokenID, 1, "");
+        _balancesnft[msg.sender] = tokenID;
+
+        emit Minter(msg.sender, tokenID, counterTokenID, 0);//free minted
+
+    }
+    //mint with price
+     function mintPayable(uint256 tokenID, uint weiPrice) public payable onlyAccounts nonReentrant {
+        uint weiAmount = msg.value;//number of wei sent with the message
+        require(weiAmount >=weiPrice, "not enough ETH"); //1 amount, ether is a shortcut for 10^18)
+        
+        userBalances[msg.sender] = weiAmount;
+        require(userBalances[msg.sender].sub(weiPrice) >=0, "not enough ETH");
+
+        payable(owner()).transfer(weiPrice);// Send money to owner of contract
+
+        _mint(msg.sender, tokenID, 1, "");
+        _balancesnft[msg.sender] = tokenID;
+
+        emit Minter(msg.sender, tokenID, counterTokenID, weiPrice);//minted with price
+    }
+
+
+    function balanceOfNFTByAddress()  public view onlyAccounts  returns (uint256) {
+        require(msg.sender != address(0), "Sender is not exist");
+        
+        require(winners[msg.sender] == true, "Sorry, you are not allowed to access this operation");
+        
+        // Mapping from token ID to account balances
+        return balanceOf(msg.sender, _balancesnft[msg.sender]);
+    }
+
+
+    function raffle1stStage() internal returns(uint256){
         
         //gold supply = ID 1-200, silver supply = 201-2000, bronze = 2001-20000
         uint8 randnum = uint8(random(255));
@@ -147,13 +245,15 @@ contract PRT is Ownable, ReentrancyGuard {
 
         return uint256(getval)+(uint16(randval)*NUM_TOTAL);
 
+
+
     }
     
     function _setStartIdx(uint i) private onlyOwner {
         idx = i; //only owner can toggle presale
     }
 
-    function sendMP() public payable onlyAccounts onlyOwner presalePRTIsDone {
+    function sendMP() public payable onlyAccounts onlyOwner mintIsOpenModifier {
         uint xrand = createXRAND(17);
         _win_counter.increment();
         uint counter = _win_counter.current();
@@ -164,6 +264,7 @@ contract PRT is Ownable, ReentrancyGuard {
                 uint24 _winnerTokenPRTID = uint24(PRTID + 1 + xrand + uint24(uint32((168888*i)/10000))); 
                 address winneraddr = getAddrFromPRTID(_winnerTokenPRTID);
                 if (winneraddr != address(0)) {
+                    winners[winneraddr] = true;
                     emit RTWinnerAddress(winneraddr, _winnerTokenPRTID); //this needs to be 10000+i <- and i needs to be random also, 1st stage sale
                 }
                 emit RTWinnerTokenID(i, _winnerTokenPRTID, counter);//in case to track all winer tickets in logs
@@ -176,7 +277,7 @@ contract PRT is Ownable, ReentrancyGuard {
        
     }
 
-     function intArrIterate() public onlyAccounts onlyOwner presalePRTIsDone {
+     function intArrIterate() public onlyAccounts onlyOwner mintIsOpenModifier {
 
         for (uint i=0; i < intArr.length; i++) {
             emit LastIntArrStore(i, intArr[i]); //we need this for 2nd stage sale
@@ -235,18 +336,18 @@ contract PRT is Ownable, ReentrancyGuard {
         }
         emit DitributePRTs(msg.sender, userPRTs[msg.sender]);
         
-        console.log("start!!!");
-        console.log("got total", msg.sender, uint8(userPRTs[account].length));
-        console.log("status! latestprtIndex, MAX_PRT_INDEX", latestprtIndex, MAX_PRT_INDEX);
+        // console.log("start!!!");
+        // console.log("got total", msg.sender, uint8(userPRTs[account].length));
+        // console.log("status! latestprtIndex, MAX_PRT_INDEX", latestprtIndex, MAX_PRT_INDEX);
 
         // console.log('_tokenPRTID_index.current()! end', _tokenPRTID_index.current());
 
         if (_tokenPRTID_index.current() == MAX_SUPPLY_PRT) {
-            presalepPRTDone = true; //toggle presale is done
-            emit EmitPresalepPRTDone('Presale PRT is done.');
-            console.log("Presale PRT is DONE!");
+            mintIsOpen = true; //toggle presale is done
+            emit EmitmintIsOpen('Presale PRT is done.');
+            // console.log("Presale PRT is DONE!");
         } else {
-            emit EmitPresalepPRTDone('Presale PRT is not done yet.');
+            emit EmitmintIsOpen('Presale PRT is not done yet.');
 
         }
 
@@ -265,6 +366,7 @@ contract PRT is Ownable, ReentrancyGuard {
 
     }
 
+
     function balanceOf () public payable onlyOwner returns (uint){
         return msg.value;
     }
@@ -273,6 +375,42 @@ contract PRT is Ownable, ReentrancyGuard {
         payable(msg.sender).transfer(address(this).balance);//This function allows the owner to withdraw from the contract
 
     }
+
+       /**
+     * Override isApprovedForAll to whitelist user's OpenSea proxy accounts to enable gas-less listings.
+     */
+    function isApprovedForAll(address owner, address operator)
+        override
+        public
+        view
+        returns (bool)
+    {
+        // Whitelist OpenSea proxy contract for easy trading.
+        ProxyRegistry proxyRegistry = ProxyRegistry(proxyRegistryAddress);
+        if (address(proxyRegistry.proxies(owner)) == operator) {
+            return true;
+        }
+
+        return super.isApprovedForAll(owner, operator);
+    }
+
      
 
 }
+
+
+
+/**
+  @title An OpenSea delegate proxy contract which we include for whitelisting.
+  @author OpenSea
+*/
+contract OwnableDelegateProxy {}
+
+/**
+  @title An OpenSea proxy registry contract which we include for whitelisting.
+  @author OpenSea
+*/
+contract ProxyRegistry {
+    mapping(address => OwnableDelegateProxy) public proxies;
+}
+

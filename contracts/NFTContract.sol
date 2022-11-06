@@ -93,7 +93,7 @@ contract NFTContract is ERC1155, Ownable, ReentrancyGuard {
 
         counterTokenID = _tokenIdCounter.current();
 
-        require(counterTokenID >= 0 && counterTokenID < NUM_TOTAL*10, "Error: exceeded max supply NUM_TOTAL*10");
+        require(counterTokenID >= 0 && counterTokenID < NUM_TOTAL*10, "Error: exceeded max supply 10000");
 
         uint256 tokenID = raffle();
 

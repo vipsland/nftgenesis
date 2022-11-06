@@ -65,7 +65,12 @@ https://goerlifaucet.com/
 
 
 # Remix cli
+```
+http://remix.ethereum.org/
+
 https://www.npmjs.com/package/@remix-project/remixd
+
+```
 
 
 # How to use it.each with hardhat provided in example

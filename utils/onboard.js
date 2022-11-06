@@ -18,6 +18,7 @@ const eth_mainnet_settings = {
 /** @type import('hardhat/config').HardhatUserConfig */
 const GOERLI_RPC_URL = `https://eth-goerli.alchemyapi.io/v2/${eth_goerli_settings.apiKey}`
 const MAINNET_RPC_URL = `https://eth-mainnet.g.alchemy.com/v2/${eth_mainnet_settings.apiKey}`
+const GANACHE_RPC_URL = `http://localhost:8545`
 
 const injected = injectedModule()
 
@@ -42,6 +43,13 @@ const initOnboard = init({
       label: 'Ethereum Goerli Testnet',
       rpcUrl: GOERLI_RPC_URL
     },
+
+    // {
+    //   id: '0x1337',
+    //   token: 'gETH',
+    //   label: 'Ethereum Ganache Testnet',
+    //   rpcUrl: GANACHE_RPC_URL
+    // },
 
     // {
     //   id: '0x89',
