@@ -50,23 +50,32 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
     mapping(address => uint256) userBalances;
     mapping (uint256 => string) private _uris;
 
+    struct Token {
+        uint256 tokenID;
+        uint tokenCount;
+        uint256 tokenPRTID;
+        bool isWinner;
+        bool isMember;
+        uint256[] tokenPRTIDs;
+    }
+
     // Mapping from token ID to account balances
-    mapping(address => uint256) private _balancesnft;
+    mapping(address => Token) public _balancesnft;
  
-
-
-    // Public Raffles Ticket (PRT) : 160,000
+     // Public Raffles Ticket (PRT) : 160,000
     // ID #20,001 to ID #180,000
     mapping(address => uint256[]) public userPRTs;
     mapping(uint => address) public prtPerAddress;
-    mapping(address => bool) public winners;
+
+
+
     
     
     uint16[] public intArr;
 
-    constructor(address _proxyRegistryAddress) // 0xC6CD41b08DC8f9124933d377431480c69F1e1C9f
+    constructor(address _proxyRegistryAddress) 
         ERC1155(
-            "ipfs://QmU5rGmMp93x6wAZctKiiTxiVbVoQ5h72R9e9SHgQqv6Up/nft/collections/genesis/json/{id}.json" //default way
+            "https://ipfs.vipsland.com/nft/collections/genesis/json/{id}.json" //default way
         ) ReentrancyGuard() // A modifier that can prevent reentrancy during certain functions
     {
 
@@ -75,24 +84,24 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
         proxyRegistryAddress = _proxyRegistryAddress;
     }
 
-   function uri(uint256 tokenId) override public view returns (string memory) {
+    function uri(uint256 tokenId) override public view returns (string memory) {
         return(_uris[tokenId]);
-    }
-    
+    }    
+
     function setTokenUri(uint256 tokenId, string memory uri_to_update) public onlyOwner {
         require(bytes(_uris[tokenId]).length == 0, "Cannot set uri twice"); //can do it once once
         _uris[tokenId] = uri_to_update; 
     }
 
 
-    event DitributePRTs(address indexed from, uint256[] list); /* This is an event */
+    event DitributePRTs(address indexed from, uint256[] list); 
     event RTWinnerTokenID(uint index, uint winnerTokenPRTID, uint counter);
     event TransferFromToContract(address from, uint amount);
     event RTWinnerAddress(address winner, uint winnerTokenPRTID);
     event LastIntArrStore(uint index, uint indexArr);
     event EmitmintIsOpen(string msg);
-    event Minter(address indexed from, uint256 tokenID, uint256 counterTokenID, uint price); /* This is an event */
-
+    event Minter(address indexed from, uint256 tokenID, uint256 counterTokenID, uint price); 
+    event MessageForMinter(address indexed to, uint256 counterPRTID, string msg); 
 
 
     // ---modifiers--- do not remove this function
@@ -102,6 +111,11 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
             root,
             keccak256(abi.encodePacked(msg.sender))
             ) == true, "Not allowed origin");
+        _;
+    }
+
+    modifier isNotOwnedNFT() {
+        require(balanceOf(msg.sender, _balancesnft[msg.sender].tokenID) == 0, "Mint only once");
         _;
     }
 
@@ -122,6 +136,8 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
         _;
     }
 
+   
+
     function togglePreSalePRT() public onlyOwner {
         presalePRT = !presalePRT;
     }
@@ -131,9 +147,12 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
     }
 
     function setWinnerToggle(address addr) public onlyOwner {
-        winners[addr] = !winners[addr];
+        _balancesnft[addr].isWinner = !_balancesnft[addr].isWinner;
     }
 
+    function setMemberToggle(address addr) public onlyOwner {
+        _balancesnft[addr].isMember = !_balancesnft[addr].isMember;
+    }
 
     function createXRAND(uint number)  internal view returns(uint)  {
         //number = 17, 0 - 16 <- this is what we want
@@ -161,15 +180,18 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
     }
 
     function isWinner(address addr) public view onlyAccounts returns(bool){
-        return winners[addr];
+        return _balancesnft[addr].isWinner;
     }
 
+    function _concatenate(string memory a, string memory b) private pure returns (string memory){
+        return string(abi.encodePacked(a,' ',b));
+    } 
 
-    function publicSaleMint() external payable onlyAccounts {
+    function mintFreeForMember() external payable onlyAccounts isNotOwnedNFT {
 
         require(msg.sender != address(0), "Sender is not exist");
         
-        require(winners[msg.sender] == true, "You are not a winner");
+        require(_balancesnft[msg.sender].isMember == true, "You are not a member");
 
         counterTokenID = _tokenIdCounter.current();
 
@@ -178,11 +200,33 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
         uint256 tokenID = raffle1stStage();
 
         require(tokenID >= 5 && tokenID <= MAX_SUPPLY_FOR_TOKEN, "Error: tokenID < 5 OR tokenID > MAX_SUPPLY_FOR_TOKEN");
-        // require(getTokenID(msg.sender) == 0, "This address already own token");
 
-        if (counterTokenID < 1000) {
+        mintFree(tokenID);
+
+        _tokenIdCounter.increment();
+
+    }
+
+    function publicSaleMint() external payable onlyAccounts isNotOwnedNFT {
+
+        require(msg.sender != address(0), "Sender is not exist");
+        
+        require(_balancesnft[msg.sender].isWinner == true, "You are not a winner");
+
+        counterTokenID = _tokenIdCounter.current();
+
+        require(counterTokenID >= 0 && counterTokenID < NUM_TOTAL*10, "Error: exceeded max supply 10000");
+
+        uint256 tokenID = raffle1stStage();
+
+        require(tokenID >= 5 && tokenID <= MAX_SUPPLY_FOR_TOKEN, "Error: tokenID < 5 OR tokenID > MAX_SUPPLY_FOR_TOKEN");
+
+        // holder of PRT ID > MAX_SUPPLY_PRT, mint free
+        if (_balancesnft[msg.sender].tokenPRTID > MAX_SUPPLY_PRT) {
+            emit MessageForMinter(msg.sender, _balancesnft[msg.sender].tokenPRTID, "You mint free");
             mintFree(tokenID);
         } else {
+            emit MessageForMinter(msg.sender, _balancesnft[msg.sender].tokenPRTID, "You can not mint free, price is 0.00002098755 eth");
             uint weiPrice = 20987550000000; //0.00002098755 eth;
             mintPayable(tokenID, weiPrice);
         }
@@ -192,7 +236,7 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
 
     function mintFree(uint256 tokenID) internal onlyAccounts nonReentrant {
         _mint(msg.sender, tokenID, 1, "");
-        _balancesnft[msg.sender] = tokenID;
+        _balancesnft[msg.sender].tokenID = tokenID;
 
         emit Minter(msg.sender, tokenID, counterTokenID, 0);//free minted
 
@@ -208,7 +252,7 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
         payable(owner()).transfer(weiPrice);// Send money to owner of contract
 
         _mint(msg.sender, tokenID, 1, "");
-        _balancesnft[msg.sender] = tokenID;
+        _balancesnft[msg.sender].tokenID = tokenID;
 
         emit Minter(msg.sender, tokenID, counterTokenID, weiPrice);//minted with price
     }
@@ -217,10 +261,10 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
     function balanceOfNFTByAddress()  public view onlyAccounts  returns (uint256) {
         require(msg.sender != address(0), "Sender is not exist");
         
-        require(winners[msg.sender] == true, "Sorry, you are not allowed to access this operation");
+        require(_balancesnft[msg.sender].isWinner == true, "Sorry, you are not allowed to access this operation");
         
         // Mapping from token ID to account balances
-        return balanceOf(msg.sender, _balancesnft[msg.sender]);
+        return balanceOf(msg.sender, _balancesnft[msg.sender].tokenID);
     }
 
 
@@ -253,6 +297,7 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
         idx = i; //only owner can toggle presale
     }
 
+//call 10 times
     function sendMP() public payable onlyAccounts onlyOwner mintIsOpenModifier {
         uint xrand = createXRAND(17);
         _win_counter.increment();
@@ -264,7 +309,8 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
                 uint24 _winnerTokenPRTID = uint24(PRTID + 1 + xrand + uint24(uint32((168888*i)/10000))); 
                 address winneraddr = getAddrFromPRTID(_winnerTokenPRTID);
                 if (winneraddr != address(0)) {
-                    winners[winneraddr] = true;
+                    _balancesnft[msg.sender].isWinner = true;
+                    _balancesnft[msg.sender].tokenPRTID = _winnerTokenPRTID;
                     emit RTWinnerAddress(winneraddr, _winnerTokenPRTID); //this needs to be 10000+i <- and i needs to be random also, 1st stage sale
                 }
                 emit RTWinnerTokenID(i, _winnerTokenPRTID, counter);//in case to track all winer tickets in logs
@@ -366,17 +412,12 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
 
     }
 
-
-    function balanceOf () public payable onlyOwner returns (uint){
-        return msg.value;
-    }
-
     function withdraw () public payable onlyOwner {
         payable(msg.sender).transfer(address(this).balance);//This function allows the owner to withdraw from the contract
 
     }
 
-       /**
+      /**
      * Override isApprovedForAll to whitelist user's OpenSea proxy accounts to enable gas-less listings.
      */
     function isApprovedForAll(address owner, address operator)
@@ -393,8 +434,6 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
 
         return super.isApprovedForAll(owner, operator);
     }
-
-     
 
 }
 

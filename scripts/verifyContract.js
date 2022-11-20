@@ -11,7 +11,7 @@
  async function main() {
    
    await hre.run('verify:verify', { 
-     address: '0x8B74A330169734d036A18D4d66af8C01355eF09d', // you can also verify with remix plugin
+     address: '0x1c8d42eE1ca0E5536bD3dCF8ED443217FC88d588', // you can also verify with remix plugin
      constructorArguments: [proxyRegistryAddressGoerli]
    })
  }
