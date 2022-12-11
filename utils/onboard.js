@@ -1,22 +1,23 @@
 import { init, useConnectWallet } from '@web3-onboard/react'
 import injectedModule from '@web3-onboard/injected-wallets'
-// const {apiKey, PK, etherscanApiKey} = require('../secrets.json')
 import { Network, Alchemy } from 'alchemy-sdk';
 // import { TASK_COMPILE_SOLIDITY_COMPILE } from 'hardhat/builtin-tasks/task-names';
+const {goerliApiKey, ethMainApiKey} = require('../secrets.json')
 
 const eth_goerli_settings = {
-    apiKey: "da4QudLrjNs6-NR8EurK-N0ikxP6ZTVR",
+    apiKey: `${goerliApiKey}`,
     network: Network.ETH_GOERLI,
 };
 
 const eth_mainnet_settings = {
-  apiKey: "k7Dy_53hGKxAHfb9_k7sEAWbvE2Z5Lgo",
+  apiKey: `${ethMainApiKey}`,
   network: Network.ETH_MAINNET,
 };
 
 
 /** @type import('hardhat/config').HardhatUserConfig */
-const GOERLI_RPC_URL = `https://eth-goerli.alchemyapi.io/v2/${eth_goerli_settings.apiKey}`
+// old rpc url https://eth-goerli.alchemyapi.io/v2/
+const GOERLI_RPC_URL = `https://eth-goerli.g.alchemy.com/v2/${eth_goerli_settings.apiKey}`
 const MAINNET_RPC_URL = `https://eth-mainnet.g.alchemy.com/v2/${eth_mainnet_settings.apiKey}`
 const GANACHE_RPC_URL = `http://localhost:8545`
 

@@ -9,7 +9,7 @@ const hre = require('hardhat')
 // const whitelist = require('./whitelist.js')
 
 // const BASE_URI = 'ipfs://Qmb5A1fFECM2iFHgUioii2khT814nCi6VU9aHXHHqNxHCK/'
-const proxyRegistryAddressGoerli = '0xC6CD41b08DC8f9124933d377431480c69F1e1C9f'
+// const proxyRegistryAddressGoerli = '0xC6CD41b08DC8f9124933d377431480c69F1e1C9f'
 // const proxyRegistryAddressMainnet = '0xa5409ec958c83c3f309868babaca7c86dcb077c1'
 
 async function main() {
@@ -32,7 +32,7 @@ async function main() {
   const prtContract = await PRTFactory.deploy(
     // BASE_URI,
     // root,
-    proxyRegistryAddressGoerli
+    // proxyRegistryAddressGoerli
   )
 
   await prtContract.deployed()

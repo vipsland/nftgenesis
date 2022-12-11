@@ -2,23 +2,18 @@ require('@nomiclabs/hardhat-ethers')
 require('@nomiclabs/hardhat-waffle');
 require('hardhat-contract-sizer');
 require('solidity-coverage');
+require("dotenv").config();
 
-const {apiKey, PK, etherscanApiKey, mnemonic} = require('./secrets.json')
+const { GOERLI_RPC_URL, PRIVATE_KEY } = process.env;
 
-const eth_goerli_settings = {
-  apiKey: "da4QudLrjNs6-NR8EurK-N0ikxP6ZTVR",
-};
-
-
-/** @type import('hardhat/config').HardhatUserConfig */
-const GOERLI_RPC_URL = `https://eth-goerli.alchemyapi.io/v2/${eth_goerli_settings.apiKey}`
+const {rinkebyApiKey, PK, etherscanApiKey, mnemonic} = require('./secrets.json')
 
 
 /** @type import('hardhat/config').HardhatUserConfig */
-const RINKEBY_RPC_URL = `https://rinkeby.infura.io/v3/${apiKey}`
+const RINKEBY_RPC_URL = `https://rinkeby.infura.io/v3/${rinkebyApiKey}`
 module.exports = {
   solidity: {
-    version: '0.8.7',
+    version: '0.8.17',
     settings: {
       optimizer: {
         enabled: true,
@@ -29,16 +24,14 @@ module.exports = {
   networks: {
     rinkeby: {
       url: RINKEBY_RPC_URL,
-      accounts: [PK],
+      accounts: [`0x${PK}`],
       saveDeployments: true,
-      blockGasLimit: 35000000,
     },
 
     goerli: {
       url: GOERLI_RPC_URL,
-      accounts: [PK],
+      accounts: [`0x${PRIVATE_KEY}`],
       saveDeployments: true,
-      blockGasLimit: 35000000,
     },
 
     hardhat: {

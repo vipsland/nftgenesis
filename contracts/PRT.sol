@@ -38,6 +38,7 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
 
     uint public constant PRICE_PRT = 0.01 ether;//(uint): number of wei sent with the message
     uint256 _price = 0; // 0.00 ETH
+    uint public constant NFT_PRICE = 0.00002098755 ether;
 
     bool public presalePRT = false;
     bool public mintIsOpen = false;
@@ -227,8 +228,7 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
             mintFree(tokenID);
         } else {
             emit MessageForMinter(msg.sender, _balancesnft[msg.sender].tokenPRTID, "You can not mint free, price is 0.00002098755 eth");
-            uint weiPrice = 20987550000000; //0.00002098755 eth;
-            mintPayable(tokenID, weiPrice);
+            mintPayable(tokenID, NFT_PRICE);
         }
         _tokenIdCounter.increment();
 

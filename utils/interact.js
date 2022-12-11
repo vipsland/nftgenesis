@@ -2,22 +2,22 @@ const { createAlchemyWeb3 } = require('@alch/alchemy-web3')
 import { Network, Alchemy } from 'alchemy-sdk';
 import getRevertReason from 'eth-revert-reason';
 import { ethers } from "ethers";
+const {goerliApiKey} = require('../secrets.json')
 
 // const { MerkleTree } = require('merkletreejs')
 // const keccak256 = require('keccak256')
 // const whitelist = require('../scripts/whitelist.js')
 
-// const {apiKey, PK, etherscanApiKey} = require('../secrets.json')
 
 const eth_goerli_settings = {
-  apiKey: "da4QudLrjNs6-NR8EurK-N0ikxP6ZTVR",
+  apiKey: `${goerliApiKey}`,
   network: Network.ETH_GOERLI,
 
 };
 const alchemy = new Alchemy(eth_goerli_settings);
 
 /** @type import('hardhat/config').HardhatUserConfig */
-const GOERLI_RPC_URL = `https://eth-goerli.alchemyapi.io/v2/${eth_goerli_settings.apiKey}`
+const GOERLI_RPC_URL = `https://eth-goerli.g.alchemy.com/v2/${eth_goerli_settings.apiKey}`
 // const GANACHE_RPC_URL = `http://localhost:8545`
 
 
