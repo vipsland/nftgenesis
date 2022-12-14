@@ -70,6 +70,8 @@ http://remix.ethereum.org/
 
 https://www.npmjs.com/package/@remix-project/remixd
 
+npx remixd -s . --remix-ide https://remix.ethereum.org
+
 ```
 
 
@@ -119,3 +121,5 @@ npx ganache-cli --deterministic --mnemonic "party south hazard person adult prai
 ```
 
 
+## Reveal NFTs
+https://www.youtube.com/watch?v=19SSvs32m8I

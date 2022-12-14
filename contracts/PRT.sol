@@ -9,7 +9,6 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/finance/PaymentSplitter.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 
@@ -69,9 +68,6 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
     mapping(uint => address) public prtPerAddress;
 
 
-
-    
-    
     uint16[] public intArr;
 
     constructor(address _proxyRegistryAddress) 

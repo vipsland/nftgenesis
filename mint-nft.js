@@ -7,7 +7,7 @@ const API_KEY = process.env.API_KEY;
 // Define an Alchemy Provider
 const provider = new ethers.providers.AlchemyProvider('goerli', API_KEY)
 
-const contract = require("./artifacts/contracts/PRT.sol/PRT.json");
+const contract = require("./artifacts/contracts/AwesomeNFT.sol/AwesomeNFT.json");
 
 console.log(JSON.stringify(contract.abi));
 
@@ -18,10 +18,11 @@ const signer = new ethers.Wallet(privateKey, provider)
 
 // Get contract ABI and address
 const abi = contract.abi
-const contractAddress = '0x3d964786fae5d4eaF030e4dbEf7f686381eA8982'
+const contractAddress = '0x42fb8bd5509be95aa4e9a0f1fde36250f4e21fb9'
 
 // Create a contract instance
-const myNftContract = new ethers.Contract(contractAddress, abi, signer)
+const awesomeNFT = new ethers.Contract(contractAddress, abi, signer)
+
 
 // Get the NFT Metadata IPFS URL
 const tokenID = 0;
@@ -29,14 +30,33 @@ const tokenID = 0;
 
 // Call mintNFT function
 const mintNFT = async () => {
-    let nftTxn = await myNftContract.mintFree(tokenID)
+    let nftTxn = await awesomeNFT.callMint()
     await nftTxn.wait()
-    console.log(`NFT Minted! Check it out at: https://goerli.etherscan.io/tx/${nftTxn.hash}`)
+    const counterTokenID = await awesomeNFT.counterTokenID()
+    console.log(`NFT Minted! Check it out at: https://goerli.etherscan.io/tx/${nftTxn.hash}, counterTokenID: ${counterTokenID}`)
+    return {hash: nftTxn.hash, counterTokenID}
 }
 
-mintNFT()
-    .then(() => process.exit(0))
+
+let index = 0 ;
+// Array.from(Array(10).keys())
+
+const mint = () => {
+    mintNFT()
+    .then(() => {
+        index++;
+        if(index === 9) {
+            process.exit(0)
+        } else {
+            mint()
+        }
+    })
     .catch((error) => {
         console.error(error);
         process.exit(1);
     });
+
+}
+
+mint()
+
