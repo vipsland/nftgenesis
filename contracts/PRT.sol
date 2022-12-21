@@ -70,7 +70,7 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
 
     uint16[] public intArr;
 
-    constructor(address _proxyRegistryAddress) 
+    constructor() 
         ERC1155(
             "https://ipfs.vipsland.com/nft/collections/genesis/json/{id}.json" //default way
         ) ReentrancyGuard() // A modifier that can prevent reentrancy during certain functions
@@ -78,7 +78,6 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
 
         intArr = new uint16[](MAX_SUPPLY_FOR_TOKEN/NUM_TOTAL);
         intArr[0]=4;
-        proxyRegistryAddress = _proxyRegistryAddress;
     }
 
     function uri(uint256 tokenId) override public view returns (string memory) {

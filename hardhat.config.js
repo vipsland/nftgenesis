@@ -24,7 +24,7 @@ module.exports = {
   networks: {
     rinkeby: {
       url: RINKEBY_RPC_URL,
-      accounts: [`0x${PK}`],
+      accounts: [`0x${PRIVATE_KEY}`],
       saveDeployments: true,
     },
 
@@ -35,12 +35,12 @@ module.exports = {
     },
 
     hardhat: {
-      blockGasLimit: 35000000,
+      blockGasLimit: 45000000,
       accounts: {
         mnemonic,
         path: "m/44'/60'/0'/0/",
         initialIndex: 0,
-        count: 1601,
+        count: 6,
       }
   },
   },

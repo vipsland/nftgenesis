@@ -94,9 +94,9 @@ describe("PRT contract", function () {
   
       await hardhatPRT.deployed();
 
-      await hardhatPRT.connect(owner).togglePresalepPRTDone();
+      await hardhatPRT.connect(owner).togglePreSalePRT();
 
-      const isActive = await hardhatPRT.presalepPRTDone();
+      const isActive = await hardhatPRT.presalePRT();
 
       expect(isActive).to.equal(true);
     });

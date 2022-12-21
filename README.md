@@ -123,3 +123,17 @@ npx ganache-cli --deterministic --mnemonic "party south hazard person adult prai
 
 ## Reveal NFTs
 https://www.youtube.com/watch?v=19SSvs32m8I
+
+
+## Test Mint Batch
+```
+
+#1
+npx hardhat test --network hardhat ./test/PRT_only_sendMP_and_save_logs.js
+
+#2
+get array of 10k generated ids
+
+#3
+node mint-nft.js
+```

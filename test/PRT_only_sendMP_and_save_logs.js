@@ -37,17 +37,26 @@ describe("PRT contract", function () {
       const contractBalance = await provider.getBalance(hardhatPRT.address);
       console.log({contractBalance});
       
-      await hardhatPRT.connect(owner).togglePresalepPRTDone();
+      await hardhatPRT.connect(owner).togglePreSalePRT();
       await delay(1000);
 
-      const presalepPRTDone = await hardhatPRT.presalepPRTDone();
+      const presalePRT = await hardhatPRT.presalePRT();
 
-      console.log({presalepPRTDone});
+      console.log({presalePRT});
 
-      expect(presalepPRTDone).to.equal(true);
+      expect(presalePRT).to.equal(true);
 
-          var file = fs.createWriteStream('./output/PRTs_lotery.json');
-          file.on('error', function(err) { console.log(err) });
+      await hardhatPRT.connect(owner).toggleMintIsOpen();
+      await delay(1000);
+
+      const mintIsOpen = await hardhatPRT.mintIsOpen();
+
+      console.log({mintIsOpen});
+      expect(mintIsOpen).to.equal(true);
+      let tokens = ``;
+      
+
+          var file = fs.createWriteStream('./output/PRTs_lotery.txt', {flags: 'a'});
 
           //call 10 times, as we can not call this function only once
           forEach([
@@ -71,8 +80,16 @@ describe("PRT contract", function () {
             r =  r.map(i => {
               const winnerTokenPRTID = i.args.winnerTokenPRTID.toNumber();
               //writeStream
-              file.write(`${JSON.stringify(winnerTokenPRTID)},`);
-
+              console.log({winnerTokenPRTID})
+              file.write(`"${JSON.stringify(winnerTokenPRTID)}",`, (err) => {
+                  if (err) {
+                      console.log('Error:', err.message);
+                  }else{
+                      console.log('Done Written');
+                  }
+              });
+             
+                              tokens = `${tokens},${winnerTokenPRTID}`
               return ({index: i.args.index.toNumber(), winnerTokenPRTID, counter: i.args.counter.toNumber()  });
             });
 
@@ -87,6 +104,11 @@ describe("PRT contract", function () {
       
       
           });
+
+          file.on('finish', () => {
+            console.log('wrote all data to file');
+          });
+          file.on('error', function(err) { console.log(`ERR`,{err}) });
 
           // file.end();
           
