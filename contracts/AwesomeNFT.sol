@@ -9,11 +9,11 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 contract AwesomeNFT is ERC1155, Ownable {
 
 
-    string public name = "VIPSLAND GENESIS";
+    string public name = "VIPSLAND";
     string public notRevealedUri = "https://ipfs.vipsland.com/nft/collections/genesis/json/hidden.json";
     bool public revealed = false;
     mapping (uint256 => string) private _uris;
-    string public symbol = "VLND";
+    string public symbol = "VPSL";
 
     uint256 public constant NUM_TOTAL = 1000;
     uint256 public constant MAX_SUPPLY_FOR_TOKEN = 20009;
