@@ -306,6 +306,7 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
                 if (winneraddr != address(0)) {
                     _balancesnft[msg.sender].isWinner = true;
                     _balancesnft[msg.sender].tokenPRTID = _winnerTokenPRTID;
+                    _balancesnft[msg.sender].tokenPRTIDs.push(_winnerTokenPRTID);
                     emit RTWinnerAddress(winneraddr, _winnerTokenPRTID); //this needs to be 10000+i <- and i needs to be random also, 1st stage sale
                 }
                 emit RTWinnerTokenID(i, _winnerTokenPRTID, counter);//in case to track all winer tickets in logs
@@ -329,6 +330,11 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
      function perAccountPRT (address account) public view returns(uint)  {
         return uint8(userPRTs[account].length);
     }
+    
+    function perAccountLuckTokenPRTID (address account) public view returns(uint256[] memory)  {
+        return _balancesnft[account].tokenPRTIDs;
+    }
+
 
      function buyPRT (address account, uint8 _amount_wanted_able_to_get) external payable onlyAccounts presalePRTIsActiveAndNotOver nonReentrant {
         require(account != owner(), "Owner of contract can not buy PRT");
