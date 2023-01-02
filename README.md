@@ -111,7 +111,7 @@ npx remixd -s . --remix-ide https://remix.ethereum.org
 ```
 HD Wallet
 ==================
-Mnemonic:      party south hazard person adult praise agree direct artefact foot breeze prefer
+Mnemonic:      ***
 Base HD Path:  m/44'/60'/0'/0/{account_index}
 
 
