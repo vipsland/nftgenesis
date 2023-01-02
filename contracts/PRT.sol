@@ -35,8 +35,7 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
     uint256 public constant MAX_PRT_INDEX = 180000;
     uint256 public constant MAX_SUPPLY_PRT = 160000;
 
-    uint public constant PRICE_PRT = 0.01 ether;//(uint): number of wei sent with the message
-    uint256 _price = 0; // 0.00 ETH
+    uint public constant PRICE_PRT = 0.0230123 ether;//(uint): number of wei sent with the message
     uint public constant NFT_PRICE = 0.00002098755 ether;
 
     bool public presalePRT = false;
