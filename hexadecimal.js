@@ -5,7 +5,7 @@ const { toChecksumAddress } = require('ethereum-checksum-address')
 const [, , num] = process.argv
 function main () {
 const number = num || 0
-let  h = parseInt(number, 10).toString(16)
+let  h = parseInt(number, 10).toString(16) // hexadecimal
 // Result: "ff"
 
 // Add Padding
