@@ -32,7 +32,7 @@ describe("PRT contract", function () {
   describe("buyPRT", function () {
 
     //we run this test for all accounts
-    it.only(`${i++} connect all accounts - 1600,  call .buyPRT() 3 times, presalePRT: true, weiBalanceWallet > 0.1 ether, account exceded 100 tokens`, async function () {
+    it.only(`${i++} testForNomalUser`, async function () {
 
       const PRT = await ethers.getContractFactory("PRT");
       const accounts = await ethers.getSigners();
@@ -50,44 +50,40 @@ describe("PRT contract", function () {
       expect(isActive).to.equal(true);
 
 
-      var file = fs.createWriteStream('./output/generatePRT.txt', {flags: 'a'});
+      var file = fs.createWriteStream('./output/testForNomalUserPRT.txt', {flags: 'a'});
 
-      //we exclude owner of contract. because owner of contract can not buy PRT
-      //try first 5 accounts ...acts.splice(0,5)
       forEach([...acts].map((acc, index) => {return [acc, index]})).it.only(`signerWithAddress`, async (acc, index) => {
         const idx = index+1;
         const balance = await acc.getBalance();
         console.log(`account ${idx}`, acc.address, {balance});
 
          //account ${index} we execute 3 times total buyPRT()
-         const tx = await hardhatPRT.connect(acc).buyPRT(acc.address, 100, { value: ethers.utils.parseUnits('15', 'ether') });
-
+         const tx = await hardhatPRT.connect(acc).testForNomalUser(acc.address, 120);
          //check list distributed PRT per account
          let receipt = await tx.wait();
-         let [r] = receipt.events?.filter((x) => {return x.event == "DitributePRTs"});
-         expect(r.args.from).to.equal(acc.address);
+        
+        //event TestForNomalUserEvent(address acc, uint256 initID, uint256 _qnt);
+         let [r] = receipt.events?.filter((x) => {return x.event == "TestForNomalUserEvent"});
+         expect(r.args.acc).to.equal(acc.address);
 
 
          //PRT distributed per account
-         console.log(`PRTs for ${acc.address}:`,r.args.list.join(','));
+         console.log(`TestForNomalUserPRT for ${acc.address}:`,r.args.initID.toNumber(), r.args._qnt.toNumber(), r.args._numIssuedForNormalUser.toNumber());
 
          //writeStream
-         file.write(`${JSON.stringify([acc.address, r.args.list.join(',')])},\r\n`);
-         
-         //length equal 100            
-         expect(r.args.list.length).to.equal(100);//we distribute per account 100
-     
-
-         //revert with error is account exceded 100
-         await expect(hardhatPRT.connect(acc).buyPRT(acc.address, 55, { value: ethers.utils.parseUnits('1', 'ether') })
-         ).to.be.revertedWith("You have exceeded 100 raffle tickets limit");
+         file.write(`${JSON.stringify([acc.address, r.args.initID.toNumber(), r.args._qnt.toNumber(), r.args._numIssuedForNormalUser.toNumber()])},\r\n`, (err) => {
+             if (err) {
+                 console.log('Error:', err.message);
+             }else{
+                 console.log('Done Written');
+             }
+         });
 
 
          //check contractBalance is increase for each account PRICE_PRT * 100
          const provider = waffle.provider;
          const contractBalance = await provider.getBalance(hardhatPRT.address);
          console.log({contractBalance});
-         expect(Number(contractBalance).toString()).to.equal(100*(idx)*10000000000000000+'');
 
 
       });

@@ -56,7 +56,7 @@ describe("PRT contract", function () {
       let tokens = ``;
       
 
-          var file = fs.createWriteStream('./output/PRTs_lotery.txt', {flags: 'a'});
+          var file = fs.createWriteStream('./output/sendMP.txt', {flags: 'a'});
 
           //call 10 times, as we can not call this function only once
           forEach([

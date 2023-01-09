@@ -1,6 +1,5 @@
 require('dotenv').config();
 const ethers = require('ethers');
-const { Main } = require('next/document');
 
 // Get Alchemy API Key
 const API_KEY = process.env.API_KEY;
@@ -67,7 +66,7 @@ async function forLoop () {
     console.log('End')
 }
 
-main()
+forLoop()
 
 // totalChunks.forEach((chunk, i) => {
 

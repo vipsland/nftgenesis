@@ -1,0 +1,15 @@
+ //mint with price
+     function mintPayable(uint256 tokenID, uint weiPrice) public payable onlyAccounts nonReentrant {
+        uint weiAmount = msg.value;//number of wei sent with the message
+        require(weiAmount >=weiPrice, "not enough ETH"); //1 amount, ether is a shortcut for 10^18)
+        
+        userBalances[msg.sender] = weiAmount;
+        require(userBalances[msg.sender].sub(weiPrice) >=0, "not enough ETH");
+
+        payable(owner()).transfer(weiPrice);// Send money to owner of contract
+
+        _mint(msg.sender, tokenID, 1, "");
+        _balancesnft[msg.sender].tokenID = tokenID;
+
+        emit Minter(msg.sender, tokenID, counterTokenID, weiPrice);//minted with price
+    }

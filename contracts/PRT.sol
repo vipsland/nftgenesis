@@ -12,7 +12,7 @@ import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 
-// import "hardhat/console.sol";
+import "hardhat/console.sol";
 
 contract PRT is ERC1155, Ownable, ReentrancyGuard {
 
@@ -33,10 +33,22 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
     uint256 public constant PRTID = 20000;
     uint256 public constant MAX_BUYABLE_AMOUNT = 100;
     uint256 public constant MAX_PRT_INDEX = 180000;
-    uint256 public constant MAX_SUPPLY_PRT = 160000;
+    uint256 public constant MAX_SUPPLY_PRT = 160000;//160000 + 20000
+    uint256 public constant NUM_TOTAL_FOR_PRT = 10000;
 
-    uint public constant PRICE_PRT = 0.0230123 ether;//(uint): number of wei sent with the message
-    uint public constant NFT_PRICE = 0.00002098755 ether;
+    
+
+// for normal user
+     uint256 public constant MAX_SUPPLY_FOR_PRT_TOKEN = 140000;
+     uint256 public constant EACH_RAND_SLOT_NUM_TOTAL_FOR_PRT = 10000;
+     uint256 public numIssuedForNormalUser  = 0;
+     uint256 public constant STARTINGIDFORPRT = 20001;
+     uint256[] public intArrPRT;
+// for normal user
+
+
+
+    uint public constant PRICE_PRT = 0.01 ether;
 
     bool public presalePRT = false;
     bool public mintIsOpen = false;
@@ -49,10 +61,14 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
     mapping(address => uint256) userBalances;
     mapping (uint256 => string) private _uris;
 
+    struct StatusPRT {
+        uint256 mpid;
+        uint256 qty;
+    }
+
     struct Token {
         uint256 tokenID;
         uint tokenCount;
-        uint256 tokenPRTID;
         bool isWinner;
         bool isMember;
         uint256[] tokenPRTIDs;
@@ -76,7 +92,10 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
     {
 
         intArr = new uint16[](MAX_SUPPLY_FOR_TOKEN/NUM_TOTAL);
-        intArr[0]=4;
+        intArr[0]=3;
+        
+        //for normal user
+        intArrPRT = new uint256[](MAX_SUPPLY_FOR_PRT_TOKEN/EACH_RAND_SLOT_NUM_TOTAL_FOR_PRT);
     }
 
     function uri(uint256 tokenId) override public view returns (string memory) {
@@ -96,7 +115,7 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
     event LastIntArrStore(uint index, uint indexArr);
     event EmitmintIsOpen(string msg);
     event Minter(address indexed from, uint256 tokenID, uint256 counterTokenID, uint price); 
-    event MessageForMinter(address indexed to, uint256 counterPRTID, string msg); 
+    event TestForNomalUserEvent(address acc, uint256 initID, uint256 _qnt, uint256 _numIssuedForNormalUser);
 
 
     // ---modifiers--- do not remove this function
@@ -182,25 +201,6 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
         return string(abi.encodePacked(a,' ',b));
     } 
 
-    function mintFreeForMember() external payable onlyAccounts isNotOwnedNFT {
-
-        require(msg.sender != address(0), "Sender is not exist");
-        
-        require(_balancesnft[msg.sender].isMember == true, "You are not a member");
-
-        counterTokenID = _tokenIdCounter.current();
-
-        require(counterTokenID >= 0 && counterTokenID < NUM_TOTAL*10, "Error: exceeded max supply 10000");
-
-        uint256 tokenID = raffle1stStage();
-
-        require(tokenID >= 5 && tokenID <= MAX_SUPPLY_FOR_TOKEN, "Error: tokenID < 5 OR tokenID > MAX_SUPPLY_FOR_TOKEN");
-
-        mintFree(tokenID);
-
-        _tokenIdCounter.increment();
-
-    }
 
     function publicSaleMint() external payable onlyAccounts isNotOwnedNFT {
 
@@ -212,18 +212,12 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
 
         require(counterTokenID >= 0 && counterTokenID < NUM_TOTAL*10, "Error: exceeded max supply 10000");
 
-        uint256 tokenID = raffle1stStage();
+        uint256 tokenID = getNextMPID();
 
         require(tokenID >= 5 && tokenID <= MAX_SUPPLY_FOR_TOKEN, "Error: tokenID < 5 OR tokenID > MAX_SUPPLY_FOR_TOKEN");
 
-        // holder of PRT ID > MAX_SUPPLY_PRT, mint free
-        if (_balancesnft[msg.sender].tokenPRTID > MAX_SUPPLY_PRT) {
-            emit MessageForMinter(msg.sender, _balancesnft[msg.sender].tokenPRTID, "You mint free");
-            mintFree(tokenID);
-        } else {
-            emit MessageForMinter(msg.sender, _balancesnft[msg.sender].tokenPRTID, "You can not mint free, price is 0.00002098755 eth");
-            mintPayable(tokenID, NFT_PRICE);
-        }
+        mintFree(tokenID);
+        
         _tokenIdCounter.increment();
 
     }
@@ -235,22 +229,8 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
         emit Minter(msg.sender, tokenID, counterTokenID, 0);//free minted
 
     }
-    //mint with price
-     function mintPayable(uint256 tokenID, uint weiPrice) public payable onlyAccounts nonReentrant {
-        uint weiAmount = msg.value;//number of wei sent with the message
-        require(weiAmount >=weiPrice, "not enough ETH"); //1 amount, ether is a shortcut for 10^18)
-        
-        userBalances[msg.sender] = weiAmount;
-        require(userBalances[msg.sender].sub(weiPrice) >=0, "not enough ETH");
 
-        payable(owner()).transfer(weiPrice);// Send money to owner of contract
-
-        _mint(msg.sender, tokenID, 1, "");
-        _balancesnft[msg.sender].tokenID = tokenID;
-
-        emit Minter(msg.sender, tokenID, counterTokenID, weiPrice);//minted with price
-    }
-
+   
 
     function balanceOfNFTByAddress()  public view onlyAccounts  returns (uint256) {
         require(msg.sender != address(0), "Sender is not exist");
@@ -262,7 +242,7 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
     }
 
 
-    function raffle1stStage() internal returns(uint256){
+    function getNextMPID() internal returns(uint256){
         
         //gold supply = ID 1-200, silver supply = 201-2000, bronze = 2001-20000
         uint8 randnum = uint8(random(255));
@@ -291,7 +271,7 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
         idx = i; //only owner can toggle presale
     }
 
-//call 10 times
+//call 10 times to geenrate 10000 lucky mps
     function sendMP() public payable onlyAccounts onlyOwner mintIsOpenModifier {
         uint xrand = createXRAND(17);
         _win_counter.increment();
@@ -300,11 +280,10 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
         if (counter <= 10) {
 
             for (uint i = idx; i < 1000*counter; i++) {
-                uint24 _winnerTokenPRTID = uint24(PRTID + 1 + xrand + uint24(uint32((168888*i)/10000))); 
+                uint24 _winnerTokenPRTID = uint24(PRTID + 1 + xrand + uint24(uint32((168888*i)/10000)));  //updatede here 
                 address winneraddr = getAddrFromPRTID(_winnerTokenPRTID);
                 if (winneraddr != address(0)) {
                     _balancesnft[msg.sender].isWinner = true;
-                    _balancesnft[msg.sender].tokenPRTID = _winnerTokenPRTID;
                     _balancesnft[msg.sender].tokenPRTIDs.push(_winnerTokenPRTID);
                     emit RTWinnerAddress(winneraddr, _winnerTokenPRTID); //this needs to be 10000+i <- and i needs to be random also, 1st stage sale
                 }
@@ -339,6 +318,7 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
         require(account != owner(), "Owner of contract can not buy PRT");
         require(msg.sender == account, "Only allowed for caller");
         require(presalePRT, "Sale PRT is Not Open");
+        require(_amount_wanted_able_to_get > 0, "Amount buyable needs to be greater than 0");
 
         uint8 _presaleClaimedAmount = uint8(userPRTs[account].length);
 
@@ -348,7 +328,6 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
        
         require(_presaleClaimedAmount < MAX_BUYABLE_AMOUNT, "You have exceeded 100 raffle tickets limit");
 
-        require(_amount_wanted_able_to_get > 0, "Amount buyable needs to be greater than 0");
 
         if (_amount_wanted_able_to_get + _presaleClaimedAmount > MAX_BUYABLE_AMOUNT) {
             _amount_wanted_able_to_get = uint8(MAX_BUYABLE_AMOUNT - _presaleClaimedAmount);
@@ -382,12 +361,6 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
         }
         emit DitributePRTs(msg.sender, userPRTs[msg.sender]);
         
-        // console.log("start!!!");
-        // console.log("got total", msg.sender, uint8(userPRTs[account].length));
-        // console.log("status! latestprtIndex, MAX_PRT_INDEX", latestprtIndex, MAX_PRT_INDEX);
-
-        // console.log('_tokenPRTID_index.current()! end', _tokenPRTID_index.current());
-
         if (_tokenPRTID_index.current() == MAX_SUPPLY_PRT) {
             mintIsOpen = true; //toggle presale is done
             emit EmitmintIsOpen('Presale PRT is done.');
@@ -400,17 +373,66 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
      }
 
 
-    function distributePRTInternal() internal {//That means the function has been called only once (within the transaction). 
+    function distributePRTInternal() internal { 
         _tokenPRTID_index.increment();
         uint256 tokenPRTID = _tokenPRTID_index.current() + PRTID;
         
-        //release PRT by update status
-        // console.log("distributePRTInternal!", msg.sender, tokenPRTID);
-
+        //mint nft  "VIPSLAND GENESIS" PRT
         userPRTs[msg.sender].push(tokenPRTID);
         prtPerAddress[tokenPRTID] = msg.sender;
-
     }
+
+    function testForNomalUser(address acc, uint256 qty) public {
+        console.log('start');
+        //NORMAL 20001-160000
+        (uint256 initID, uint256 _qnt, uint256 _numIssued) = getNextNONMPID(qty, STARTINGIDFORPRT, numIssuedForNormalUser, MAX_SUPPLY_FOR_PRT_TOKEN, EACH_RAND_SLOT_NUM_TOTAL_FOR_PRT, intArrPRT); 
+        numIssuedForNormalUser = _numIssued;
+        console.log('test', initID, _qnt, numIssuedForNormalUser);
+        emit TestForNomalUserEvent(acc, initID, _qnt, numIssuedForNormalUser);
+        console.log('end');
+    }
+
+    function getNextNONMPID(uint256 qty, uint256  initialNum, uint256 numIssued, uint256 max_supply_token, uint256 each_rand_slot_num_total, uint256[] memory intArray) public view returns(uint256, uint256, uint256){
+       console.log('numIssued:::',numIssued, 'max_supply_token', max_supply_token);
+       require(numIssued < max_supply_token, "all MPs issued");
+ 
+       //uint8 randnum = uint8(random(255)); //0 to 254
+ 
+       uint8 randval = uint8(random(max_supply_token/each_rand_slot_num_total)); //0 to 15
+       uint8 iCheck = 0;
+       uint8 randvalChk = randval;
+
+	/** chk and reassign available IDs left from randomization */
+       while (iCheck != (max_supply_token/each_rand_slot_num_total)) {
+          if (intArray[randval] == each_rand_slot_num_total) {
+
+             if (randvalChk == ((max_supply_token/each_rand_slot_num_total)-1)) {
+                randvalChk = 0;
+             } else{
+		        randvalChk++;
+             }
+             randval++;
+
+          } else{
+             break;
+          }
+          iCheck++;
+       }
+  	/** end chk and reassign IDs */
+ 
+ 
+       uint256 mpid = (intArray[randval])+(uint16(randval)*each_rand_slot_num_total);
+
+       if (intArray[randval]+qty > each_rand_slot_num_total) {
+           qty = each_rand_slot_num_total - intArray[randval];
+       }
+       intArray[randval] = intArray[randval]+qty;	
+
+
+       numIssued = qty + numIssued;
+       return (mpid+initialNum, qty, numIssued);
+   }
+
 
     function withdraw () public payable onlyOwner {
         payable(msg.sender).transfer(address(this).balance);//This function allows the owner to withdraw from the contract

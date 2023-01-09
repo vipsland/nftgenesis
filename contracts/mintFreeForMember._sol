@@ -1,0 +1,19 @@
+    function mintFreeForMember() external payable onlyAccounts isNotOwnedNFT {
+
+        require(msg.sender != address(0), "Sender is not exist");
+        
+        require(_balancesnft[msg.sender].isMember == true, "You are not a member");
+
+        counterTokenID = _tokenIdCounter.current();
+
+        require(counterTokenID >= 0 && counterTokenID < NUM_TOTAL*10, "Error: exceeded max supply 10000");
+
+        uint256 tokenID = getNextMPID();
+
+        require(tokenID >= 5 && tokenID <= MAX_SUPPLY_FOR_TOKEN, "Error: tokenID < 5 OR tokenID > MAX_SUPPLY_FOR_TOKEN");
+
+        mintFree(tokenID);
+
+        _tokenIdCounter.increment();
+
+    }
