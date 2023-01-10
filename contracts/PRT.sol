@@ -38,14 +38,27 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
 
     
 
-// for normal user
+// NORMAL 20001-160000
      uint256 public constant MAX_SUPPLY_FOR_PRT_TOKEN = 140000;
      uint256 public constant EACH_RAND_SLOT_NUM_TOTAL_FOR_PRT = 10000;
      uint256 public numIssuedForNormalUser  = 0;
      uint256 public constant STARTINGIDFORPRT = 20001;
      uint256[] public intArrPRT;
-// for normal user
 
+// INTERNAL TEAM - 160001-180000
+    uint256 public constant MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN = 20000;
+    uint256 public constant EACH_RAND_SLOT_NUM_TOTAL_FOR_INTERNALTEAM = 1000;
+    uint256 public numIssuedForInternalTeamIDs  = 0;
+    uint256 public constant STARTINGIDFORINTERNALTEAM = 160001;
+    uint256[] public intArrPRTInternalTeam;
+
+
+ //AIRDROP8888 - 180001-188888
+    uint256 public constant MAX_SUPPLY_FOR_AIRDROP_TOKEN = 8888;
+    uint256 public constant EACH_RAND_SLOT_NUM_TOTAL_FOR_AIRDROP = 1111;
+    uint256 public numIssuedForAIRDROP  = 0;
+    uint256 public constant  STARTINGIDFORAIRDROP = 180001;
+    uint256[] public intArrPRTAIRDROP;
 
 
     uint public constant PRICE_PRT = 0.01 ether;
@@ -96,6 +109,13 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
         
         //for normal user
         intArrPRT = new uint256[](MAX_SUPPLY_FOR_PRT_TOKEN/EACH_RAND_SLOT_NUM_TOTAL_FOR_PRT);
+
+        //for internal team
+        intArrPRTInternalTeam = new uint256[](MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN/EACH_RAND_SLOT_NUM_TOTAL_FOR_INTERNALTEAM);
+
+        //for airdrop
+        intArrPRTAIRDROP = new uint256[](MAX_SUPPLY_FOR_AIRDROP_TOKEN/EACH_RAND_SLOT_NUM_TOTAL_FOR_AIRDROP);
+
     }
 
     function uri(uint256 tokenId) override public view returns (string memory) {
@@ -115,7 +135,7 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
     event LastIntArrStore(uint index, uint indexArr);
     event EmitmintIsOpen(string msg);
     event Minter(address indexed from, uint256 tokenID, uint256 counterTokenID, uint price); 
-    event TestForNomalUserEvent(address acc, uint256 initID, uint256 _qnt, uint256 _numIssuedForNormalUser);
+    event TestGetNextNONMPIDEvent(address acc, uint256 initID, uint256 _qnt);
 
 
     // ---modifiers--- do not remove this function
@@ -382,17 +402,32 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
         prtPerAddress[tokenPRTID] = msg.sender;
     }
 
-    function testForNomalUser(address acc, uint256 qty) public {
-        console.log('start');
-        //NORMAL 20001-160000
-        (uint256 initID, uint256 _qnt, uint256 _numIssued) = getNextNONMPID(qty, STARTINGIDFORPRT, numIssuedForNormalUser, MAX_SUPPLY_FOR_PRT_TOKEN, EACH_RAND_SLOT_NUM_TOTAL_FOR_PRT, intArrPRT); 
-        numIssuedForNormalUser = _numIssued;
-        console.log('test', initID, _qnt, numIssuedForNormalUser);
-        emit TestForNomalUserEvent(acc, initID, _qnt, numIssuedForNormalUser);
-        console.log('end');
+
+    function testForAIRDROP(address acc, uint256 qty) public {
+        //AIRDROP8888 - 180001-188888
+        (uint256 initID, uint256 _qnt, uint256 _numIssued, uint8 _randval) = getNextNONMPID(qty, STARTINGIDFORAIRDROP, numIssuedForAIRDROP, MAX_SUPPLY_FOR_AIRDROP_TOKEN, EACH_RAND_SLOT_NUM_TOTAL_FOR_AIRDROP, intArrPRTAIRDROP); 
+        numIssuedForAIRDROP = _numIssued;
+        intArrPRTAIRDROP[_randval] = intArrPRTAIRDROP[_randval] + _qnt;
+        emit TestGetNextNONMPIDEvent(acc, initID, _qnt);
     }
 
-    function getNextNONMPID(uint256 qty, uint256  initialNum, uint256 numIssued, uint256 max_supply_token, uint256 each_rand_slot_num_total, uint256[] memory intArray) public view returns(uint256, uint256, uint256){
+    function testForInternalTeam(address acc, uint256 qty) public {
+        //INTERNAL TEAM - 160001-180000
+        (uint256 initID, uint256 _qnt, uint256 _numIssued, uint8 _randval) = getNextNONMPID(qty, STARTINGIDFORINTERNALTEAM, numIssuedForInternalTeamIDs, MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN, EACH_RAND_SLOT_NUM_TOTAL_FOR_INTERNALTEAM, intArrPRTInternalTeam); 
+        numIssuedForInternalTeamIDs = _numIssued;
+        intArrPRTInternalTeam[_randval] = intArrPRTInternalTeam[_randval] + _qnt;
+        emit TestGetNextNONMPIDEvent(acc, initID, _qnt);
+    }
+    
+    function testForNomalUser(address acc, uint256 qty) public {
+        //NORMAL 20001-160000
+        (uint256 initID, uint256 _qnt, uint256 _numIssued, uint8 _randval) = getNextNONMPID(qty, STARTINGIDFORPRT, numIssuedForNormalUser, MAX_SUPPLY_FOR_PRT_TOKEN, EACH_RAND_SLOT_NUM_TOTAL_FOR_PRT, intArrPRT); 
+        numIssuedForNormalUser = _numIssued;
+        intArrPRT[_randval] = intArrPRT[_randval] + _qnt;
+        emit TestGetNextNONMPIDEvent(acc, initID, _qnt);
+    }
+
+    function getNextNONMPID(uint256 qty, uint256  initialNum, uint256 numIssued, uint256 max_supply_token, uint256 each_rand_slot_num_total, uint256[] memory intArray) public view returns(uint256, uint256, uint256, uint8){
        console.log('numIssued:::',numIssued, 'max_supply_token', max_supply_token);
        require(numIssued < max_supply_token, "all MPs issued");
  
@@ -426,11 +461,12 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
        if (intArray[randval]+qty > each_rand_slot_num_total) {
            qty = each_rand_slot_num_total - intArray[randval];
        }
-       intArray[randval] = intArray[randval]+qty;	
+    //    intArray[randval] = intArray[randval]+qty;
 
+       console.log('intArray[randval]:::', intArray[randval], randval);
 
        numIssued = qty + numIssued;
-       return (mpid+initialNum, qty, numIssued);
+       return (mpid+initialNum, qty, numIssued, randval);
    }
 
 

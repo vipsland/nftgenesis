@@ -50,7 +50,7 @@ describe("PRT contract", function () {
       expect(isActive).to.equal(true);
 
 
-      var file = fs.createWriteStream('./output/testForNomalUserPRT.txt', {flags: 'a'});
+      var file = fs.createWriteStream('./output/testForAIRDROPPRT.txt', {flags: 'a'});
 
       forEach([...acts].map((acc, index) => {return [acc, index]})).it.only(`signerWithAddress`, async (acc, index) => {
         const idx = index+1;
@@ -58,14 +58,15 @@ describe("PRT contract", function () {
         console.log(`account ${idx}`, acc.address, {balance});
 
          //account ${index} we execute 3 times total buyPRT()
-         const rand_amount = Math.floor(Math.random()*100)+1
-         const tx = await hardhatPRT.connect(acc).testForNomalUser(acc.address, rand_amount);
+         const rand_amount = Math.floor(Math.random()*100)+1 
+         const tx = await hardhatPRT.connect(acc).testForAIRDROP(acc.address, rand_amount);
          //check list distributed PRT per account
          let receipt = await tx.wait();
         
         //event TestGetNextNONMPIDEvent(address acc, uint256 initID, uint256 _qnt);
          let [r] = receipt.events?.filter((x) => {return x.event == "TestGetNextNONMPIDEvent"});
          expect(r.args.acc).to.equal(acc.address);
+
 
          //writeStream
          file.write(`${JSON.stringify([acc.address, r.args.initID.toNumber(), r.args._qnt.toNumber()])},\r\n`, (err) => {
