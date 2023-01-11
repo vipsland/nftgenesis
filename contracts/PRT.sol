@@ -27,7 +27,7 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
     address proxyRegistryAddress;
 
     uint256 public constant NUM_TOTAL = 1000;
-    uint256 public constant MAX_SUPPLY_FOR_TOKEN = 20000;
+    uint256 public constant MAX_SUPPLY_MP = 20000;
 
 
     uint256 public constant PRTID = 20000;
@@ -35,6 +35,7 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
     uint256 public constant MAX_PRT_INDEX = 180000;
     uint256 public constant MAX_SUPPLY_PRT = 160000;//160000 + 20000
     uint256 public constant NUM_TOTAL_FOR_PRT = 10000;
+    uint64 public numIssuedForMP  = 4;
 
     
 
@@ -103,8 +104,8 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
             "https://ipfs.vipsland.com/nft/collections/genesis/json/{id}.json" //default way
         ) ReentrancyGuard() // A modifier that can prevent reentrancy during certain functions
     {
-
-        intArr = new uint16[](MAX_SUPPLY_FOR_TOKEN/NUM_TOTAL);
+        // for mp
+        intArr = new uint16[](MAX_SUPPLY_MP/NUM_TOTAL);
         intArr[0]=3;
         
         //for normal user
@@ -134,7 +135,7 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
     event RTWinnerAddress(address winner, uint winnerTokenPRTID);
     event LastIntArrStore(uint index, uint indexArr);
     event EmitmintIsOpen(string msg);
-    event Minter(address indexed from, uint256 tokenID, uint256 counterTokenID, uint price); 
+    event Minter(address indexed from, uint256 tokenID, uint256 counterTokenID); 
     event TestGetNextNONMPIDEvent(address acc, uint256 initID, uint256 _qnt);
 
 
@@ -222,23 +223,23 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
     } 
 
 
-    function publicSaleMint() external payable onlyAccounts isNotOwnedNFT {
+    function publicSaleMintForStage() external payable onlyAccounts isNotOwnedNFT {
 
         require(msg.sender != address(0), "Sender is not exist");
         
-        require(_balancesnft[msg.sender].isWinner == true, "You are not a winner");
+        // require(_balancesnft[msg.sender].isWinner == true, "You are not a winner");
 
-        counterTokenID = _tokenIdCounter.current();
+        // counterTokenID = _tokenIdCounter.current();
 
-        require(counterTokenID >= 0 && counterTokenID < NUM_TOTAL*10, "Error: exceeded max supply 10000");
+        // require(counterTokenID >= 0 && counterTokenID < (NUM_TOTAL*10)-4, "Error: exceeded max supply 10000");
 
         uint256 tokenID = getNextMPID();
 
-        require(tokenID >= 5 && tokenID <= MAX_SUPPLY_FOR_TOKEN, "Error: tokenID < 5 OR tokenID > MAX_SUPPLY_FOR_TOKEN");
+        // require(tokenID >= 5 && tokenID <= MAX_SUPPLY_MP, "Error: tokenID < 5 OR tokenID > 20000");
 
         mintFree(tokenID);
         
-        _tokenIdCounter.increment();
+        // _tokenIdCounter.increment();
 
     }
 
@@ -246,7 +247,7 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
         _mint(msg.sender, tokenID, 1, "");
         _balancesnft[msg.sender].tokenID = tokenID;
 
-        emit Minter(msg.sender, tokenID, counterTokenID, 0);//free minted
+        emit Minter(msg.sender, tokenID, counterTokenID);
 
     }
 
@@ -261,31 +262,76 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
         return balanceOf(msg.sender, _balancesnft[msg.sender].tokenID);
     }
 
-
     function getNextMPID() internal returns(uint256){
-        
+        require(numIssuedForMP < MAX_SUPPLY_MP, "all MPs issued.");
         //gold supply = ID 1-200, silver supply = 201-2000, bronze = 2001-20000
-        uint8 randnum = uint8(random(255));
-        uint8 randval = uint8(random(MAX_SUPPLY_FOR_TOKEN/NUM_TOTAL)); //0 to 19
+        //uint8 randnum = uint8(random(255)); //0 to 254
+    
+        uint8 randval = uint8(random(MAX_SUPPLY_MP/NUM_TOTAL)); //0 to 199
+    
+    
+        /** chk and reassign available IDs left from randomization */
+        uint8 iCheck = 0;
+        uint8 randvalChk = randval;
 
-        if (randval == 0) {
-            if (uint8(randnum % 9) == 1) {
-                if (intArr[randval] == 96) {
-                    randval = uint8(random(MAX_SUPPLY_FOR_TOKEN/NUM_TOTAL-1)+1);
+        while (iCheck != (MAX_SUPPLY_MP/NUM_TOTAL)) {
+    
+            if (intArr[randval] == NUM_TOTAL) {
+
+                if(randvalChk == ((MAX_SUPPLY_MP/NUM_TOTAL)-1)) {
+                    randvalChk = 0;
+                } else{
+                    randvalChk++;
                 }
-            } else  {
-                randval = uint8(random(MAX_SUPPLY_FOR_TOKEN/NUM_TOTAL-1)+1);
+            randval++;
+
+            } else {
+                break;
             }
-            //randval == 0  gold ticket
+            iCheck++;
+
         }
+        /** end chk and reassign IDs */
+        uint256 mpid;
+    
+        if (intArr[randval] < 100) { //intArr[0] = 3; should be placed on top of global variable declaration
+            mpid = (intArr[randval]*2)+(uint16(randval)*NUM_TOTAL);
+        }else{
+            
+            if (randval == 0 && intArr[randval] == (MAX_SUPPLY_MP/NUM_TOTAL)) {
+                intArr[randval] = 102;
+            }
+            mpid = (intArr[randval]-100)*2+1+(uint16(randval)*NUM_TOTAL);
+        }
+    
         intArr[randval] = intArr[randval]+1;
-        uint16 getval = intArr[randval]+1;
-
-        return uint256(getval)+(uint16(randval)*NUM_TOTAL);
-
-
-
+        numIssuedForMP++;
+        return mpid;
     }
+
+
+    // function getNextMPID() internal returns(uint256){
+        
+    //     //gold supply = ID 1-200, silver supply = 201-2000, bronze = 2001-20000
+    //     uint8 randnum = uint8(random(255));
+    //     uint8 randval = uint8(random(MAX_SUPPLY_MP/NUM_TOTAL)); //0 to 19
+
+    //     if (randval == 0) {
+    //         if (uint8(randnum % 9) == 1) {
+    //             if (intArr[randval] == 96) {
+    //                 randval = uint8(random(MAX_SUPPLY_MP/NUM_TOTAL-1)+1);
+    //             }
+    //         } else  {
+    //             randval = uint8(random(MAX_SUPPLY_MP/NUM_TOTAL-1)+1);
+    //         }
+    //         //randval == 0  gold ticket
+    //     }
+    //     intArr[randval] = intArr[randval]+1;
+    //     uint16 getval = intArr[randval]+1;
+
+    //     return uint256(getval)+(uint16(randval)*NUM_TOTAL);
+
+    // }
     
     function _setStartIdx(uint i) private onlyOwner {
         idx = i; //only owner can toggle presale
@@ -429,7 +475,7 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
 
     function getNextNONMPID(uint256 qty, uint256  initialNum, uint256 numIssued, uint256 max_supply_token, uint256 each_rand_slot_num_total, uint256[] memory intArray) public view returns(uint256, uint256, uint256, uint8){
        console.log('numIssued:::',numIssued, 'max_supply_token', max_supply_token);
-       require(numIssued < max_supply_token, "all MPs issued");
+       require(numIssued < max_supply_token, "all PRT issued.");
  
        //uint8 randnum = uint8(random(255)); //0 to 254
  

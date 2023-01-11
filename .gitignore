@@ -13,3 +13,4 @@ contracts/scenario.json
 accounts-ganache-cli
 contracts/example.sol
 .env
+output/
