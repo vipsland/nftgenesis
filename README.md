@@ -136,4 +136,9 @@ get array of 10k generated ids
 
 #3
 node mint-nft.js
+
+#4 or mint batch
+node mint-nft-batch.js   
 ```
+
+

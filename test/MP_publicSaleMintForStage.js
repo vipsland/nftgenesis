@@ -7,6 +7,7 @@ const forEach = require('mocha-each');
 const { advanceBlock } = require("@nomicfoundation/hardhat-network-helpers/dist/src/helpers/time");
 chai.use(solidity);
 const fs = require("fs");
+const { doesNotMatch } = require("assert");
 
 
 async function delay(mls) {
@@ -32,7 +33,7 @@ describe("PRT contract", function () {
   describe("publicSaleMintForStage", function () {
 
     //we run this test for all accounts
-    it.only(`${i++} test publicSaleMintForStage`, async function () {
+    it.only(`${i++} test publicSaleMintForStage`, async function (done) {
 
       const PRT = await ethers.getContractFactory("PRT");
       const accounts = await ethers.getSigners();
@@ -85,7 +86,8 @@ describe("PRT contract", function () {
       });
       file.on('error', function(err) { console.log(`ERR`,{err}) });
 
-      // file.end();
+      file.end();
+      done()
 
     });
 

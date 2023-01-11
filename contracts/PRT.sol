@@ -28,6 +28,7 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
 
     uint256 public constant NUM_TOTAL = 1000;
     uint256 public constant MAX_SUPPLY_MP = 20000;
+    uint256 public constant NUM_TOTAL_FOR_MP = 200;
 
 
     uint256 public constant PRTID = 20000;
@@ -267,18 +268,18 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
         //gold supply = ID 1-200, silver supply = 201-2000, bronze = 2001-20000
         //uint8 randnum = uint8(random(255)); //0 to 254
     
-        uint8 randval = uint8(random(MAX_SUPPLY_MP/NUM_TOTAL)); //0 to 199
+        uint8 randval = uint8(random(MAX_SUPPLY_MP/NUM_TOTAL_FOR_MP)); //0 to 199
     
     
         /** chk and reassign available IDs left from randomization */
         uint8 iCheck = 0;
         uint8 randvalChk = randval;
 
-        while (iCheck != (MAX_SUPPLY_MP/NUM_TOTAL)) {
+        while (iCheck != (MAX_SUPPLY_MP/NUM_TOTAL_FOR_MP)) {
     
-            if (intArr[randval] == NUM_TOTAL) {
+            if (intArr[randval] == NUM_TOTAL_FOR_MP) {
 
-                if(randvalChk == ((MAX_SUPPLY_MP/NUM_TOTAL)-1)) {
+                if(randvalChk == ((MAX_SUPPLY_MP/NUM_TOTAL_FOR_MP)-1)) {
                     randvalChk = 0;
                 } else{
                     randvalChk++;
@@ -295,13 +296,13 @@ contract PRT is ERC1155, Ownable, ReentrancyGuard {
         uint256 mpid;
     
         if (intArr[randval] < 100) { //intArr[0] = 3; should be placed on top of global variable declaration
-            mpid = (intArr[randval]*2)+(uint16(randval)*NUM_TOTAL);
+            mpid = (intArr[randval]*2)+(uint16(randval)*NUM_TOTAL_FOR_MP);
         }else{
             
-            if (randval == 0 && intArr[randval] == (MAX_SUPPLY_MP/NUM_TOTAL)) {
+            if (randval == 0 && intArr[randval] == (MAX_SUPPLY_MP/NUM_TOTAL_FOR_MP)) {
                 intArr[randval] = 102;
             }
-            mpid = (intArr[randval]-100)*2+1+(uint16(randval)*NUM_TOTAL);
+            mpid = (intArr[randval]-100)*2+1+(uint16(randval)*NUM_TOTAL_FOR_MP);
         }
     
         intArr[randval] = intArr[randval]+1;
