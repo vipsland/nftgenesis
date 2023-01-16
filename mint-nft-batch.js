@@ -24,8 +24,11 @@ const contractAddress = '0x38a140c905df5a5df117b65ce792d75d78b6ff98'
 const awesomeNFTBatch = new ethers.Contract(contractAddress, abi, signer)
 
 
-var arr = [...Array(188888).keys()].map(i => i+1)
-console.log({arr})
+let arr = [...Array(188888).keys()].map(i => i+1)
+
+const index  = arr.indexOf(2311)
+arr = arr.splice(index)
+// console.log({arr})
 
 const SIZE = 35
 const counts = Array.apply(null, {length: SIZE}).map(Function.call, () => 1);
