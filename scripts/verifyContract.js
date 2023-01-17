@@ -6,7 +6,7 @@
  async function main() {
    
    await hre.run('verify:verify', { 
-     address: '0x42fb8bd5509be95aa4e9a0f1fde36250f4e21fb9', 
+     address: '0xc67269E99102279B1c8BA33435d0Ade2963deBb6', 
      constructorArguments: []
    })
  }

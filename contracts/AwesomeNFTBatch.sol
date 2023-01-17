@@ -2,11 +2,12 @@
 pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract AwesomeNFTBatch is ERC1155, Ownable {
+contract AwesomeNFTBatch is ERC1155Supply, Ownable {
 
 
     string public name = "VIPSLAND GENESIS";
@@ -37,6 +38,28 @@ contract AwesomeNFTBatch is ERC1155, Ownable {
     function reveal() public onlyOwner {
         revealed = true;
     }
+
+//added to test
+    function _totalSupply(uint256 id) public view virtual returns (uint256) {
+        return totalSupply(id);
+    }
+
+//added to test
+    function _exists(uint256 id) public view returns (bool) {
+        return exists(id);
+    }
+
+//added to test
+    function mintByOwner(uint256 tokenId) public onlyOnceCanBeMint(tokenId) onlyOwner {
+       _mint(msg.sender, tokenId, 1, "");
+    }
+
+//added to test
+    modifier onlyOnceCanBeMint (uint256 tokenId) { //for security
+        require(_totalSupply(tokenId) == 0, "Can mint only once!!!");
+        _;
+    }
+
 
     function mintNFTBatch(uint256[] memory ids, uint256[] memory amounts) public onlyOwner {
        _mintBatch(msg.sender, ids, amounts, "");

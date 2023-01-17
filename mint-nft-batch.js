@@ -26,7 +26,9 @@ const awesomeNFTBatch = new ethers.Contract(contractAddress, abi, signer)
 
 let arr = [...Array(188888).keys()].map(i => i+1)
 
-const index  = arr.indexOf(28071)
+const TARGET_ID = 40000
+const index  = arr.indexOf(36576) 
+
 arr = arr.splice(index)
 // console.log({arr})
 
@@ -53,26 +55,35 @@ const mintNFTBatch = async (chunk, counts) => {
 
 // const [first] = totalChunks
 // console.log({first})
-
 async function forLoop () {
     console.log('Start')
     for (let index = 0; index < totalChunks.length; index++) {
-        const chunk = totalChunks[index]
-        try {
-            const res = await mintNFTBatch(chunk, counts)
-            console.log(`success`, {index, chunk, hash: res.hash})
-            if(index === totalChunks.length -1 ) {
-                console.log(`done latest`, {index, chunk, hash: res.hash})
-                process.exit(0)
-            } 
-        } catch (error) {
-            console.error(`error`,{error, index, chunk});
-            process.exit(1);
-    
-        }
+
+        do {
+            const chunk = totalChunks[index]
+            try {
+                const [id] = chunk
+                if (id === TARGET_ID) {
+                    process.exit(1);
+                }
+
+                const res = await mintNFTBatch(chunk, counts)
+                console.log(`success`, {index, chunk, hash: res.hash})
+                if(index === totalChunks.length -1 ) {
+                    console.log(`done latest`, {index, chunk, hash: res.hash})
+                    process.exit(0)
+                } 
+                break;
+            } catch (error) {
+                console.error(`error`,{error, index, chunk});
+                //process.exit(1);
+        
+            }
+        } while (true)
       }
     console.log('End')
 }
+
 
 forLoop()
 
