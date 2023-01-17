@@ -18,7 +18,7 @@ const signer = new ethers.Wallet(privateKey, provider)
 
 // Get contract ABI and address
 const abi = contract.abi
-const contractAddress = '0x38a140c905df5a5df117b65ce792d75d78b6ff98'
+const contractAddress = '0x38a140c905df5a5df117b65ce792d75d78b6ff98' //https://testnets.opensea.io/collection/vipsland-genesis-ooardjhdya
 
 // Create a contract instance
 const awesomeNFTBatch = new ethers.Contract(contractAddress, abi, signer)
@@ -26,7 +26,7 @@ const awesomeNFTBatch = new ethers.Contract(contractAddress, abi, signer)
 
 let arr = [...Array(188888).keys()].map(i => i+1)
 
-const index  = arr.indexOf(2311)
+const index  = arr.indexOf(28071)
 arr = arr.splice(index)
 // console.log({arr})
 

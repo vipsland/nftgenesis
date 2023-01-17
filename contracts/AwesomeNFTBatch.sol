@@ -43,6 +43,7 @@ contract AwesomeNFTBatch is ERC1155, Ownable {
        emit Minted(ids);
     }
     
+
     
     function uri(uint256) override public view returns (string memory) {
         if (revealed == false) {
