@@ -39,22 +39,22 @@ contract AwesomeNFTBatch is ERC1155Supply, Ownable {
         revealed = true;
     }
 
-//added to test
+//added to test add to main contract
     function _totalSupply(uint256 id) public view virtual returns (uint256) {
         return totalSupply(id);
     }
 
-//added to test
+//added to test add to main contract
     function _exists(uint256 id) public view returns (bool) {
         return exists(id);
     }
 
-//added to test
+//added to test add to main contract
     function mintByOwner(uint256 tokenId) public onlyOnceCanBeMint(tokenId) onlyOwner {
        _mint(msg.sender, tokenId, 1, "");
     }
 
-//added to test
+//added to test add to main contract
     modifier onlyOnceCanBeMint (uint256 tokenId) { //for security
         require(_totalSupply(tokenId) == 0, "Can mint only once!!!");
         _;

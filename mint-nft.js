@@ -7,7 +7,7 @@ const API_KEY = process.env.API_KEY;
 // Define an Alchemy Provider
 const provider = new ethers.providers.AlchemyProvider('goerli', API_KEY)
 
-const contract = require("./artifacts/contracts/AwesomeNFT.sol/AwesomeNFT.json");
+const contract = require("./artifacts/contracts/AwesomeNFTBatch.sol/AwesomeNFTBatch.json");
 
 console.log(JSON.stringify(contract.abi));
 
@@ -18,10 +18,10 @@ const signer = new ethers.Wallet(privateKey, provider)
 
 // Get contract ABI and address
 const abi = contract.abi
-const contractAddress = '0x42fb8bd5509be95aa4e9a0f1fde36250f4e21fb9'
+const contractAddress = '0x779380EdbdbfaDB16678056a4948291F5fBd88F1'
 
 // Create a contract instance
-const awesomeNFT = new ethers.Contract(contractAddress, abi, signer)
+const awesomeNFTBatch = new ethers.Contract(contractAddress, abi, signer)
 
 
 // Get the NFT Metadata IPFS URL
@@ -29,12 +29,14 @@ const tokenID = 0;
 
 
 // Call mintNFT function
-const mintNFT = async () => {
-    let nftTxn = await awesomeNFT.callMint()
-    await nftTxn.wait()
-    const counterTokenID = await awesomeNFT.counterTokenID()
-    console.log(`NFT Minted! Check it out at: https://goerli.etherscan.io/tx/${nftTxn.hash}, counterTokenID: ${counterTokenID}`)
-    return {hash: nftTxn.hash, counterTokenID}
+const mintNFT = async () => 
+{
+    let nftTxn = await awesomeNFTBatch.mintByOwner(71)
+    const result = await nftTxn.wait()
+    console.log(`NFT Minted! Check it out at: https://goerli.etherscan.io/tx/${nftTxn.hash}`)
+    console.log(`? res `,{result, hash})
+    return {hash: nftTxn.hash}
+
 }
 
 

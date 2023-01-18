@@ -26,8 +26,8 @@ const awesomeNFTBatch = new ethers.Contract(contractAddress, abi, signer)
 
 let arr = [...Array(188888).keys()].map(i => i+1)
 
-const TARGET_ID = 40000
-const index  = arr.indexOf(36576) 
+const TARGET_ID = 80000
+const index  = arr.indexOf(74130) 
 
 arr = arr.splice(index)
 // console.log({arr})
