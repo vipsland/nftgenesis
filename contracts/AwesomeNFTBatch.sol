@@ -40,6 +40,7 @@ contract AwesomeNFTBatch is ERC1155Supply, Ownable {
     }
 
 //added to test add to main contract
+//https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC1155/extensions/ERC1155Supply.sol
     function _totalSupply(uint256 id) public view virtual returns (uint256) {
         return totalSupply(id);
     }
