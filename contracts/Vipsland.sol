@@ -14,35 +14,25 @@ import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
 
 import "hardhat/console.sol";
 
-contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
+contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
+    //main
     using SafeMath for uint256;
     using Counters for Counters.Counter;
+    mapping(address => uint256) userBalances;
 
-    Counters.Counter public _tokenPRTID_index;
-    Counters.Counter public _counter_for_generatelucky_mp;
-    uint public xrand = 18;
-    Counters.Counter public _tokenIdCounter;
-
-
-
-    uint256 public constant NUM_TOTAL = 1000;
+    //MP
+    uint256 public constant PRTID = 20000;
     uint256 public constant MAX_SUPPLY_MP = 20000;
     uint256 public constant NUM_TOTAL_FOR_MP = 200;
-
-
-    uint256 public constant PRTID = 20000;
-
-    uint256 public constant MAX_PRT_INDEX = 180000;
-    uint256 public constant MAX_SUPPLY_PRT = 160000;//160000 + 20000
-    uint256 public constant NUM_TOTAL_FOR_PRT = 10000;
-
-   //start clean code here
-    mapping(address => uint256) userBalances;
-    mapping(address => uint256) public userNONMPs;
-
-   //MP
+    uint256 public constant NUM_TOTAL = 1000;
+    uint public xrand = 18;
+    Counters.Counter public _counter_for_generatelucky_mp;
     uint64 public numIssuedForMP  = 4;
+    uint16[] public intArr;
+
+    //NONMP 
+    mapping(address => uint256) public userNONMPs;
 
     uint256 public constant MAX_PRT_AMOUNT_PER_ACC = 100;
     uint256 public constant  MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION = 35;
@@ -85,16 +75,11 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
     }
     //toggle end
 
-    
-    uint256 public counterTokenID;
-    mapping (uint256 => string) private _uris;
-
-    struct StatusPRT {
-        uint256 mpid;
-        uint256 qty;
-    }
-
-    uint16[] public intArr;
+    // events start
+    event DitributePRTs(address indexed acc, uint256[] list); 
+    event MPWinnerTokenID(address indexed acc, uint winnerTokenPRTID);
+    event mintNONMPIDEvent(address indexed acc, uint256 initID, uint256 _qnt);
+    // events end
 
     constructor() 
         ERC1155(
@@ -113,27 +98,8 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
 
         //for airdrop
         intArrPRTAIRDROP = new uint256[](MAX_SUPPLY_FOR_AIRDROP_TOKEN/EACH_RAND_SLOT_NUM_TOTAL_FOR_AIRDROP);
-
-    }
-
-    function uri(uint256 tokenId) override public view returns (string memory) {
-        return(_uris[tokenId]);
-    }    
-
-    function setTokenUri(uint256 tokenId, string memory uri_to_update) public onlyOwner {
-        require(bytes(_uris[tokenId]).length == 0, "Cannot set uri twice"); //can do it once once
-        _uris[tokenId] = uri_to_update; 
-    }
-
-
-    event DitributePRTs(address indexed from, uint256[] list); 
-    event MPWinnerTokenID(address acc, uint winnerTokenPRTID);
-    event TransferFromToContract(address from, uint amount);
-    event RTWinnerAddress(address winner, uint winnerTokenPRTID);
-    event LastIntArrStore(uint index, uint indexArr);
-    event EmitmintIsOpen(string msg);
-    event Minter(address indexed from, uint256 tokenID, uint256 counterTokenID); 
-    event mintNONMPIDEvent(address acc, uint256 initID, uint256 _qnt);
+   
+   }
 
     modifier onlyAccounts () { 
         require(msg.sender == tx.origin, "Not allowed origin");
@@ -144,23 +110,12 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
         require(msg.sender == _account, "Only allowed for caller");
         _;
     }
-    
 
     modifier mintIsOpenModifier () {
         require(mintIsOpen, "Mint is not open");
         _;
     }
-
     
-    function getTotalPRT() public view returns(uint){
-        return _tokenPRTID_index.current();
-    }
-    
-    function getTotalMinted() public view returns(uint){
-        return _tokenIdCounter.current();
-    }
-
-
     function random(uint number) public view returns(uint){
         //return uint(keccak256(abi.encodePacked(block.timestamp,block.difficulty,  
         //msg.sender))) % number;
@@ -322,6 +277,7 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
         require(weiBalanceWallet >= PRICE_PRT_AIRDROP, "Insufficient funds"); 
         userBalances[msg.sender] = weiBalanceWallet;
         require(userBalances[msg.sender].sub(PRICE_PRT_AIRDROP * _qnt) >=0, "Insufficient funds");
+        
         //added:4
         payable(owner()).transfer(PRICE_PRT_AIRDROP * _qnt);//Send money to owner of contract
 
@@ -333,6 +289,8 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
             //add here: logic to  toggle allowed if sold 1400000 
         }
         _mintBatch(msg.sender, ids, ids, "");
+        emit DitributePRTs(msg.sender, ids); 
+
         //added:6 
         userNONMPs[msg.sender] = uint256(userNONMPs[msg.sender]) + ids.length;
 
@@ -374,6 +332,8 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
             //add here: logic to  toggle allowed if sold 1400000 
         }
         _mintBatch(msg.sender, ids, ids, "");
+        emit DitributePRTs(msg.sender, ids); 
+        
         //added:6 
         userNONMPs[msg.sender] = uint256(userNONMPs[msg.sender]) + ids.length;
 
@@ -418,6 +378,8 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
             //add here: logic to  toggle allowed if sold 1400000 
         }
         _mintBatch(msg.sender, ids, ids, "");
+        emit DitributePRTs(msg.sender, ids); 
+
         //added:6 
         userNONMPs[msg.sender] = uint256(userNONMPs[msg.sender]) + ids.length;
 
