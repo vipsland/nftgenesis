@@ -94,22 +94,6 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
         uint256 qty;
     }
 
-    struct Token {
-        uint256 tokenID;
-        uint tokenCount;
-        bool isWinner;
-        bool isMember;
-        uint256[] tokenPRTIDs;
-    }
-
-    //Mapping from token ID to account balances
-    mapping(address => Token) public _balancesnft;
- 
-     //Public Raffles Ticket (PRT) : 160,000
-    //ID #20,001 to ID #180,000
-    mapping(uint => address) public prtPerAddress;
-
-
     uint16[] public intArr;
 
     constructor() 
@@ -143,7 +127,7 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
 
 
     event DitributePRTs(address indexed from, uint256[] list); 
-    event RTWinnerTokenID(address acc, uint winnerTokenPRTID);
+    event MPWinnerTokenID(address acc, uint winnerTokenPRTID);
     event TransferFromToContract(address from, uint amount);
     event RTWinnerAddress(address winner, uint winnerTokenPRTID);
     event LastIntArrStore(uint index, uint indexArr);
@@ -167,21 +151,6 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
         _;
     }
 
-
-    function setWinnerToggle(address addr) public onlyOwner {
-        _balancesnft[addr].isWinner = !_balancesnft[addr].isWinner;
-    }
-
-    function setMemberToggle(address addr) public onlyOwner {
-        _balancesnft[addr].isMember = !_balancesnft[addr].isMember;
-    }
-
-
-
-    function getAddrFromPRTID (uint _winnerTokenPRTID) internal view returns (address) {
-        return prtPerAddress[_winnerTokenPRTID];
-    }
-
     
     function getTotalPRT() public view returns(uint){
         return _tokenPRTID_index.current();
@@ -198,32 +167,24 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
         return uint(blockhash(block.number-1)) % number;
     }
 
-    function isWinner(address addr) public view onlyAccounts returns(bool){
-        return _balancesnft[addr].isWinner;
-    }
-
-
-    function balanceOfNFTByAddress()  public view onlyAccounts  returns (uint256) {
-        require(msg.sender != address(0), "Sender is not exist");
+    // function balanceOfNFTByAddress()  public view onlyAccounts  returns (uint256) {
+    //     require(msg.sender != address(0), "Sender is not exist");
         
-        require(_balancesnft[msg.sender].isWinner == true, "Sorry, you are not allowed to access this operation");
+    //     require(_balancesnft[msg.sender].isWinner == true, "Sorry, you are not allowed to access this operation");
         
-        //Mapping from token ID to account balances
-        return balanceOf(msg.sender, _balancesnft[msg.sender].tokenID);
-    }
+    //     //Mapping from token ID to account balances
+    //     return balanceOf(msg.sender, _balancesnft[msg.sender].tokenID);
+    // }
 
-     function intArrIterate() public onlyAccounts onlyOwner mintIsOpenModifier {
+    //  function intArrIterate() public onlyAccounts onlyOwner mintIsOpenModifier {
 
-        for (uint i=0; i < intArr.length; i++) {
-            emit LastIntArrStore(i, intArr[i]); //we need this for 2nd stage sale
-        }
+    //     for (uint i=0; i < intArr.length; i++) {
+    //         emit LastIntArrStore(i, intArr[i]); //we need this for 2nd stage sale
+    //     }
     
-    }
+    // }
 
-    function perAccountLuckTokenPRTID (address account) public view returns(uint256[] memory)  {
-        return _balancesnft[account].tokenPRTIDs;
-    }
-
+    //clean code from here:
 
 
     //sendMP start
@@ -280,9 +241,14 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
         return uint(blockhash(block.number-1)) % number;
     }
 
-    //call 10 times
-    uint public idx = 0;
+    mapping(uint256 => address) public prtPerAddress;
 
+    function getAddrFromNONMPID (uint _winnerTokenNONMPID) internal view returns (address) {
+        return prtPerAddress[_winnerTokenNONMPID];
+    }
+
+    uint public idx = 0;
+    //call 10 times
     function sendMP() public payable onlyAccounts onlyOwner mintIsOpenModifier {
         if (xrand == 18) {
             xrand = createXRAND(17);
@@ -290,25 +256,25 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
         _counter_for_generatelucky_mp.increment();
         uint counter = _counter_for_generatelucky_mp.current();
 
-        //generate Lucky MP you can not at once call 10000
+        //you can not call at once 10000, call 10 times
         if (counter <= 10) {
-
-            for (uint i = idx; i < 1000; i++) {
-                uint24 _winnerTokenPRTID = uint24(PRTID + 1 + xrand + uint24(uint32((168888*i)/10000)));  //updatede here 
-                address winneraddr = getAddrFromPRTID(_winnerTokenPRTID);
+            for (uint i = idx; i < 1000*counter; i++) {
+                uint24 _winnerTokenNONMPID = uint24(PRTID + 1 + xrand + uint24(uint32((168888*i)/10000)));  //updatede here 
+                address winneraddr = getAddrFromNONMPID(_winnerTokenNONMPID);
                 if (winneraddr != address(0)) {
                      uint256 tokenID = getNextMPID();
+                     //mint and transfer to winner
                      _mint(msg.sender, tokenID, 1, "");
                      safeTransferFrom(msg.sender, winneraddr, tokenID, 1, "");
-                     emit RTWinnerTokenID(winneraddr,  tokenID);
+                     emit MPWinnerTokenID(winneraddr,  tokenID);
                 }
             }
-            
+            idx = 1000*counter;
          }
     }
     //sendMP end
 
-    //PRT mint start
+    //NONMP mint start
     function _concatenate(string memory a, string memory b) private pure returns (string memory){
         return string(abi.encodePacked(a,' ',b));
     }
@@ -363,6 +329,7 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
         uint256[] memory ids = new uint256[](_qnt);
         for (uint i = 0; i < _qnt; i++) {
             ids[i] = initID+i;
+            prtPerAddress[ids[i]] = msg.sender;
             //add here: logic to  toggle allowed if sold 1400000 
         }
         _mintBatch(msg.sender, ids, ids, "");
@@ -403,6 +370,7 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
         uint256[] memory ids = new uint256[](_qnt);
         for (uint i = 0; i < _qnt; i++) {
             ids[i] = initID+i;
+            prtPerAddress[ids[i]] = msg.sender;
             //add here: logic to  toggle allowed if sold 1400000 
         }
         _mintBatch(msg.sender, ids, ids, "");
@@ -446,6 +414,7 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
         uint256[] memory ids = new uint256[](_qnt);
         for (uint i = 0; i < _qnt; i++) {
             ids[i] = initID+i;
+            prtPerAddress[ids[i]] = msg.sender;
             //add here: logic to  toggle allowed if sold 1400000 
         }
         _mintBatch(msg.sender, ids, ids, "");
@@ -491,7 +460,7 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
        numIssued = qty + numIssued;
        return (mpid+initialNum, qty, numIssued, randval);
    }
-   //PRT mint end
+   //NONMP mint end
 
 
     function withdraw () public payable onlyOwner {
