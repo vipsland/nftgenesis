@@ -1,5 +1,5 @@
-// contracts/access-control/Auth.sol
-// SPDX-License-Identifier: MIT
+//contracts/access-control/Auth.sol
+//SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 
@@ -37,8 +37,9 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
     uint256 public constant MAX_SUPPLY_PRT = 160000;//160000 + 20000
     uint256 public constant NUM_TOTAL_FOR_PRT = 10000;
 
-   //userBalances
+   //start clean code here
     mapping(address => uint256) userBalances;
+    mapping(address => uint256) public userNONMPs;
 
    //MP
     uint64 public numIssuedForMP  = 4;
@@ -84,7 +85,6 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
     }
     //toggle end
 
-    uint public idx = 0;
     
     uint256 public counterTokenID;
     mapping (uint256 => string) private _uris;
@@ -102,12 +102,11 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
         uint256[] tokenPRTIDs;
     }
 
-    // Mapping from token ID to account balances
+    //Mapping from token ID to account balances
     mapping(address => Token) public _balancesnft;
  
-     // Public Raffles Ticket (PRT) : 160,000
-    // ID #20,001 to ID #180,000
-    mapping(address => uint256[]) public userPRTs;
+     //Public Raffles Ticket (PRT) : 160,000
+    //ID #20,001 to ID #180,000
     mapping(uint => address) public prtPerAddress;
 
 
@@ -116,9 +115,9 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
     constructor() 
         ERC1155(
             "https://ipfs.vipsland.com/nft/collections/genesis/json/{id}.json" //default way
-        ) ReentrancyGuard() // A modifier that can prevent reentrancy during certain functions
+        ) ReentrancyGuard() //A modifier that can prevent reentrancy during certain functions
     {
-        // for mp
+        //for mp
         intArr = new uint16[](MAX_SUPPLY_MP/NUM_TOTAL);
         intArr[0]=3;
         
@@ -152,11 +151,6 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
     event Minter(address indexed from, uint256 tokenID, uint256 counterTokenID); 
     event mintNONMPIDEvent(address acc, uint256 initID, uint256 _qnt);
 
-    modifier isNotOwnedNFT() {
-        require(balanceOf(msg.sender, _balancesnft[msg.sender].tokenID) == 0, "Mint only once");
-        _;
-    }
-
     modifier onlyAccounts () { 
         require(msg.sender == tx.origin, "Not allowed origin");
         _;
@@ -173,11 +167,6 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
         _;
     }
 
-
-
-   
-
-   
 
     function setWinnerToggle(address addr) public onlyOwner {
         _balancesnft[addr].isWinner = !_balancesnft[addr].isWinner;
@@ -204,8 +193,8 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
 
 
     function random(uint number) public view returns(uint){
-        // return uint(keccak256(abi.encodePacked(block.timestamp,block.difficulty,  
-        // msg.sender))) % number;
+        //return uint(keccak256(abi.encodePacked(block.timestamp,block.difficulty,  
+        //msg.sender))) % number;
         return uint(blockhash(block.number-1)) % number;
     }
 
@@ -213,16 +202,13 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
         return _balancesnft[addr].isWinner;
     }
 
-    function _concatenate(string memory a, string memory b) private pure returns (string memory){
-        return string(abi.encodePacked(a,' ',b));
-    } 
 
     function balanceOfNFTByAddress()  public view onlyAccounts  returns (uint256) {
         require(msg.sender != address(0), "Sender is not exist");
         
         require(_balancesnft[msg.sender].isWinner == true, "Sorry, you are not allowed to access this operation");
         
-        // Mapping from token ID to account balances
+        //Mapping from token ID to account balances
         return balanceOf(msg.sender, _balancesnft[msg.sender].tokenID);
     }
 
@@ -234,17 +220,13 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
     
     }
 
-     function perAccountPRT (address account) public view returns(uint)  {
-        return uint8(userPRTs[account].length);
-    }
-    
     function perAccountLuckTokenPRTID (address account) public view returns(uint256[] memory)  {
         return _balancesnft[account].tokenPRTIDs;
     }
 
 
 
-    // generate lucky PRT and transfer MP start
+    //sendMP start
     function getNextMPID() internal returns(uint256){
         require(numIssuedForMP < MAX_SUPPLY_MP, "all MPs issued.");
         //gold supply = ID 1-200, silver supply = 201-2000, bronze = 2001-20000
@@ -298,7 +280,9 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
         return uint(blockhash(block.number-1)) % number;
     }
 
-    //call 10 times to geenrate 10000 lucky mps
+    //call 10 times
+    uint public idx = 0;
+
     function sendMP() public payable onlyAccounts onlyOwner mintIsOpenModifier {
         if (xrand == 18) {
             xrand = createXRAND(17);
@@ -322,15 +306,19 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
             
          }
     }
+    //sendMP end
 
+    //PRT mint start
+    function _concatenate(string memory a, string memory b) private pure returns (string memory){
+        return string(abi.encodePacked(a,' ',b));
+    }
 
-    // PRT mint start
     modifier presalePRTisActive () {
         require(presalePRT, "Presale PRT is not open.");
         _;
     }
-    
-     function mintPRT (address account, uint8 _amount_wanted_able_to_get, uint8 _name) external payable onlyForCaller(account) onlyAccounts presalePRTisActive nonReentrant {
+    //main function to mint NONMP
+     function mintNONMP (address account, uint8 _amount_wanted_able_to_get, uint8 _name) external payable onlyForCaller(account) onlyAccounts presalePRTisActive nonReentrant {
         require(_amount_wanted_able_to_get > 0, "Amount needs to be greater than 0");
         require(msg.sender != address(0), "Sender is not exist");
 
@@ -349,18 +337,27 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
 
     function mintNONMPForAIRDROP(address acc, uint256 qty) internal {
         //added:1
-        require(qty <= MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION, "Max mint per transaction is 35 tokens");
+        require(qty <= MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION, "Max per transaction 35 tokens");
         //AIRDROP8888 - 180001-188888
         (uint256 initID, uint256 _qnt, uint256 _numIssued, uint8 _randval) = getNextNONMPID(qty, STARTINGIDFORAIRDROP, numIssuedForAIRDROP, MAX_SUPPLY_FOR_AIRDROP_TOKEN, EACH_RAND_SLOT_NUM_TOTAL_FOR_AIRDROP, intArrPRTAIRDROP); 
         //added:2
         require(_qnt <= MAX_PRT_AMOUNT_PER_ACC, "Max supply 100 tokens");
+        require(userNONMPs[msg.sender] < MAX_PRT_AMOUNT_PER_ACC, "Limit is 100 tokens");
+        
+        uint256 _qnt_remain;
+        if (userNONMPs[msg.sender] + _qnt >= MAX_PRT_AMOUNT_PER_ACC) {
+            uint256 diff = uint256(userNONMPs[msg.sender] + _qnt - MAX_PRT_AMOUNT_PER_ACC);
+            _qnt_remain  = uint256(_qnt - diff);
+        } 
+        require(userNONMPs[msg.sender] + _qnt  < MAX_PRT_AMOUNT_PER_ACC, _concatenate("The remain qty: ", Strings.toString(_qnt_remain)));
+
         //added:3
         uint weiBalanceWallet = msg.value;
         require(weiBalanceWallet >= PRICE_PRT_AIRDROP, "Insufficient funds"); 
         userBalances[msg.sender] = weiBalanceWallet;
         require(userBalances[msg.sender].sub(PRICE_PRT_AIRDROP * _qnt) >=0, "Insufficient funds");
         //added:4
-        payable(owner()).transfer(PRICE_PRT_AIRDROP * _qnt);// Send money to owner of contract
+        payable(owner()).transfer(PRICE_PRT_AIRDROP * _qnt);//Send money to owner of contract
 
         //added:5
         uint256[] memory ids = new uint256[](_qnt);
@@ -369,6 +366,8 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
             //add here: logic to  toggle allowed if sold 1400000 
         }
         _mintBatch(msg.sender, ids, ids, "");
+        //added:6 
+        userNONMPs[msg.sender] = uint256(userNONMPs[msg.sender]) + ids.length;
 
         //update:
         numIssuedForAIRDROP = _numIssued;
@@ -383,13 +382,22 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
         (uint256 initID, uint256 _qnt, uint256 _numIssued, uint8 _randval) = getNextNONMPID(qty, STARTINGIDFORINTERNALTEAM, numIssuedForInternalTeamIDs, MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN, EACH_RAND_SLOT_NUM_TOTAL_FOR_INTERNALTEAM, intArrPRTInternalTeam); 
         //added:2
         require(_qnt <= MAX_PRT_AMOUNT_PER_ACC, "Max supply 100 tokens");
+        require(userNONMPs[msg.sender] < MAX_PRT_AMOUNT_PER_ACC, "Limit is 100 tokens");
+        
+        uint256 _qnt_remain;
+        if (userNONMPs[msg.sender] + _qnt >= MAX_PRT_AMOUNT_PER_ACC) {
+            uint256 diff = uint256(userNONMPs[msg.sender] + _qnt - MAX_PRT_AMOUNT_PER_ACC);
+            _qnt_remain  = uint256(_qnt - diff);
+        } 
+        require(userNONMPs[msg.sender] + _qnt  < MAX_PRT_AMOUNT_PER_ACC, _concatenate("The remain qty: ", Strings.toString(_qnt_remain)));
+
         //added:3
         uint weiBalanceWallet = msg.value;
         require(weiBalanceWallet >= PRICE_PRT_INTERNALTEAM, "Insufficient funds"); 
         userBalances[msg.sender] = weiBalanceWallet;
         require(userBalances[msg.sender].sub(PRICE_PRT_INTERNALTEAM * _qnt) >=0, "Insufficient funds");
         //added:4
-        payable(owner()).transfer(PRICE_PRT_INTERNALTEAM * _qnt);// Send money to owner of contract
+        payable(owner()).transfer(PRICE_PRT_INTERNALTEAM * _qnt);//Send money to owner of contract
 
         //added:5
         uint256[] memory ids = new uint256[](_qnt);
@@ -398,6 +406,8 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
             //add here: logic to  toggle allowed if sold 1400000 
         }
         _mintBatch(msg.sender, ids, ids, "");
+        //added:6 
+        userNONMPs[msg.sender] = uint256(userNONMPs[msg.sender]) + ids.length;
 
 
         //update:
@@ -411,15 +421,26 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
         require(qty <= MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION, "Max mint per transaction is 35 tokens");
         //NORMAL 20001-160000
         (uint256 initID, uint256 _qnt, uint256 _numIssued, uint8 _randval) = getNextNONMPID(qty, STARTINGIDFORPRT, numIssuedForNormalUser, MAX_SUPPLY_FOR_PRT_TOKEN, EACH_RAND_SLOT_NUM_TOTAL_FOR_PRT, intArrPRT); 
+
         //added:2
         require(_qnt <= MAX_PRT_AMOUNT_PER_ACC, "Max supply 100 tokens");
+        require(userNONMPs[msg.sender] < MAX_PRT_AMOUNT_PER_ACC, "Limit is 100 tokens");
+        
+        uint256 _qnt_remain;
+        if (userNONMPs[msg.sender] + _qnt >= MAX_PRT_AMOUNT_PER_ACC) {
+            uint256 diff = uint256(userNONMPs[msg.sender] + _qnt - MAX_PRT_AMOUNT_PER_ACC);
+            _qnt_remain  = uint256(_qnt - diff);
+        } 
+        require(userNONMPs[msg.sender] + _qnt  < MAX_PRT_AMOUNT_PER_ACC, _concatenate("The remain qty: ", Strings.toString(_qnt_remain)));
+
         //added:3
         uint weiBalanceWallet = msg.value;
         require(weiBalanceWallet >= PRICE_PRT, "Insufficient funds"); 
         userBalances[msg.sender] = weiBalanceWallet;
         require(userBalances[msg.sender].sub(PRICE_PRT * _qnt) >=0, "Insufficient funds");
+
         //added:4
-        payable(owner()).transfer(PRICE_PRT * _qnt);// Send money to owner of contract
+        payable(owner()).transfer(PRICE_PRT * _qnt);//Send money to owner of contract
 
         //added:5
         uint256[] memory ids = new uint256[](_qnt);
@@ -428,6 +449,8 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
             //add here: logic to  toggle allowed if sold 1400000 
         }
         _mintBatch(msg.sender, ids, ids, "");
+        //added:6 
+        userNONMPs[msg.sender] = uint256(userNONMPs[msg.sender]) + ids.length;
 
 
         //update:
@@ -468,7 +491,7 @@ contract PRT is ERC1155Supply, Ownable, ReentrancyGuard {
        numIssued = qty + numIssued;
        return (mpid+initialNum, qty, numIssued, randval);
    }
-   // PRT mint end
+   //PRT mint end
 
 
     function withdraw () public payable onlyOwner {
