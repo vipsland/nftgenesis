@@ -64,6 +64,7 @@ contract AwesomeNFT is ERC1155, Ownable {
         if (revealed == false) {
             return notRevealedUri;
         }
+        //string(abi.encodePacked(_baseURI, tokenURI))
         return (
             string(
                 abi.encodePacked("https://ipfs.vipsland.com/nft/collections/genesis/json/", 

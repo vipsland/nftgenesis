@@ -1333,6 +1333,11 @@
   dependencies:
     ethereumjs-util "^7.1.4"
 
+"@nomicfoundation/hardhat-toolbox@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@nomicfoundation/hardhat-toolbox/-/hardhat-toolbox-2.0.1.tgz#3d8c620a54df2c0086c9109fb0f987bf29329deb"
+  integrity sha512-/pr8m9xlqiNlq6fXv4hEPNwdNwUhysoB2qbDCKqERfPpq34EydUQTC3Vis4aIea8RLwSrU8sDXFdv4TQxYstKw==
+
 "@nomicfoundation/solidity-analyzer-darwin-arm64@0.0.3":
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/@nomicfoundation/solidity-analyzer-darwin-arm64/-/solidity-analyzer-darwin-arm64-0.0.3.tgz#1d49e4ac028831a3011a9f3dca60bd1963185342"

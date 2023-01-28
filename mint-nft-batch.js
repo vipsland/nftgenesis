@@ -43,8 +43,6 @@ for (let i = 0; i < arr.length; i += chunkSize) {
 }
 console.log({totalChunks})
 
-
-
 // Call mintNFTBatch function
 const mintNFTBatch = async (chunk, counts) => {
     let nftTxn = await awesomeNFTBatch.mintNFTBatch(chunk, counts)

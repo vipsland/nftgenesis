@@ -11,20 +11,10 @@ contract AwesomeNFTBatch is ERC1155Supply, Ownable {
 
 
     string public name = "VIPSLAND GENESIS";
+    string public symbol = "VPSL";
     string public notRevealedUri = "https://ipfs.vipsland.com/nft/collections/genesis/json/hidden.json";
     bool public revealed = false;
     mapping (uint256 => string) private _uris;
-    string public symbol = "VPSL";
-
-    uint256 public constant NUM_TOTAL = 1000;
-    uint256 public constant MAX_SUPPLY_FOR_TOKEN = 20009;
-    
-    using Counters for Counters.Counter;
-    Counters.Counter public _tokenIdCounter;
-    uint256 public counterTokenID;
-    Counters.Counter public _mint_counter;
-
-    uint256[] public tokenIds;
 
     constructor() ERC1155(notRevealedUri) {
 
@@ -50,16 +40,26 @@ contract AwesomeNFTBatch is ERC1155Supply, Ownable {
         return exists(id);
     }
 
-//added to test add to main contract
-    function mintByOwner(uint256 tokenId) public onlyOnceCanBeMint(tokenId) onlyOwner {
+//manually mint and transfer start
+    function mintByOwner(uint256 tokenId) public onlyOnceCanBeMinted(tokenId) onlyOwner {
        _mint(msg.sender, tokenId, 1, "");
     }
 
-//added to test add to main contract
-    modifier onlyOnceCanBeMint (uint256 tokenId) { //for security
-        require(_totalSupply(tokenId) == 0, "Can mint only once!!!");
+    function safeTransferFromByOwner(uint256 tokenId, address addr) public tokenExist(tokenId) onlyOwner {
+       safeTransferFrom(msg.sender, addr, tokenId, 1, "");
+    }
+
+
+    modifier onlyOnceCanBeMinted (uint256 tokenId) { //for security
+        require(totalSupply(tokenId) == 0, "Only once can be minted");
         _;
     }
+
+    modifier tokenExist (uint256 tokenId) { //for security
+        require(exists(tokenId), "Token is not exist");
+        _;
+    }
+//manually mint and transfer end
 
 
     function mintNFTBatch(uint256[] memory ids, uint256[] memory amounts) public onlyOwner {

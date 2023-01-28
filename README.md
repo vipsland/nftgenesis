@@ -50,9 +50,9 @@ open coverage/index.html
 #with clean /output
 yarn clean && npx hardhat test --network hardhat
 
-
-#with goerli
 npx hardhat test --network hardhat
+#one file
+npx hardhat test --network hardhat ./test/Vipsland.js
 
 ```
 
