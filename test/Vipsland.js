@@ -110,22 +110,68 @@ describe("Vipslad contract deploy", function () {
        
   });
 
-  describe("setPRICE_PRT_AIRDROP", function () {
+  describe("setPRICE_PRT ", function () {
    
     it(`${i++} setPRICE_PRT_AIRDROP 0.01`, async function () {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
-  
+      const [acc] = addrs
+
       await hardhatVipslad.deployed();
 
       const value_initial = await hardhatVipslad.PRICE_PRT_AIRDROP();
       expect(value_initial).to.equal(0);
 
-      await hardhatVipslad.connect(owner).setPRICE_PRT_AIRDROP(1);
+      await hardhatVipslad.connect(owner).setPRICE_PRT_AIRDROP(ethers.utils.parseEther("0.1"));
 
       const value_updated = await hardhatVipslad.PRICE_PRT_AIRDROP();
-      expect(value_updated).to.equal(1);
+      expect(value_updated).to.equal(Number(ethers.utils.parseEther("0.1")).toString());
 
+      await expect(hardhatVipslad.connect(acc).setPRICE_PRT_AIRDROP(ethers.utils.parseEther("0.01"))
+      ).to.be.revertedWith("Ownable: caller is not the owner");
+
+
+    });
+
+    it(`${i++} setPRICE_PRT_INTERNALTEAM 0.01`, async function () {
+
+      const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
+      const [acc] = addrs
+
+      await hardhatVipslad.deployed();
+
+      const value_initial = await hardhatVipslad.PRICE_PRT_INTERNALTEAM();
+      expect(value_initial).to.equal(0);
+
+      await hardhatVipslad.connect(owner).setPRICE_PRT_INTERNALTEAM(ethers.utils.parseEther("0.1"));
+
+      const value_updated = await hardhatVipslad.PRICE_PRT_INTERNALTEAM();
+      expect(value_updated).to.equal(Number(ethers.utils.parseEther("0.1")).toString());
+
+      await expect(hardhatVipslad.connect(acc).setPRICE_PRT_INTERNALTEAM(ethers.utils.parseEther("0.01"))
+      ).to.be.revertedWith("Ownable: caller is not the owner");
+
+
+    });
+    
+
+    it(`${i++} setPRICE_PRT 0.01`, async function () {
+
+      const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
+      const [acc] = addrs
+  
+      await hardhatVipslad.deployed();
+
+      const value_initial = await hardhatVipslad.PRICE_PRT();
+      expect(value_initial).to.equal(Number(ethers.utils.parseEther("0.05")).toString());
+
+      await hardhatVipslad.connect(owner).setPRICE_PRT(ethers.utils.parseEther("0.01"));
+
+      const value_updated = await hardhatVipslad.PRICE_PRT();
+      expect(value_updated).to.equal(Number(ethers.utils.parseEther("0.01")).toString());
+
+      await expect(hardhatVipslad.connect(acc).setPRICE_PRT(ethers.utils.parseEther("0.01"))
+      ).to.be.revertedWith("Ownable: caller is not the owner");
 
     });
     
@@ -133,6 +179,79 @@ describe("Vipslad contract deploy", function () {
   });
 
 
+  describe("manually mint and transfer ", function () {
+
+    it(`${i++} mintByOwner, existsCustom, onlyOnceCanBeMinted, safeTransferFromByOwner, tokenExist, totalSupplyCustom`, async function () {
+
+      const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
+      const [acc] = addrs;
+      const tokenId = 1;
+      const tokenIdNotMinted = 2;
+  
+      await hardhatVipslad.deployed();
+
+      const notexist = await hardhatVipslad.existsCustom(tokenId);
+      expect(notexist).to.equal(false);
+
+      const supply_zero = await hardhatVipslad.totalSupplyCustom(tokenId);
+      expect(supply_zero).to.equal(0);
+
+      await hardhatVipslad.connect(owner).mintByOwner(tokenId);
+
+      const exist = await hardhatVipslad.existsCustom(tokenId);
+      expect(exist).to.equal(true);
+
+      const supply = await hardhatVipslad.totalSupplyCustom(tokenId);
+      expect(supply).to.equal(1);
+
+
+      await expect(hardhatVipslad.connect(acc).mintByOwner(tokenId)
+      ).to.be.revertedWith("Ownable: caller is not the owner");
+
+      await expect(hardhatVipslad.connect(owner).mintByOwner(tokenId)
+      ).to.be.revertedWith("Only once can be minted");
+
+
+      await expect(hardhatVipslad.connect(owner).safeTransferFromByOwner(tokenIdNotMinted, owner.address)
+      ).to.be.revertedWith("Token is not exist");
+
+      await hardhatVipslad.connect(owner).safeTransferFromByOwner(tokenId, acc.address);
+
+      await expect(hardhatVipslad.connect(acc).safeTransferFromByOwner(tokenId, owner.address)
+      ).to.be.revertedWith("Ownable: caller is not the owner");
+      
+    });
+    
+
+  });
+
+  describe("reveal logic ", function () {
+
+    it(`${i++} toggleReveal(), uri()`, async function () {
+
+      const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
+      const [acc] = addrs;
+      const tokenId = 1;
+  
+      await hardhatVipslad.deployed();
+
+      const result = await hardhatVipslad.revealed();
+      expect(result).to.equal(false);
+      await hardhatVipslad.connect(owner).uri(tokenId);
+
+      await hardhatVipslad.connect(owner).toggleReveal();
+
+      const result_updated = await hardhatVipslad.revealed();
+      expect(result_updated).to.equal(true);
+      await hardhatVipslad.connect(owner).uri(tokenId);
+
+      await expect(hardhatVipslad.connect(acc).toggleReveal()
+      ).to.be.revertedWith("Ownable: caller is not the owner");
+      
+    });
+    
+
+  });
   
   describe.skip("sendMP", function () {
 

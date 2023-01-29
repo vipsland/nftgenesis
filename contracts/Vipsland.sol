@@ -33,11 +33,11 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
     }
 
     //manually mint and transfer start
-    function mintByOwner(uint256 tokenId) public onlyOnceCanBeMinted(tokenId) onlyOwner {
+    function mintByOwner(uint256 tokenId) public onlyOwner onlyOnceCanBeMinted(tokenId) {
        _mint(msg.sender, tokenId, 1, "");
     }
 
-    function safeTransferFromByOwner(uint256 tokenId, address addr) public tokenExist(tokenId) onlyOwner {
+    function safeTransferFromByOwner(uint256 tokenId, address addr) public onlyOwner tokenExist(tokenId) {
        safeTransferFrom(msg.sender, addr, tokenId, 1, "");
     }
 
