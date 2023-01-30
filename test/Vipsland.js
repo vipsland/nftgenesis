@@ -294,7 +294,16 @@ describe("Vipslad contract deploy", function () {
       const _mintMPIsOpen = await hardhatVipslad.mintMPIsOpen();
       expect(_mintMPIsOpen).to.equal(false);
 
-      await hardhatVipslad.connect(owner).mintNONMP(owner.address, 30, { value: ethers.utils.parseUnits('2', 'ether')})
+      const tx = await hardhatVipslad.connect(owner).mintNONMP(owner.address, 30, { value: ethers.utils.parseUnits('2', 'ether')})
+      //event DitributePRTs(address indexed acc, uint256 minted_amount, uint256 last_minted_NONMPID);
+      let receipt = await tx.wait();
+      let [r] = receipt.events?.filter((x) => {return x.event == "DitributePRTs"});
+      expect(r.args.acc).to.equal(owner.address);
+      expect(r.args.minted_amount).to.equal(100);
+      const PRTID = await hardhatVipslad.PRTID();
+      const MAX_SUPPLY_FOR_PRT_TOKEN = await hardhatVipslad.MAX_SUPPLY_FOR_PRT_TOKEN();
+      expect(r.args.last_minted_NONMPID < PRTID+MAX_SUPPLY_FOR_PRT_TOKEN).to.be.true;
+
 
       _qnt_minter_by_user = await hardhatVipslad.userNONMPs(owner.address);
       expect(_qnt_minter_by_user).to.equal(100);
