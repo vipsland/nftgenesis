@@ -79,6 +79,8 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
     uint256 public constant NUM_TOTAL = 1000;
     uint public xrand = 18;
     Counters.Counter public _counter_for_generatelucky_mp;
+    Counters.Counter public _counter_for_generatelucky_mp_internalteam;
+    Counters.Counter public _counter_for_generatelucky_mp_airdrop;
     uint64 public numIssuedForMP = 4;
     uint16[] public intArr;
 
@@ -284,6 +286,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
     //call 10 times
     function sendMP() public payable onlyAccounts onlyOwner mintMPIsOpenModifier {
+        require(sendMPAllDoneForNormalUsers == false, "All send MPs are issued.");
         if (xrand == 18) {
             xrand = createXRAND(17);
         }
@@ -294,6 +297,11 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
         if (counter <= 10) {
             for (uint i = idx; i < 1000 * counter; i++) {
                 uint24 _winnerTokenNONMPID = uint24(PRTID + 1 + xrand + uint24(uint32((168888 * i) / 10000))); //updatede here
+                if (_winnerTokenNONMPID > PRTID + MAX_SUPPLY_FOR_PRT_TOKEN) {
+                    sendMPAllDoneForNormalUsers = true;
+                    break;
+                }
+
                 address winneraddr = getAddrFromNONMPID(_winnerTokenNONMPID);
                 if (winneraddr != address(0)) {
                     uint256 tokenID = getNextMPID();
@@ -307,6 +315,67 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
         }
     }
 
+    function sendMPInternalTeam() public payable onlyAccounts onlyOwner mintInternalTeamMPIsOpenModifier {
+        require(sendMPAllDoneForNormalUsers == true, "All send MPs are not yet issued.");
+        require(sendMPAllDoneForInternalTeam == false, "All send Internal Team MPs completely issued.");
+
+        _counter_for_generatelucky_mp_internalteam.increment();
+        uint counter = _counter_for_generatelucky_mp_internalteam.current();
+
+        if (counter <= 2) {
+            for (uint i = idxInternalTeam; i < 1000 * counter; i++) {
+                //_winnerTokenNONMPID = (20000-188888)
+                uint24 _winnerTokenNONMPID = uint24(140000 + PRTID + 1 + xrand + uint24(uint32((168888 * i) / 10000))); //updatede here
+
+                if (_winnerTokenNONMPID > PRTID + MAX_SUPPLY_FOR_PRT_TOKEN + MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN) {
+                    sendMPAllDoneForInternalTeam = true;
+                    break;
+                }
+
+                address winneraddr = getAddrFromNONMPID(_winnerTokenNONMPID);
+                if (winneraddr != address(0)) {
+                    uint256 tokenID = getNextMPID();
+                    _mint(msg.sender, tokenID, 1, "");
+                    safeTransferFrom(msg.sender, winneraddr, tokenID, 1, "");
+                    emit MPWinnerTokenID(winneraddr, tokenID);
+                }
+            }
+            idxInternalTeam = 1000 * counter;
+        }
+    }
+
+    function sendMPAirdrop() public payable onlyAccounts onlyOwner mintAirdropMPIsOpenModifier {
+        require(sendMPAllDoneForNormalUsers == true, "all send MPs are not yet issued.");
+        require(sendMPAllDoneForAirdrop == false, "All sendAirdrop MPs completely issued.");
+
+        _counter_for_generatelucky_mp_airdrop.increment();
+        uint counter = _counter_for_generatelucky_mp_airdrop.current();
+
+        if (counter <= 1) {
+            for (uint i = idxAirdrop; i < 1000 * counter; i++) {
+                uint24 _winnerTokenNONMPID = uint24(160000 + PRTID + 1 + xrand + uint24(uint32((168888 * i) / 10000))); //updatede here
+
+                if (_winnerTokenNONMPID > 188888) {
+                    sendMPAllDoneForAirdrop = true;
+                    break;
+                }
+
+                address winneraddr = getAddrFromNONMPID(_winnerTokenNONMPID);
+                if (winneraddr != address(0)) {
+                    uint256 tokenID = getNextMPID();
+
+                    //we need this sendMPLastID value for internal team mp sending and also for airdrop mp sending
+                    //sendMPLastID = i + 1000*counter
+
+                    //mint and transfer to winner
+                    _mint(msg.sender, tokenID, 1, "");
+                    safeTransferFrom(msg.sender, winneraddr, tokenID, 1, "");
+                    emit MPWinnerTokenID(winneraddr, tokenID);
+                }
+            }
+            idxAirdrop = 1000 * counter;
+        }
+    }
     //sendMP end
 
     //NONMP mint start
