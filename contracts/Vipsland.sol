@@ -297,7 +297,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
         if (counter <= 10) {
             for (uint i = idx; i < 1000 * counter; i++) {
                 uint24 _winnerTokenNONMPID = uint24(PRTID + 1 + xrand + uint24(uint32((168888 * i) / 10000))); //updatede here
-                if (_winnerTokenNONMPID > PRTID + MAX_SUPPLY_FOR_PRT_TOKEN) {
+                if (_winnerTokenNONMPID >= (PRTID + MAX_SUPPLY_FOR_PRT_TOKEN - xrand)) {
                     sendMPAllDoneForNormalUsers = true;
                     break;
                 }
@@ -327,7 +327,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
                 //_winnerTokenNONMPID = (20000-188888)
                 uint24 _winnerTokenNONMPID = uint24(140000 + PRTID + 1 + xrand + uint24(uint32((168888 * i) / 10000))); //updatede here
 
-                if (_winnerTokenNONMPID > PRTID + MAX_SUPPLY_FOR_PRT_TOKEN + MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN) {
+                if (_winnerTokenNONMPID >= (PRTID + MAX_SUPPLY_FOR_PRT_TOKEN + MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN - xrand)) {
                     sendMPAllDoneForInternalTeam = true;
                     break;
                 }
@@ -355,7 +355,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
             for (uint i = idxAirdrop; i < 1000 * counter; i++) {
                 uint24 _winnerTokenNONMPID = uint24(160000 + PRTID + 1 + xrand + uint24(uint32((168888 * i) / 10000))); //updatede here
 
-                if (_winnerTokenNONMPID > 188888) {
+                if (_winnerTokenNONMPID >= (PRTID + MAX_SUPPLY_FOR_PRT_TOKEN + MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN + MAX_SUPPLY_FOR_AIRDROP_TOKEN - xrand)) {
                     sendMPAllDoneForAirdrop = true;
                     break;
                 }
@@ -376,6 +376,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
             idxAirdrop = 1000 * counter;
         }
     }
+
     //sendMP end
 
     //NONMP mint start
@@ -458,7 +459,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
         //added:8
         //toggle MP mint is open if sold MAX_SUPPLY_FOR_PRT_TOKEN (only for normal user)
-        uint256 max_nonmpid = PRTID + MAX_SUPPLY_FOR_PRT_TOKEN + MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN;
+        uint256 max_nonmpid = PRTID + MAX_SUPPLY_FOR_PRT_TOKEN + MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN + MAX_SUPPLY_FOR_AIRDROP_TOKEN;
         if (ids[_qnt - 1] >= max_nonmpid) {
             mintAirdropMPIsOpen = true;
         }
