@@ -100,7 +100,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
     uint256 public constant MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION = 35;
 
     //NONMP NORMAL 20001-160000
-    uint public PRICE_PRT = 0.05 ether;
+    uint public PRICE_PRT = 0.123 ether;
 
     function setPRICE_PRT(uint price) public onlyOwner {
         PRICE_PRT = price;
@@ -297,19 +297,20 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
         if (counter <= 10) {
             for (uint i = idx; i < 1000 * counter; i++) {
                 uint24 _winnerTokenNONMPID = uint24(PRTID + 1 + xrand + uint24(uint32((168888 * i) / 10000))); //updatede here
+
+                address winneraddr = getAddrFromNONMPID(_winnerTokenNONMPID);
+                if (winneraddr != address(0)) {
+                    uint256 tokenID = getNextMPID();
+                    _mint(msg.sender, tokenID, 1, "");
+                    safeTransferFrom(msg.sender, winneraddr, tokenID, 1, "");
+                    emit MPWinnerTokenID(winneraddr, tokenID);
+                }
                 if (_winnerTokenNONMPID >= (PRTID + MAX_SUPPLY_FOR_PRT_TOKEN - xrand)) {
                     sendMPAllDoneForNormalUsers = true;
                     break;
                 }
 
-                address winneraddr = getAddrFromNONMPID(_winnerTokenNONMPID);
-                if (winneraddr != address(0)) {
-                    uint256 tokenID = getNextMPID();
-                    //mint and transfer to winner
-                    _mint(msg.sender, tokenID, 1, "");
-                    safeTransferFrom(msg.sender, winneraddr, tokenID, 1, "");
-                    emit MPWinnerTokenID(winneraddr, tokenID);
-                }
+
             }
             idx = 1000 * counter;
         }
@@ -327,11 +328,6 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
                 //_winnerTokenNONMPID = (20000-188888)
                 uint24 _winnerTokenNONMPID = uint24(140000 + PRTID + 1 + xrand + uint24(uint32((168888 * i) / 10000))); //updatede here
 
-                if (_winnerTokenNONMPID >= (PRTID + MAX_SUPPLY_FOR_PRT_TOKEN + MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN - xrand)) {
-                    sendMPAllDoneForInternalTeam = true;
-                    break;
-                }
-
                 address winneraddr = getAddrFromNONMPID(_winnerTokenNONMPID);
                 if (winneraddr != address(0)) {
                     uint256 tokenID = getNextMPID();
@@ -339,6 +335,13 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
                     safeTransferFrom(msg.sender, winneraddr, tokenID, 1, "");
                     emit MPWinnerTokenID(winneraddr, tokenID);
                 }
+                if (_winnerTokenNONMPID >= (PRTID + MAX_SUPPLY_FOR_PRT_TOKEN + MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN - xrand)) {
+                    sendMPAllDoneForInternalTeam = true;
+                    break;
+                }
+
+
+
             }
             idxInternalTeam = 1000 * counter;
         }
@@ -355,23 +358,18 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
             for (uint i = idxAirdrop; i < 1000 * counter; i++) {
                 uint24 _winnerTokenNONMPID = uint24(160000 + PRTID + 1 + xrand + uint24(uint32((168888 * i) / 10000))); //updatede here
 
+                address winneraddr = getAddrFromNONMPID(_winnerTokenNONMPID);
+                if (winneraddr != address(0)) {
+                    uint256 tokenID = getNextMPID();
+                    _mint(msg.sender, tokenID, 1, "");
+                    safeTransferFrom(msg.sender, winneraddr, tokenID, 1, "");
+                    emit MPWinnerTokenID(winneraddr, tokenID);
+                }
                 if (_winnerTokenNONMPID >= (PRTID + MAX_SUPPLY_FOR_PRT_TOKEN + MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN + MAX_SUPPLY_FOR_AIRDROP_TOKEN - xrand)) {
                     sendMPAllDoneForAirdrop = true;
                     break;
                 }
 
-                address winneraddr = getAddrFromNONMPID(_winnerTokenNONMPID);
-                if (winneraddr != address(0)) {
-                    uint256 tokenID = getNextMPID();
-
-                    //we need this sendMPLastID value for internal team mp sending and also for airdrop mp sending
-                    //sendMPLastID = i + 1000*counter
-
-                    //mint and transfer to winner
-                    _mint(msg.sender, tokenID, 1, "");
-                    safeTransferFrom(msg.sender, winneraddr, tokenID, 1, "");
-                    emit MPWinnerTokenID(winneraddr, tokenID);
-                }
             }
             idxAirdrop = 1000 * counter;
         }
@@ -561,11 +559,20 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
         //added:3
         uint weiBalanceWallet = msg.value;
-        require(weiBalanceWallet >= PRICE_PRT, "Insufficient funds");
-        require(weiBalanceWallet >= PRICE_PRT * _qnt, "Insufficient funds");
+        require(weiBalanceWallet >= PRICE_PRT, "Insufficient funds");//minimum for one token
+
+        uint _PRICE_PRT = PRICE_PRT;
+        if (_qnt >= 5 && _qnt < 10) {
+            _PRICE_PRT = PRICE_PRT*4/5;
+        } else 
+        if (_qnt >= 10) {
+            _PRICE_PRT = PRICE_PRT*1/2;
+        }
+
+        require(weiBalanceWallet >= _PRICE_PRT * _qnt, "Insufficient funds");
 
         //added:4
-        payable(owner()).transfer(PRICE_PRT * _qnt); //Send money to owner of contract
+        payable(owner()).transfer(_PRICE_PRT * _qnt); //Send money to owner of contract
 
         //added:5
         uint256[] memory ids = new uint256[](_qnt);
