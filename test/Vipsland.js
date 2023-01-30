@@ -307,7 +307,9 @@ describe("Vipslad contract deploy", function () {
       expect(r.args.minted_amount).to.equal(100);
       const PRTID = await hardhatVipslad.PRTID();
       const MAX_SUPPLY_FOR_PRT_TOKEN = await hardhatVipslad.MAX_SUPPLY_FOR_PRT_TOKEN();
-      expect(r.args.last_minted_NONMPID < PRTID+MAX_SUPPLY_FOR_PRT_TOKEN).to.be.true;
+      console.log('r.args.last_minted_NONMPID:::', r.args.last_minted_NONMPID);
+      console.log('PRTID+MAX_SUPPLY_FOR_PRT_TOKEN:::', Number(PRTID)+Number(MAX_SUPPLY_FOR_PRT_TOKEN));
+      expect(r.args.last_minted_NONMPID < Number(PRTID)+Number(MAX_SUPPLY_FOR_PRT_TOKEN)).to.be.true;
 
 
       _qnt_minter_by_user = await hardhatVipslad.userNONMPs(owner.address);

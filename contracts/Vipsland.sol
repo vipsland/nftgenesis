@@ -480,10 +480,13 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
         //added:8
         //toggle MP mint is open if sold MAX_SUPPLY_FOR_PRT_TOKEN (only for normal user)
         uint256 max_nonmpid = PRTID + MAX_SUPPLY_FOR_PRT_TOKEN;
+        console.log('max_nonmpid:::', max_nonmpid);
         if (ids[_qnt - 1] >= max_nonmpid) {
+            console.log('warning!::::', ids[_qnt - 1], max_nonmpid);
             mintMPIsOpen = true;
         }
         //added:9
+        console.log('ids[_qnt - 1]:::', ids[_qnt - 1]);
         emit DitributePRTs(msg.sender, userNONMPs[msg.sender], ids[_qnt - 1]);
     }
 
