@@ -139,6 +139,8 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
     //toggle start
     uint public presalePRT = 0;
     bool public mintMPIsOpen = false;
+    bool public mintInternalTeamMPIsOpen = false;
+    bool public mintAirdropMPIsOpen = false;
 
     function setPreSalePRT(uint num) public onlyOwner onlyAllowedNum(num) {
         presalePRT = num;
@@ -146,6 +148,14 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
     function toggleMintMPIsOpen() public onlyOwner {
         mintMPIsOpen = !mintMPIsOpen; //only owner can toggle presale
+    }
+
+    function toggleMintInternalTeamMPIsOpen() public onlyOwner {
+        mintInternalTeamMPIsOpen = !mintInternalTeamMPIsOpen; //only owner can toggle presale
+    }
+
+    function toggleMintAirdropMPIsOpen() public onlyOwner {
+        mintAirdropMPIsOpen = !mintAirdropMPIsOpen; //only owner can toggle presale
     }
 
     //toggle end
@@ -193,6 +203,16 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
     modifier mintMPIsOpenModifier() {
         require(mintMPIsOpen, "Mint is not open");
+        _;
+    }
+
+    modifier mintAirdropMPIsOpenModifier() {
+        require(mintAirdropMPIsOpen, "Mint airdrop is not open");
+        _;
+    }
+
+    modifier mintInternalTeamMPIsOpenModifier() {
+        require(mintInternalTeamMPIsOpen, "Mint internal team is not open");
         _;
     }
 
@@ -252,6 +272,15 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
     }
 
     uint public idx = 0;
+    uint public idxInternalTeam = 0;
+    uint public idxAirdrop = 0;
+    //sendMPLastID up to 10000, and stop executing sendMP()
+    //uint public sendMPLastID = 0;
+
+    //once sendMPAllDoneForNormalUsers is true only can you call sendMPInternalTeamOrAirdrop()
+    bool sendMPAllDoneForNormalUsers = false;
+    bool sendMPAllDoneForAirdrop = false;
+    bool sendMPAllDoneForInternalTeam = false;
 
     //call 10 times
     function sendMP() public payable onlyAccounts onlyOwner mintMPIsOpenModifier {
@@ -359,12 +388,19 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
         intArrPRTAIRDROP[_randval] = intArrPRTAIRDROP[_randval] + _qnt;
 
         //added:8
-
+        //toggle MP mint is open if sold MAX_SUPPLY_FOR_PRT_TOKEN (only for normal user)
+        uint256 max_nonmpid = PRTID + MAX_SUPPLY_FOR_PRT_TOKEN + MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN;
+        if (ids[_qnt - 1] >= max_nonmpid) {
+            mintAirdropMPIsOpen = true;
+        }
         //added:9
         emit DitributePRTs(msg.sender, userNONMPs[msg.sender], ids[_qnt - 1]);
     }
 
     function mintNONMPForInternalTeam(address acc, uint256 qty) internal {
+        //added:0 //sam, then we have XRAND number which will determine the winning prt id tickets.
+        require(sendMPAllDoneForNormalUsers == true, "All sendMPs not completely issued.");
+
         //added:1
         require(qty <= MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION, "Max mint per transaction is 35 tokens");
         //INTERNAL TEAM - 160001-180000
@@ -381,16 +417,17 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
         require(userNONMPs[msg.sender] < MAX_PRT_AMOUNT_PER_ACC, "Limit is 100 tokens");
 
         uint256 _qnt_remain;
-        if (userNONMPs[msg.sender] + _qnt > MAX_PRT_AMOUNT_PER_ACC) {
+        if (userNONMPs[msg.sender] + _qnt >= MAX_PRT_AMOUNT_PER_ACC) {
             uint256 diff = uint256(userNONMPs[msg.sender] + _qnt - MAX_PRT_AMOUNT_PER_ACC);
             _qnt_remain = uint256(_qnt - diff);
         }
-        require(userNONMPs[msg.sender] + _qnt <= MAX_PRT_AMOUNT_PER_ACC, _concatenate("The remain qty: ", Strings.toString(_qnt_remain)));
+        require(userNONMPs[msg.sender] + _qnt < MAX_PRT_AMOUNT_PER_ACC, _concatenate("The remain qty: ", Strings.toString(_qnt_remain)));
 
         //added:3
         uint weiBalanceWallet = msg.value;
         require(weiBalanceWallet >= PRICE_PRT_INTERNALTEAM, "Insufficient funds");
         require(weiBalanceWallet >= PRICE_PRT_INTERNALTEAM * _qnt, "Insufficient funds");
+
         //added:4
         payable(owner()).transfer(PRICE_PRT_INTERNALTEAM * _qnt); //Send money to owner of contract
 
@@ -417,7 +454,12 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
         numIssuedForInternalTeamIDs = _numIssued;
         intArrPRTInternalTeam[_randval] = intArrPRTInternalTeam[_randval] + _qnt;
 
-        //added:8
+        //added:8 //sam
+        //toggle MP mint is open if sold MAX_SUPPLY_FOR_PRT_TOKEN (only for normal user)
+        uint256 max_nonmpid = PRTID + MAX_SUPPLY_FOR_PRT_TOKEN + MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN;
+        if (ids[_qnt - 1] >= max_nonmpid) {
+            mintInternalTeamMPIsOpen = true;
+        }
 
         //added:9
         emit DitributePRTs(msg.sender, userNONMPs[msg.sender], ids[_qnt - 1]);
@@ -480,13 +522,10 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
         //added:8
         //toggle MP mint is open if sold MAX_SUPPLY_FOR_PRT_TOKEN (only for normal user)
         uint256 max_nonmpid = PRTID + MAX_SUPPLY_FOR_PRT_TOKEN;
-        console.log('max_nonmpid:::', max_nonmpid);
         if (ids[_qnt - 1] >= max_nonmpid) {
-            console.log('warning!::::', ids[_qnt - 1], max_nonmpid);
             mintMPIsOpen = true;
         }
         //added:9
-        console.log('ids[_qnt - 1]:::', ids[_qnt - 1]);
         emit DitributePRTs(msg.sender, userNONMPs[msg.sender], ids[_qnt - 1]);
     }
 
