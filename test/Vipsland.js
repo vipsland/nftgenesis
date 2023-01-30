@@ -100,9 +100,14 @@ describe("Vipslad contract deploy", function () {
   
       await hardhatVipslad.deployed();
 
+      let _mintMPIsOpen;
       await hardhatVipslad.connect(owner).toggleMintMPIsOpen();
-      const _mintMPIsOpen = await hardhatVipslad.mintMPIsOpen();
+      _mintMPIsOpen = await hardhatVipslad.mintMPIsOpen();
       expect(_mintMPIsOpen).to.equal(true);
+
+      await hardhatVipslad.connect(owner).toggleMintMPIsOpen();
+      _mintMPIsOpen = await hardhatVipslad.mintMPIsOpen();
+      expect(_mintMPIsOpen).to.equal(false);
 
     });
     

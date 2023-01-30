@@ -214,16 +214,15 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
         /** chk and reassign available IDs left from randomization */
         uint8 iCheck = 0;
-        uint8 randvalChk = randval;
+        //uint8 randvalChk = randval;
 
         while (iCheck != (MAX_SUPPLY_MP / NUM_TOTAL_FOR_MP)) {
             if (intArr[randval] == NUM_TOTAL_FOR_MP) {
-                if (randvalChk == ((MAX_SUPPLY_MP / NUM_TOTAL_FOR_MP) - 1)) {
-                    randvalChk = 0;
+                if (randval == ((MAX_SUPPLY_MP / NUM_TOTAL_FOR_MP) - 1)) {
+                    randval = 0;
                 } else {
-                    randvalChk++;
+                    randval++;
                 }
-                randval++;
             } else {
                 break;
             }
@@ -465,7 +464,6 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
         for (uint i = 0; i < _qnt; i++) {
             amounts[i] = 1;
         }
-
         _mintBatch(msg.sender, ids, amounts, "");
         for (uint i = 0; i < _qnt; i++) {
             prtPerAddress[ids[i]] = msg.sender;
@@ -501,16 +499,15 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
         uint8 randval = uint8(random(max_supply_token / each_rand_slot_num_total)); //0 to 15
         uint8 iCheck = 0;
-        uint8 randvalChk = randval;
+        //uint8 randvalChk = randval;
 
         while (iCheck != (max_supply_token / each_rand_slot_num_total)) {
             if (intArray[randval] == each_rand_slot_num_total) {
-                if (randvalChk == ((max_supply_token / each_rand_slot_num_total) - 1)) {
-                    randvalChk = 0;
+                if (randval == ((max_supply_token / each_rand_slot_num_total) - 1)) {
+                    randval = 0;
                 } else {
-                    randvalChk++;
+                    randval++;
                 }
-                randval++;
             } else {
                 break;
             }
