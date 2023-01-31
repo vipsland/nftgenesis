@@ -356,6 +356,72 @@ describe("Vipslad contract deploy", function () {
     });
 
 
+    it.only(`${i++} mintNONMP() for stage 2,  mintNONMPForInternalTeam()`, async function () {
+
+      const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
+      const [acc] = addrs;
+  
+      await hardhatVipslad.deployed();
+
+      await expect(hardhatVipslad.connect(owner).mintNONMP(acc.address, 0)
+      ).to.be.revertedWith("Only allowed for caller");
+
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 0)
+      ).to.be.revertedWith("Presale PRT is not active");
+
+      await hardhatVipslad.connect(owner).setPreSalePRT(2);
+      const num = await hardhatVipslad.presalePRT();
+      expect(num).to.equal(2);
+
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 0)
+      ).to.be.revertedWith("Amount needs to be greater than 0");
+
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 36, { value: ethers.utils.parseUnits('5', 'ether')})
+      ).to.be.revertedWith("Max mint per transaction is 35 tokens");
+      
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 35, { value: ethers.utils.parseUnits('0', 'ether')})
+      ).to.be.not.reverted;//insufficient funds
+
+      
+      let PRICE_PRT_INTERNALTEAM_initial = await hardhatVipslad.PRICE_PRT_INTERNALTEAM();
+      expect(PRICE_PRT_INTERNALTEAM_initial).to.equal(Number(ethers.utils.parseEther("0")).toString());
+
+      await hardhatVipslad.connect(owner).mintNONMP(owner.address, 35, { value: ethers.utils.parseUnits('0', 'ether')})
+      await hardhatVipslad.connect(owner).mintNONMP(owner.address, 5, { value: ethers.utils.parseUnits('0', 'ether')})
+
+      let _qnt_minter_by_user;
+      _qnt_minter_by_user = await hardhatVipslad.userNONMPs(owner.address);
+      expect(_qnt_minter_by_user).to.equal(75);
+
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 30, { value: ethers.utils.parseUnits('0', 'ether')})
+      ).to.be.revertedWith("The remain qty: 25");
+
+      // const _mintInternalTeamMPIsOpen = await hardhatVipslad.mintInternalTeamMPIsOpen();
+      // expect(_mintInternalTeamMPIsOpen).to.equal(false);
+
+      // const tx = await hardhatVipslad.connect(owner).mintNONMP(owner.address, 25, { value: ethers.utils.parseUnits('0', 'ether')})
+      
+      // //event DitributePRTs(address indexed acc, uint256 minted_amount, uint256 last_minted_NONMPID);
+      // let receipt = await tx.wait();
+      // let [r] = receipt.events?.filter((x) => {return x.event == "DitributePRTs"});
+      // expect(r.args.acc).to.equal(owner.address);
+      // expect(r.args.minted_amount).to.equal(100);
+      // const PRTID = await hardhatVipslad.PRTID();
+      // const MAX_SUPPLY_FOR_PRT_TOKEN = await hardhatVipslad.MAX_SUPPLY_FOR_PRT_TOKEN();
+      // const MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN = await hardhatVipslad.MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN();
+      
+      // expect(r.args.last_minted_NONMPID < Number(PRTID)+Number(MAX_SUPPLY_FOR_PRT_TOKEN)+Number(MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN)).to.be.true;
+
+      // _qnt_minter_by_user = await hardhatVipslad.userNONMPs(owner.address);
+      // expect(_qnt_minter_by_user).to.equal(100);
+      // //mint max batch end start
+
+      // await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 9, { value: ethers.utils.parseUnits('5', 'ether')})
+      // ).to.be.revertedWith("Limit is 100 tokens");
+
+    });
+
+
 
   });
 
@@ -466,163 +532,6 @@ describe("Vipslad contract deploy", function () {
 
 
   describe.skip("buyPRT", function () {
-
-    it(`${i++} MAX_SUPPLY_PRT test`, async function () {
-
-      const PRT = await ethers.getContractFactory("Vipsland");
-      const [owner, addr1, addr2] = await ethers.getSigners();
-  
-      const hardhatVipslad = await PRT.deploy();
-  
-      await hardhatVipslad.deployed();
-
-      const max_supply = await hardhatVipslad.MAX_SUPPLY_PRT();
-
-      expect(max_supply.toString()).to.equal('160000');
-
-    });
-
-    it(`${i++} connect(owner).buyPRT(), presalePRT: false`, async function () {
-
-      const PRT = await ethers.getContractFactory("Vipsland");
-      const [owner, addr1, addr2] = await ethers.getSigners();
-  
-      const hardhatVipslad = await PRT.deploy();
-  
-      await hardhatVipslad.deployed();
-
-      await expect(hardhatVipslad.connect(owner).buyPRT(addr1.address, 0)
-    ).to.be.revertedWith("Presale PRT is not active");
-
-    });
-
-    it(`${i++} connect(owner).buyPRT(), presalePRT: true`, async function () {
-
-      const PRT = await ethers.getContractFactory("Vipsland");
-      const [owner, addr1, addr2] = await ethers.getSigners();
-  
-      const hardhatVipslad = await PRT.deploy();
-  
-      await hardhatVipslad.deployed();
-
-      await hardhatVipslad.connect(owner).togglePreSalePRT();
-
-      const isActive = await hardhatVipslad.presalePRT();
-
-      expect(isActive).to.equal(true);
-
-      await expect(hardhatVipslad.connect(owner).buyPRT(addr1.address, 0)
-    ).to.be.revertedWith("Only allowed for caller");
-      await expect(hardhatVipslad.connect(owner).buyPRT(owner.address, 0)
-    ).to.be.revertedWith("Owner of contract can not buy PRT");
-    });
-
-    it(`${i++} connect(addr1).buyPRT(), presalePRT: true, MAX_BUYABLE_AMOUNT = 0`, async function () {
-
-      const PRT = await ethers.getContractFactory("Vipsland");
-      const [owner, addr1, addr2] = await ethers.getSigners();
-  
-      const hardhatVipslad = await PRT.deploy();
-  
-      await hardhatVipslad.deployed();
-
-      await hardhatVipslad.connect(owner).togglePreSalePRT();
-
-      const isActive = await hardhatVipslad.presalePRT();
-
-      expect(isActive).to.equal(true);
-
-      await expect(hardhatVipslad.connect(addr1).buyPRT(addr1.address, 0)
-    ).to.be.revertedWith("Amount buyable needs to be greater than 0");
-    });
-
-
-    it(`${i++} connect(addr1).buyPRT(), presalePRT: true, MAX_BUYABLE_AMOUNT > 100`, async function () {
-
-      const PRT = await ethers.getContractFactory("Vipsland");
-      const [owner, addr1, addr2] = await ethers.getSigners();
-  
-      const hardhatVipslad = await PRT.deploy();
-  
-      await hardhatVipslad.deployed();
-
-      await hardhatVipslad.connect(owner).togglePreSalePRT();
-
-      const isActive = await hardhatVipslad.presalePRT();
-
-      expect(isActive).to.equal(true);
-
-      const balance = await addr1.getBalance();
-      expect(balance >= 100000000000000000).to.equal(true);
-
-      await expect(hardhatVipslad.connect(addr1).buyPRT(addr1.address, 101, { value: ethers.utils.parseUnits('1', 'ether')} )
-    ).to.be.revertedWith("You can't mint so much tokens");
-    
-    });
-
-    it(`${i++} connect(addr1).buyPRT(), presalePRT: true, weiBalanceWallet = 0 ether `, async function () {
-
-      const PRT = await ethers.getContractFactory("Vipsland");
-      const [owner, addr1, addr2] = await ethers.getSigners();
-  
-      const hardhatVipslad = await PRT.deploy();
-  
-      await hardhatVipslad.deployed();
-
-      await hardhatVipslad.connect(owner).togglePreSalePRT();
-
-      const isActive = await hardhatVipslad.presalePRT();
-
-      expect(isActive).to.equal(true);
-
-      await expect(hardhatVipslad.connect(addr1).buyPRT(addr1.address, 100)
-    ).to.be.revertedWith("Min 0.01 ether");
-
-    });
-
-
-    it(`${i++} connect(addr1).buyPRT(), presalePRT: true, weiBalanceWallet > 0.1 ether, _presaleClaimedAmount <= 100, TransferFromToContract is emitted, DitributePRTs is emitted, total distribution 30 tokens per account`, async function () {
-
-      const PRT = await ethers.getContractFactory("Vipsland");
-      const [owner, addr1, addr2] = await ethers.getSigners();
-  
-      const hardhatVipslad = await PRT.deploy();
-  
-      await hardhatVipslad.deployed();
-
-      await hardhatVipslad.connect(owner).togglePreSalePRT();
-
-      const isActive = await hardhatVipslad.presalePRT();
-
-      expect(isActive).to.equal(true);
-
-      const balance = await addr1.getBalance();
-      expect(balance >= 100000000000000000).to.equal(true);
-
-      //ethers.utils.parseEther("1.0")
-      await expect(hardhatVipslad.connect(addr1).buyPRT(addr1.address, 10, { value: ethers.utils.parseUnits('1', 'ether')}))
-      .to.emit(hardhatVipslad, "TransferFromToContract")
-      .withArgs(addr1.address, "100000000000000000");
-
-      await expect(hardhatVipslad.connect(addr1).buyPRT(addr1.address, 10, { value: ethers.utils.parseUnits('1', 'ether')}))
-      .to.emit(hardhatVipslad, "DitributePRTs");
-
-      const tx = await hardhatVipslad.connect(addr1).buyPRT(addr1.address, 10, { value: ethers.utils.parseUnits('1', 'ether')});
-      let receipt = await tx.wait();
-      let [r] = receipt.events?.filter((x) => {return x.event == "DitributePRTs"});
-      expect(r.args.from).to.equal(addr1.address);
-      console.log(r.args.list);
-      const [firstPRTIndex] = r.args.list;
-      const latestPRTIndex = r.args.list[r.args.list.length-1]
-      expect(firstPRTIndex).to.equal(20001);
-      expect(latestPRTIndex).to.equal(20030);
-      expect(r.args.list.length).to.equal(30);
-
-      const _tokenPRTID_index = await hardhatVipslad._tokenPRTID_index();
-
-      expect(_tokenPRTID_index).to.equal(30);
-
-    });
 
     it(`${i++} connect(addr1).buyPRT(), presalePRT: true, weiBalanceWallet > 0.1 ether, test 2 accounts`, async function () {
 
