@@ -566,7 +566,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
             _PRICE_PRT = PRICE_PRT*4/5;
         } else 
         if (_qnt >= 10) {
-            _PRICE_PRT = PRICE_PRT*1/2;
+            _PRICE_PRT = PRICE_PRT/2;
         }
 
         require(weiBalanceWallet >= _PRICE_PRT * _qnt, "Insufficient funds");
@@ -649,6 +649,11 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
     function balanceOfAccount() public payable onlyOwner returns (uint) {
         return msg.value;
     }
+
+    function contractBalance() public view onlyOwner returns (uint256) {
+        return address(this).balance; //This function allows the owner to withdraw from the contract
+    }
+
 
     function withdraw() public payable onlyOwner {
         payable(msg.sender).transfer(address(this).balance); //This function allows the owner to withdraw from the contract

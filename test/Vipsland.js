@@ -329,7 +329,35 @@ describe("Vipslad contract deploy", function () {
 
 
     });
-    
+
+    it(`${i++} mintNONMP() for stage 1,  withdraw to owner account`, async function () {
+
+      const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
+      const [acc] = addrs;
+  
+      await hardhatVipslad.deployed();
+      await hardhatVipslad.connect(owner).setPreSalePRT(1);
+
+      let res = await hardhatVipslad.connect(owner).contractBalance();
+      expect(res).to.equal(0);
+
+      const PRICE_PRT_initial = await hardhatVipslad.PRICE_PRT();
+      expect(ethers.utils.formatEther(PRICE_PRT_initial)).to.equal('0.123');
+
+
+      await hardhatVipslad.connect(acc).mintNONMP(acc.address, 1, { value: ethers.utils.parseUnits('10', 'ether')});
+
+      res = await hardhatVipslad.connect(owner).contractBalance();
+      console.log('test:::', `${35*(0.123/2)}`);
+      
+      expect(ethers.utils.formatEther(res)).to.equal(10);
+
+      // await hardhatVipslad.connect(owner).withdraw();
+
+
+    });
+
+
 
   });
 
