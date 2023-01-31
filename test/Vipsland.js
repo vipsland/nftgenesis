@@ -396,10 +396,10 @@ describe("Vipslad contract deploy", function () {
       await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 30, { value: ethers.utils.parseUnits('0', 'ether')})
       ).to.be.revertedWith("The remain qty: 25");
 
-      // const _mintInternalTeamMPIsOpen = await hardhatVipslad.mintInternalTeamMPIsOpen();
-      // expect(_mintInternalTeamMPIsOpen).to.equal(false);
+      const _mintInternalTeamMPIsOpen = await hardhatVipslad.mintInternalTeamMPIsOpen();
+      expect(_mintInternalTeamMPIsOpen).to.equal(false);
 
-      // const tx = await hardhatVipslad.connect(owner).mintNONMP(owner.address, 25, { value: ethers.utils.parseUnits('0', 'ether')})
+      const tx = await hardhatVipslad.connect(owner).mintNONMP(owner.address, 25, { value: ethers.utils.parseUnits('0', 'ether')})
       
       // //event DitributePRTs(address indexed acc, uint256 minted_amount, uint256 last_minted_NONMPID);
       // let receipt = await tx.wait();
