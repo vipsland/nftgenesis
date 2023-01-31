@@ -305,9 +305,6 @@ describe("Vipslad contract deploy", function () {
       await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 35, { value: ethers.utils.parseUnits('5', 'ether')})
       ).to.be.revertedWith("The remain qty: 30");
 
-      const _mintMPIsOpen = await hardhatVipslad.mintMPIsOpen();
-      expect(_mintMPIsOpen).to.equal(false);
-
       const tx = await hardhatVipslad.connect(owner).mintNONMP(owner.address, 30, { value: ethers.utils.parseUnits('5', 'ether')})
       
       //event DitributePRTs(address indexed acc, uint256 minted_amount, uint256 last_minted_NONMPID);
@@ -319,6 +316,10 @@ describe("Vipslad contract deploy", function () {
       const MAX_SUPPLY_FOR_PRT_TOKEN = await hardhatVipslad.MAX_SUPPLY_FOR_PRT_TOKEN();
       expect(r.args.last_minted_NONMPID < Number(PRTID)+Number(MAX_SUPPLY_FOR_PRT_TOKEN)).to.be.true;
 
+      const _mintMPIsOpen = await hardhatVipslad.mintMPIsOpen();
+      expect(_mintMPIsOpen).to.equal(false);
+
+      //userNONMPs
       _qnt_minter_by_user = await hardhatVipslad.userNONMPs(owner.address);
       expect(_qnt_minter_by_user).to.equal(100);
       //mint max batch end start
@@ -356,7 +357,7 @@ describe("Vipslad contract deploy", function () {
     });
 
 
-    it.only(`${i++} mintNONMP() for stage 2,  mintNONMPForInternalTeam()`, async function () {
+    it(`${i++} mintNONMP() for stage 2,  mintNONMPForInternalTeam()`, async function () {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
       const [acc] = addrs;
@@ -396,28 +397,29 @@ describe("Vipslad contract deploy", function () {
       await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 30, { value: ethers.utils.parseUnits('0', 'ether')})
       ).to.be.revertedWith("The remain qty: 25");
 
+
+      const tx = await hardhatVipslad.connect(owner).mintNONMP(owner.address, 25, { value: ethers.utils.parseUnits('0', 'ether')})
+
+      //event DitributePRTs(address indexed acc, uint256 minted_amount, uint256 last_minted_NONMPID);
+      let receipt = await tx.wait();
+      let [r] = receipt.events?.filter((x) => {return x.event == "DitributePRTs"});
+      expect(r.args.acc).to.equal(owner.address);
+      expect(r.args.minted_amount).to.equal(100);
+      const PRTID = await hardhatVipslad.PRTID();
+      const MAX_SUPPLY_FOR_PRT_TOKEN = await hardhatVipslad.MAX_SUPPLY_FOR_PRT_TOKEN();
+      const MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN = await hardhatVipslad.MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN();
+      
+      expect(r.args.last_minted_NONMPID < Number(PRTID)+Number(MAX_SUPPLY_FOR_PRT_TOKEN)+Number(MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN)).to.be.true;
+
       const _mintInternalTeamMPIsOpen = await hardhatVipslad.mintInternalTeamMPIsOpen();
       expect(_mintInternalTeamMPIsOpen).to.equal(false);
 
-      const tx = await hardhatVipslad.connect(owner).mintNONMP(owner.address, 25, { value: ethers.utils.parseUnits('0', 'ether')})
-      
-      // //event DitributePRTs(address indexed acc, uint256 minted_amount, uint256 last_minted_NONMPID);
-      // let receipt = await tx.wait();
-      // let [r] = receipt.events?.filter((x) => {return x.event == "DitributePRTs"});
-      // expect(r.args.acc).to.equal(owner.address);
-      // expect(r.args.minted_amount).to.equal(100);
-      // const PRTID = await hardhatVipslad.PRTID();
-      // const MAX_SUPPLY_FOR_PRT_TOKEN = await hardhatVipslad.MAX_SUPPLY_FOR_PRT_TOKEN();
-      // const MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN = await hardhatVipslad.MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN();
-      
-      // expect(r.args.last_minted_NONMPID < Number(PRTID)+Number(MAX_SUPPLY_FOR_PRT_TOKEN)+Number(MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN)).to.be.true;
+      //userNONMPs
+      _qnt_minter_by_user = await hardhatVipslad.userNONMPs(owner.address);
+      expect(_qnt_minter_by_user).to.equal(100);
 
-      // _qnt_minter_by_user = await hardhatVipslad.userNONMPs(owner.address);
-      // expect(_qnt_minter_by_user).to.equal(100);
-      // //mint max batch end start
-
-      // await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 9, { value: ethers.utils.parseUnits('5', 'ether')})
-      // ).to.be.revertedWith("Limit is 100 tokens");
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 9, { value: ethers.utils.parseUnits('5', 'ether')})
+      ).to.be.revertedWith("Limit is 100 tokens");
 
     });
 

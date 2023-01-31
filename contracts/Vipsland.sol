@@ -492,7 +492,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
             uint256 diff = uint256(userNONMPs[msg.sender] + _qnt - MAX_PRT_AMOUNT_PER_ACC);
             _qnt_remain = uint256(_qnt - diff);
         }
-        require(userNONMPs[msg.sender] + _qnt < MAX_PRT_AMOUNT_PER_ACC, _concatenate("The remain qty: ", Strings.toString(_qnt_remain)));
+        require(userNONMPs[msg.sender] + _qnt <= MAX_PRT_AMOUNT_PER_ACC, _concatenate("The remain qty: ", Strings.toString(_qnt_remain)));
 
         //added:3
         uint weiBalanceWallet = msg.value;
