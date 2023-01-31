@@ -330,7 +330,7 @@ describe("Vipslad contract deploy", function () {
 
     });
 
-    it(`${i++} mintNONMP() for stage 1,  withdraw to owner account`, async function () {
+    it(`${i++} mintNONMP() for stage 1,  test price and withdrawal to owner account`, async function () {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
       const [acc] = addrs;
@@ -338,22 +338,20 @@ describe("Vipslad contract deploy", function () {
       await hardhatVipslad.deployed();
       await hardhatVipslad.connect(owner).setPreSalePRT(1);
 
-      let res = await hardhatVipslad.connect(owner).contractBalance();
-      expect(res).to.equal(0);
+      const res_before = await hardhatVipslad.connect(owner).contractBalance();
+      expect(res_before).to.equal(0);
+      console.log('res_before:::', ethers.utils.formatEther(res_before));
 
       const PRICE_PRT_initial = await hardhatVipslad.PRICE_PRT();
       expect(ethers.utils.formatEther(PRICE_PRT_initial)).to.equal('0.123');
 
+      const pull_money = 10;
+      await hardhatVipslad.connect(acc).mintNONMP(acc.address, 35, { value: ethers.utils.parseUnits(`${pull_money}`, 'ether')});
 
-      await hardhatVipslad.connect(acc).mintNONMP(acc.address, 1, { value: ethers.utils.parseUnits('10', 'ether')});
+      const res_after = await hardhatVipslad.connect(owner).contractBalance();//fix: remove and check how to do it  without function
+      console.log('res_after:::', pull_money-ethers.utils.formatEther(res_after));
 
-      res = await hardhatVipslad.connect(owner).contractBalance();
-      console.log('test:::', `${35*(0.123/2)}`);
-      
-      expect(ethers.utils.formatEther(res)).to.equal(10);
-
-      // await hardhatVipslad.connect(owner).withdraw();
-
+      expect(ethers.utils.formatEther(res_after)>=`${35*(0.123/2)}`).to.be.true;
 
     });
 

@@ -571,6 +571,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
         require(weiBalanceWallet >= _PRICE_PRT * _qnt, "Insufficient funds");
 
+        console.log('_PRICE_PRT * _qnt:::', _PRICE_PRT * _qnt);
         //added:4
         payable(owner()).transfer(_PRICE_PRT * _qnt); //Send money to owner of contract
 
@@ -649,12 +650,12 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
     function balanceOfAccount() public payable onlyOwner returns (uint) {
         return msg.value;
     }
-
-    function contractBalance() public view onlyOwner returns (uint256) {
+    //fix: test in goerli
+    function contractBalance() public view onlyOwner returns (uint) {
         return address(this).balance; //This function allows the owner to withdraw from the contract
     }
 
-
+    //fix: test in goerli
     function withdraw() public payable onlyOwner {
         payable(msg.sender).transfer(address(this).balance); //This function allows the owner to withdraw from the contract
     }
