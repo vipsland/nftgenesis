@@ -406,7 +406,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
     function mintNONMPForAIRDROP(address acc, uint256 qty) internal {
         //added:1
-        require(qty <= MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION, "Max per transaction 35 tokens");
+        require(qty <= MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION, "Max mint per transaction is 35 tokens");
         //AIRDROP8888 - 180001-188888
         (uint256 initID, uint256 _qnt, uint256 _numIssued, uint8 _randval) = getNextNONMPID(
             qty,
@@ -574,7 +574,6 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
         require(weiBalanceWallet >= _PRICE_PRT * _qnt, "Insufficient funds");
 
-        console.log('_PRICE_PRT * _qnt:::', _PRICE_PRT * _qnt);
         //added:4
         payable(owner()).transfer(_PRICE_PRT * _qnt); //Send money to owner of contract
 
