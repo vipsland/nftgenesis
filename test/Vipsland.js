@@ -519,7 +519,7 @@ describe("Vipslad contract deploy", function () {
       const _mintMPIsOpen = await hardhatVipslad.mintMPIsOpen();
       expect(_mintMPIsOpen).to.equal(true);
 
-      for (let i = 1; i < 10; i++) {
+      for (let i = 1; i < 10; i++) {//fix: it is run 9 times istead of 10.
         console.log(`${i} sendMPNormalUsers`)
         await expect(hardhatVipslad.connect(owner).sendMPNormalUsers()
         ).to.be.not.reverted
