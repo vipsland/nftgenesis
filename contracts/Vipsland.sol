@@ -164,7 +164,9 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
     // events start
     event DitributePRTs(address indexed acc, uint256 minted_amount, uint256 last_minted_NONMPID);
-    event MPWinnerTokenID(address indexed acc, uint winnerTokenPRTID);
+    event WinnersMP(address indexed acc, uint256 winnerTokenPRTID);
+    event SelectedNONMPIDTokens(uint256 _winnerTokenNONMPID, uint256 max_nonmpid_minus_xrand, bool sendMPAllDoneForNormalUsers);
+
     event mintNONMPIDEvent(address indexed acc, uint256 initID, uint256 _qnt);
 
     // events end
@@ -280,9 +282,9 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
     //uint public sendMPLastID = 0;
 
     //once sendMPAllDoneForNormalUsers is true only can you call sendMPInternalTeamOrAirdrop()
-    bool sendMPAllDoneForNormalUsers = false;
-    bool sendMPAllDoneForAirdrop = false;
-    bool sendMPAllDoneForInternalTeam = false;
+    bool public sendMPAllDoneForNormalUsers = false;
+    bool public sendMPAllDoneForAirdrop = false;
+    bool public sendMPAllDoneForInternalTeam = false;
 
     //call 10 times
     function sendMPNormalUsers() public payable onlyAccounts onlyOwner mintMPIsOpenModifier {
@@ -295,20 +297,26 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
         for (uint i = idx; i < 1000 * counter; i++) {
             uint24 _winnerTokenNONMPID = uint24(PRTID + 1 + xrand + uint24(uint32((168888 * i) / 10000))); //updatede here
+            uint256 max_nonmpid = PRTID + MAX_SUPPLY_FOR_PRT_TOKEN;
+
+            sendMPAllDoneForNormalUsers = _winnerTokenNONMPID >= (max_nonmpid - xrand);
+
+            emit SelectedNONMPIDTokens(_winnerTokenNONMPID, (max_nonmpid - xrand), sendMPAllDoneForNormalUsers);
+
+            if (sendMPAllDoneForNormalUsers) {
+                break;
+            }
 
             address winneraddr = getAddrFromNONMPID(_winnerTokenNONMPID);
+
             if (winneraddr != address(0)) {
                 uint256 tokenID = getNextMPID();
                 _mint(msg.sender, tokenID, 1, "");
                 safeTransferFrom(msg.sender, winneraddr, tokenID, 1, "");
-                emit MPWinnerTokenID(winneraddr, tokenID);
+                emit WinnersMP(winneraddr, tokenID);
             }
-            uint256 max_nonmpid = PRTID + MAX_SUPPLY_FOR_PRT_TOKEN;
-            console.log('max_nonmpid - xrand???:', (max_nonmpid - xrand));// (max_nonmpid - xrand) seem problem with this issue
-            if (_winnerTokenNONMPID >= (max_nonmpid - xrand)) {
-                sendMPAllDoneForNormalUsers = true;
-                break;
-            }
+            
+
         }
         //update idx
         idx = 1000 * counter;
@@ -332,10 +340,10 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
                     uint256 tokenID = getNextMPID();
                     _mint(msg.sender, tokenID, 1, "");
                     safeTransferFrom(msg.sender, winneraddr, tokenID, 1, "");
-                    emit MPWinnerTokenID(winneraddr, tokenID);
+                    emit WinnersMP(winneraddr, tokenID);
                 }
                 uint256 max_nonmpid = PRTID + MAX_SUPPLY_FOR_PRT_TOKEN + MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN;
-                if (_winnerTokenNONMPID >= (max_nonmpid - xrand)) {
+                if (_winnerTokenNONMPID > (max_nonmpid - xrand)) {
                     sendMPAllDoneForInternalTeam = true;
                     break;
                 }
@@ -363,10 +371,10 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
                     uint256 tokenID = getNextMPID();
                     _mint(msg.sender, tokenID, 1, "");
                     safeTransferFrom(msg.sender, winneraddr, tokenID, 1, "");
-                    emit MPWinnerTokenID(winneraddr, tokenID);
+                    emit WinnersMP(winneraddr, tokenID);
                 }
                 uint256 max_nonmpid = PRTID + MAX_SUPPLY_FOR_PRT_TOKEN + MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN + MAX_SUPPLY_FOR_AIRDROP_TOKEN;
-                if (_winnerTokenNONMPID >= (max_nonmpid - xrand)) {
+                if (_winnerTokenNONMPID > (max_nonmpid - xrand)) {
                     sendMPAllDoneForAirdrop = true;
                     break;
                 }

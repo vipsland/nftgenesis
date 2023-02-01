@@ -25,6 +25,7 @@ describe("Vipslad contract deploy", function () {
   }
 
   let i = 1;
+  
 
   beforeEach(async () => {
 
@@ -519,15 +520,33 @@ describe("Vipslad contract deploy", function () {
       const _mintMPIsOpen = await hardhatVipslad.mintMPIsOpen();
       expect(_mintMPIsOpen).to.equal(true);
 
-      for (let i = 1; i < 10; i++) {//fix: it is run 9 times istead of 10.
-        console.log(`${i} sendMPNormalUsers`)
-        await expect(hardhatVipslad.connect(owner).sendMPNormalUsers()
-        ).to.be.not.reverted
-        }
+      
+      let _sendMPAllDoneForNormalUsers = await hardhatVipslad.sendMPAllDoneForNormalUsers();
+      expect(_sendMPAllDoneForNormalUsers).to.equal(false);
+      
+      let _selectedNONMPIDTokens = [];
 
+      while (_sendMPAllDoneForNormalUsers === false) {
+        const tx = await hardhatVipslad.connect(owner).sendMPNormalUsers();
+      
+        //event SelectedNONMPIDTokens(uint256 _winnerTokenNONMPID, uint256 max_nonmpid_minus_xrand, bool sendMPAllDoneForNormalUsers);
+        let receipt = await tx.wait();
+        let result = receipt.events?.filter((x) => {return x.event == "SelectedNONMPIDTokens"});
+        result.map(r => {
+          const {_winnerTokenNONMPID, max_nonmpid_minus_xrand, sendMPAllDoneForNormalUsers} = r.args
+          _sendMPAllDoneForNormalUsers = sendMPAllDoneForNormalUsers;
+          _selectedNONMPIDTokens.push({_winnerTokenNONMPID: Number(_winnerTokenNONMPID), max_nonmpid_minus_xrand: Number(max_nonmpid_minus_xrand), sendMPAllDoneForNormalUsers})
+        });
+
+        }
+        expect(_sendMPAllDoneForNormalUsers).to.equal(true);
+        expect(_selectedNONMPIDTokens.length >= 8289).to.equal(true);
+        console.log({length: _selectedNONMPIDTokens.length});
+        
       await expect(hardhatVipslad.connect(owner).sendMPNormalUsers()
       ).to.be.revertedWith('All MPs are issued for normal user');
 
+ 
     });
 
 
@@ -563,12 +582,7 @@ describe("Vipslad contract deploy", function () {
     //   );
     //   const initialOwnerBalance = await hardhatVipslad.balanceOf(owner.address);
 
-    //   // Try to send 1 token from addr1 (0 tokens) to owner (1000 tokens).
-    //   // `require` will evaluate false and revert the transaction.
-    //   await expect(
-    //     hardhatVipslad.connect(addr1).transfer(owner.address, 1)
-    //   ).to.be.revertedWith("Not enough tokens");
-
+    //:fix use native balanceOf
     //   // Owner balance shouldn't have changed.
     //   expect(await hardhatVipslad.balanceOf(owner.address)).to.equal(
     //     initialOwnerBalance
