@@ -285,36 +285,34 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
     bool sendMPAllDoneForInternalTeam = false;
 
     //call 10 times
-    function sendMP() public payable onlyAccounts onlyOwner mintMPIsOpenModifier {
-        require(sendMPAllDoneForNormalUsers == false, "All send MPs are issued.");
+    function sendMPNormalUsers() public payable onlyAccounts onlyOwner mintMPIsOpenModifier {
+        require(sendMPAllDoneForNormalUsers == false, "All MPs are issued for normal user");
         if (xrand == 18) {
             xrand = createXRAND(17);
         }
         _counter_for_generatelucky_mp.increment();
         uint counter = _counter_for_generatelucky_mp.current();
 
-        //you can not call at once 10000, call 10 times
-        if (counter <= 10) {
-            for (uint i = idx; i < 1000 * counter; i++) {
-                uint24 _winnerTokenNONMPID = uint24(PRTID + 1 + xrand + uint24(uint32((168888 * i) / 10000))); //updatede here
+        for (uint i = idx; i < 1000 * counter; i++) {
+            uint24 _winnerTokenNONMPID = uint24(PRTID + 1 + xrand + uint24(uint32((168888 * i) / 10000))); //updatede here
 
-                address winneraddr = getAddrFromNONMPID(_winnerTokenNONMPID);
-                if (winneraddr != address(0)) {
-                    uint256 tokenID = getNextMPID();
-                    _mint(msg.sender, tokenID, 1, "");
-                    safeTransferFrom(msg.sender, winneraddr, tokenID, 1, "");
-                    emit MPWinnerTokenID(winneraddr, tokenID);
-                }
-                uint256 max_nonmpid = PRTID + MAX_SUPPLY_FOR_PRT_TOKEN;
-                if (_winnerTokenNONMPID >= (max_nonmpid - xrand)) {
-                    sendMPAllDoneForNormalUsers = true;
-                    break;
-                }
-
-
+            address winneraddr = getAddrFromNONMPID(_winnerTokenNONMPID);
+            if (winneraddr != address(0)) {
+                uint256 tokenID = getNextMPID();
+                _mint(msg.sender, tokenID, 1, "");
+                safeTransferFrom(msg.sender, winneraddr, tokenID, 1, "");
+                emit MPWinnerTokenID(winneraddr, tokenID);
             }
-            idx = 1000 * counter;
+            uint256 max_nonmpid = PRTID + MAX_SUPPLY_FOR_PRT_TOKEN;
+            console.log('max_nonmpid - xrand???:', (max_nonmpid - xrand));// (max_nonmpid - xrand) seem problem with this issue
+            if (_winnerTokenNONMPID >= (max_nonmpid - xrand)) {
+                sendMPAllDoneForNormalUsers = true;
+                break;
+            }
         }
+        //update idx
+        idx = 1000 * counter;
+
     }
 
     function sendMPInternalTeam() public payable onlyAccounts onlyOwner mintInternalTeamMPIsOpenModifier {
