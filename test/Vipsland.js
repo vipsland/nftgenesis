@@ -549,6 +549,68 @@ describe("Vipslad contract deploy", function () {
  
     });
 
+    it.only(`${i++} WinnersMP for mintNONMPForNomalUser() > sendMPNormalUsers()`, async function () {
+
+      const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
+
+      await hardhatVipslad.deployed();
+      await hardhatVipslad.connect(owner).setPreSalePRT(1);//stage1
+
+      let _mintMPIsOpen;
+      _mintMPIsOpen = await hardhatVipslad.mintMPIsOpen();
+      expect(_mintMPIsOpen).to.equal(false);
+
+      let _qnt_minter_by_user = {}, _index=0;
+
+      while (_index < 1401) {
+        const acc = addrs[_index]
+        console.log(`${_index}, ${acc.address}`);
+
+        if (acc.address) {
+          _qnt_minter_by_user[acc.address] = 0;
+  
+  
+          while(!_mintMPIsOpen && _qnt_minter_by_user[acc.address] < 100) {
+            try {
+              const tx = await hardhatVipslad.connect(acc).mintNONMP(acc.address, 10, { value: ethers.utils.parseUnits('10', 'ether')});
+              const receipt = await tx.wait();
+              const _qnt = await hardhatVipslad.userNONMPs(owner.address);
+              _qnt_minter_by_user[acc.address] =_qnt;
+              _mintMPIsOpen = await hardhatVipslad.mintMPIsOpen();
+              
+              //trigger
+              //   if (ids[_qnt - 1] >= max_nonmpid) {
+              //     mintMPIsOpen = true;
+              // }
+              if (_mintMPIsOpen) {
+                  //event DitributePRTs(address indexed acc, uint256 minted_amount, uint256 last_minted_NONMPID);
+                  let receipt = await tx.wait();
+                  let [r] = receipt.events?.filter((x) => {return x.event == "DitributePRTs"});
+                  expect(r.args.minted_amount).to.equal(100);
+                  console.log('last_minted_NONMPID', r.args.last_minted_NONMPID)
+                            
+              }
+                
+            } catch (err) {
+              if ((err?.message || '').indexOf('Limit is 100 tokens') > 0) {
+                const _qnt = await hardhatVipslad.userNONMPs(owner.address);
+                _qnt_minter_by_user[acc.address] =_qnt;
+                console.log(err?.message, _qnt_minter_by_user[acc.address]);
+  
+              }
+            }
+            
+          }
+
+          console.log(`_qnt_minter_by_user[acc.address]`, _qnt_minter_by_user[acc.address]);
+
+        }
+        _index++;
+      }
+
+
+    });
+
 
 
   });

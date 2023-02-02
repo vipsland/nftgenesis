@@ -581,7 +581,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
         require(weiBalanceWallet >= _PRICE_PRT * _qnt, "Insufficient funds");
 
         //added:4
-        payable(owner()).transfer(_PRICE_PRT * _qnt); //Send money to owner of contract
+        payable(owner()).transfer(_PRICE_PRT * _qnt); //Send money to owner of contract, fix: testTransfer event
 
         //added:5
         uint256[] memory ids = new uint256[](_qnt);

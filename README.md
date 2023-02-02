@@ -1,12 +1,14 @@
-
 # Docus
+
 https://hardhat.org/hardhat-runner/docs/guides/compile-contracts
 
 # Deploy
+
 npx hardhat run --network goerli ./scripts/deploy.js
 
 # Console Debug Hardhat
-npx hardhat console --network goerli 
+
+npx hardhat console --network goerli
 
 ```
 
@@ -18,15 +20,16 @@ https://docs.ethers.io/v5/
 # Verify
 
 ```
-npx hardhat run  ./scripts/verifyContract.js --network goerli 
+npx hardhat run  ./scripts/verifyContract.js --network goerli
 https://hardhat.org/hardhat-runner/docs/guides/verifying
 
-#verified latest code 
+#verified latest code
 https://goerli.etherscan.io/address/0x2fb7Ac8fe35C3B42fDeFe47d605ef7b21242210a#code
 
 ```
 
 # Hadrhad
+
 ```
 ###Try running some of the following tasks:
 npx hardhat node
@@ -35,17 +38,18 @@ npx hardhat help
 ```
 
 # Test
+
 ```
 
 yarn
 npx hardhat compile
 
-#check accounts 
+#check accounts
 npx hardhat accounts
 
 # with coveage
-npx hardhat coverage --network hardhat     
-open coverage/index.html 
+npx hardhat coverage --network hardhat
+open coverage/index.html
 
 #with clean /output
 yarn clean && npx hardhat test --network hardhat
@@ -57,14 +61,17 @@ npx hardhat test --network hardhat ./test/Vipsland.js
 ```
 
 # Faucet
+
 ## Metamask goerli how to faucet
+
 https://faucets.chain.link/goerli
 
 ## Metamask Goerli how to faucet
+
 https://goerlifaucet.com/
 
-
 # Remix cli
+
 ```
 http://remix.ethereum.org/
 
@@ -74,8 +81,8 @@ npx remixd -s . --remix-ide https://remix.ethereum.org
 
 ```
 
-
 # How to use it.each with hardhat provided in example
+
 ```
    forEach([
             [1, 0, 999 ],
@@ -91,7 +98,9 @@ npx remixd -s . --remix-ide https://remix.ethereum.org
           ]).it(`expected: %d, %d, %d`, async (expectedCnt, expectedF, expectedL) => {
 
 ```
-# Fullstack Client 
+
+# Fullstack Client
+
 ```bash
 
 
@@ -104,7 +113,6 @@ npx remixd -s . --remix-ide https://remix.ethereum.org
 **Client:** React, TailwindCSS, web3.js
 
 **Server:** Alchemy, NextJS, Hardhat
-
 
 # Ganache CLI
 
@@ -120,12 +128,12 @@ npx ganache-cli --deterministic --mnemonic "party south hazard person adult prai
 
 ```
 
-
 ## Reveal NFTs
+
 https://www.youtube.com/watch?v=19SSvs32m8I
 
-
 ## Test Mint Batch
+
 ```
 
 #1
@@ -138,7 +146,5 @@ get array of 10k generated ids
 node mint-nft.js
 
 #4 or mint batch
-node mint-nft-batch.js   
+node mint-nft-batch.js
 ```
-
-
