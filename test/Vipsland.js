@@ -524,7 +524,7 @@ describe("Vipslad contract deploy", function () {
       let _sendMPAllDoneForNormalUsers = await hardhatVipslad.sendMPAllDoneForNormalUsers();
       expect(_sendMPAllDoneForNormalUsers).to.equal(false);
       
-      let _selectedNONMPIDTokens = [];
+      let _selectedLUCKYNONMPIDTokens = [];
 
       while (_sendMPAllDoneForNormalUsers === false) {
         const tx = await hardhatVipslad.connect(owner).sendMPNormalUsers();
@@ -535,16 +535,16 @@ describe("Vipslad contract deploy", function () {
         result.map(r => {
           const {_winnerTokenNONMPID, max_nonmpid_minus_xrand, sendMPAllDoneForNormalUsers} = r.args
           _sendMPAllDoneForNormalUsers = sendMPAllDoneForNormalUsers;
-          _selectedNONMPIDTokens.push({_winnerTokenNONMPID: Number(_winnerTokenNONMPID), max_nonmpid_minus_xrand: Number(max_nonmpid_minus_xrand), sendMPAllDoneForNormalUsers})
+          _selectedLUCKYNONMPIDTokens.push({_winnerTokenNONMPID: Number(_winnerTokenNONMPID), max_nonmpid_minus_xrand: Number(max_nonmpid_minus_xrand), sendMPAllDoneForNormalUsers})
         });
 
         }
         expect(_sendMPAllDoneForNormalUsers).to.equal(true);
-        expect(_selectedNONMPIDTokens.length >= 8289).to.equal(true);
-        console.log({length: _selectedNONMPIDTokens.length});
+        expect(_selectedLUCKYNONMPIDTokens.length >= 8289).to.equal(true);
+        console.log('_selectedLUCKYNONMPIDTokens:',{length: _selectedLUCKYNONMPIDTokens.length});
         
-      await expect(hardhatVipslad.connect(owner).sendMPNormalUsers()
-      ).to.be.revertedWith('All MPs are issued for normal user');
+        await expect(hardhatVipslad.connect(owner).sendMPNormalUsers()
+        ).to.be.revertedWith('All MPs are issued for normal user');
 
  
     });
@@ -562,6 +562,7 @@ describe("Vipslad contract deploy", function () {
 
       let _qnt_minter_by_user = {}, _index=0;
 
+      //mintNONMPForNomalUser() start
       while (_index < 1403) {
         const acc = addrs[_index];
         _qnt_minter_by_user[acc.address] = 0;
@@ -569,19 +570,18 @@ describe("Vipslad contract deploy", function () {
         while(acc.address && !_mintMPIsOpen && _qnt_minter_by_user[acc.address] < 100) {
           try {
             const tx = await hardhatVipslad.connect(acc).mintNONMP(acc.address, 10, { value: ethers.utils.parseUnits('10', 'ether')});
-            console.log(`account: `, _index, acc.address, _qnt_minter_by_user[acc.address])
             const receipt = await tx.wait();
             _qnt_minter_by_user[acc.address] = await hardhatVipslad.userNONMPs(acc.address);
             _mintMPIsOpen = await hardhatVipslad.mintMPIsOpen();
-            
             if (_mintMPIsOpen) {
               let [r] = receipt.events?.filter((x) => {return x.event == "DitributePRTs"});
               const max_nonmpid = Number(PRTID)+Number(MAX_SUPPLY_FOR_PRT_TOKEN);
               expect(max_nonmpid).to.equal(160000);
               expect(r.args.last_minted_NONMPID >= max_nonmpid).to.be.true;
-              console.log('r.args.last_minted_NONMPID', r.args.last_minted_NONMPID);
+              console.log('r.args.last_minted_NONMPID', r.args.last_minted_NONMPID, max_nonmpid);
+      
             }
-              
+            
           } catch (err) {
             console.log('err?.message', err?.message);
             if ((err?.message || '').indexOf('Limit is 100 tokens') > 0) {
@@ -594,6 +594,57 @@ describe("Vipslad contract deploy", function () {
           
         }
         _index++;
+      }
+      //mintNONMPForNomalUser() end
+
+      //sendMPNormalUsers() start
+      _mintMPIsOpen = await hardhatVipslad.mintMPIsOpen();
+      expect(_mintMPIsOpen).to.equal(true);
+
+      if (_mintMPIsOpen) {
+        let _sendMPAllDoneForNormalUsers = await hardhatVipslad.sendMPAllDoneForNormalUsers();
+        expect(_sendMPAllDoneForNormalUsers).to.equal(false);
+        
+        let _winners_sendMPNormalUsers = [];
+        while (_sendMPAllDoneForNormalUsers === false) {
+            const tx = await hardhatVipslad.connect(owner).sendMPNormalUsers();
+            let receipt = await tx.wait();
+
+            //event SelectedNONMPIDTokens(uint256 _winnerTokenNONMPID, uint256 max_nonmpid_minus_xrand, bool sendMPAllDoneForNormalUsers);
+            receipt.events?.filter((x) => {return x.event == "SelectedNONMPIDTokens"}).result_1.map(r => {
+              const {sendMPAllDoneForNormalUsers} = r.args
+              _sendMPAllDoneForNormalUsers = sendMPAllDoneForNormalUsers;
+            });
+
+            //event WinnersMP(address indexed acc, uint256 winnerTokenPRTID);
+            var file = fs.createWriteStream('./output/WinnersMP_sendMPNormalUsers.txt', {flags: 'a'});
+            receipt.events?.filter((x) => {return x.event == "WinnersMP"}).map(r => {
+              const {acc, winnerTokenPRTID} = r.args
+              //write to file all winners for sendMPNormalUsers()  
+              _winners_sendMPNormalUsers.push({acc, winnerTokenPRTID: Number(winnerTokenPRTID)});
+              file.write(`"${JSON.stringify(acc)}","${JSON.stringify(Number(winnerTokenPRTID))}"`, (err) => {
+                if (err) {
+                    console.log('Error:', err.message);
+                }else{
+                    console.log('Done');
+                }
+              });
+
+            });
+            
+        }
+        expect(_sendMPAllDoneForNormalUsers).to.equal(true);
+        console.log('_winners_sendMPNormalUsers:',{length: _winners_sendMPNormalUsers.length});
+
+        file.on('finish', () => {
+          console.log('wrote all data to file');
+        });
+        file.on('error', function(err) { console.log(`ERR`,{err}) });
+
+        file.end();
+
+        //sendMPNormalUsers() end
+
       }
 
 
