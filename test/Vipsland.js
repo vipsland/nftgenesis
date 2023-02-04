@@ -507,7 +507,7 @@ describe("Vipslad contract deploy", function () {
 
   describe("sendMP", function () {
 
-    it(`${i++} sendMPNormalUsers() `, async function () {
+    it.only(`${i++} sendMPNormalUsers() `, async function () {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
       const [acc] = addrs;
@@ -524,7 +524,7 @@ describe("Vipslad contract deploy", function () {
       let _sendMPAllDoneForNormalUsers = await hardhatVipslad.sendMPAllDoneForNormalUsers();
       expect(_sendMPAllDoneForNormalUsers).to.equal(false);
       
-      let _selectedLUCKYNONMPIDTokens = [];
+      let _selectedLUCKYNONMPIDTokensForNormalUsers = [];
 
       while (_sendMPAllDoneForNormalUsers === false) {
         const tx = await hardhatVipslad.connect(owner).sendMPNormalUsers();
@@ -535,13 +535,15 @@ describe("Vipslad contract deploy", function () {
         result.map(r => {
           const {_winnerTokenNONMPID, max_nonmpid_minus_xrand, sendMPAllDoneForNormalUsers} = r.args
           _sendMPAllDoneForNormalUsers = sendMPAllDoneForNormalUsers;
-          _selectedLUCKYNONMPIDTokens.push({_winnerTokenNONMPID: Number(_winnerTokenNONMPID), max_nonmpid_minus_xrand: Number(max_nonmpid_minus_xrand), sendMPAllDoneForNormalUsers})
+          _selectedLUCKYNONMPIDTokensForNormalUsers.push({_winnerTokenNONMPID: Number(_winnerTokenNONMPID), max_nonmpid_minus_xrand: Number(max_nonmpid_minus_xrand), sendMPAllDoneForNormalUsers})
         });
 
         }
+
+        _sendMPAllDoneForNormalUsers = await hardhatVipslad.sendMPAllDoneForNormalUsers();
         expect(_sendMPAllDoneForNormalUsers).to.equal(true);
-        expect(_selectedLUCKYNONMPIDTokens.length >= 8289).to.equal(true);
-        console.log('_selectedLUCKYNONMPIDTokens:',{length: _selectedLUCKYNONMPIDTokens.length});
+        expect(_selectedLUCKYNONMPIDTokensForNormalUsers.length >= 8289).to.equal(true);
+        console.log('_selectedLUCKYNONMPIDTokensForNormalUsers:',{length: _selectedLUCKYNONMPIDTokensForNormalUsers.length});
         
         await expect(hardhatVipslad.connect(owner).sendMPNormalUsers()
         ).to.be.revertedWith('All MPs are issued for normal user');
@@ -549,7 +551,7 @@ describe("Vipslad contract deploy", function () {
  
     });
 
-    it.only(`${i++} WinnersMP for mintNONMPForNomalUser() > sendMPNormalUsers()`, async function () {
+    it(`${i++} WinnersMP for mintNONMPForNomalUser() > sendMPNormalUsers()`, async function () {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
 
