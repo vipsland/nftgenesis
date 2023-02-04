@@ -562,48 +562,36 @@ describe("Vipslad contract deploy", function () {
 
       let _qnt_minter_by_user = {}, _index=0;
 
-      while (_index < 1401) {
-        const acc = addrs[_index]
-        console.log(`${_index}, ${acc.address}`);
+      while (_index < 1403) {
+        const acc = addrs[_index];
+        _qnt_minter_by_user[acc.address] = 0;
 
-        if (acc.address) {
-          _qnt_minter_by_user[acc.address] = 0;
-  
-  
-          while(!_mintMPIsOpen && _qnt_minter_by_user[acc.address] < 100) {
-            try {
-              const tx = await hardhatVipslad.connect(acc).mintNONMP(acc.address, 10, { value: ethers.utils.parseUnits('10', 'ether')});
-              const receipt = await tx.wait();
-              const _qnt = await hardhatVipslad.userNONMPs(owner.address);
-              _qnt_minter_by_user[acc.address] =_qnt;
-              _mintMPIsOpen = await hardhatVipslad.mintMPIsOpen();
-              
-              //trigger
-              //   if (ids[_qnt - 1] >= max_nonmpid) {
-              //     mintMPIsOpen = true;
-              // }
-              if (_mintMPIsOpen) {
-                  //event DitributePRTs(address indexed acc, uint256 minted_amount, uint256 last_minted_NONMPID);
-                  let receipt = await tx.wait();
-                  let [r] = receipt.events?.filter((x) => {return x.event == "DitributePRTs"});
-                  expect(r.args.minted_amount).to.equal(100);
-                  console.log('last_minted_NONMPID', r.args.last_minted_NONMPID)
-                            
-              }
-                
-            } catch (err) {
-              if ((err?.message || '').indexOf('Limit is 100 tokens') > 0) {
-                const _qnt = await hardhatVipslad.userNONMPs(owner.address);
-                _qnt_minter_by_user[acc.address] =_qnt;
-                console.log(err?.message, _qnt_minter_by_user[acc.address]);
-  
-              }
-            }
+        while(acc.address && !_mintMPIsOpen && _qnt_minter_by_user[acc.address] < 100) {
+          try {
+            const tx = await hardhatVipslad.connect(acc).mintNONMP(acc.address, 10, { value: ethers.utils.parseUnits('10', 'ether')});
+            console.log(`account: `, _index, acc.address, _qnt_minter_by_user[acc.address])
+            const receipt = await tx.wait();
+            _qnt_minter_by_user[acc.address] = await hardhatVipslad.userNONMPs(acc.address);
+            _mintMPIsOpen = await hardhatVipslad.mintMPIsOpen();
             
+            if (_mintMPIsOpen) {
+              let [r] = receipt.events?.filter((x) => {return x.event == "DitributePRTs"});
+              const max_nonmpid = Number(PRTID)+Number(MAX_SUPPLY_FOR_PRT_TOKEN);
+              expect(max_nonmpid).to.equal(160000);
+              expect(r.args.last_minted_NONMPID >= max_nonmpid).to.be.true;
+              console.log('r.args.last_minted_NONMPID', r.args.last_minted_NONMPID);
+            }
+              
+          } catch (err) {
+            console.log('err?.message', err?.message);
+            if ((err?.message || '').indexOf('Limit is 100 tokens') > 0) {
+              _qnt_minter_by_user[acc.address] = await hardhatVipslad.userNONMPs(acc.address);
+            }
+
           }
 
-          console.log(`_qnt_minter_by_user[acc.address]`, _qnt_minter_by_user[acc.address]);
-
+          console.log(`account: `, _index, acc.address, _qnt_minter_by_user[acc.address])
+          
         }
         _index++;
       }
