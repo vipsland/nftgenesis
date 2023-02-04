@@ -299,7 +299,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
             uint24 _winnerTokenNONMPID = uint24(PRTID + 1 + xrand + uint24(uint32((168888 * i) / 10000))); //updatede here
             uint256 max_nonmpid = PRTID + MAX_SUPPLY_FOR_PRT_TOKEN;
 
-            sendMPAllDoneForNormalUsers = _winnerTokenNONMPID >= (max_nonmpid - xrand);
+            sendMPAllDoneForNormalUsers = _winnerTokenNONMPID > (max_nonmpid - xrand);
 
             emit SelectedNONMPIDTokens(_winnerTokenNONMPID, (max_nonmpid - xrand), sendMPAllDoneForNormalUsers);
 
@@ -315,9 +315,14 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
                 safeTransferFrom(msg.sender, winneraddr, tokenID, 1, "");
                 emit WinnersMP(winneraddr, tokenID);
             }
-            
+
+            sendMPAllDoneForNormalUsers = _winnerTokenNONMPID >= (max_nonmpid - xrand);
+            if (sendMPAllDoneForNormalUsers) {
+                break;
+            }
 
         }
+        
         //update idx
         idx = 1000 * counter;
 
@@ -325,63 +330,78 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
     function sendMPInternalTeam() public payable onlyAccounts onlyOwner mintInternalTeamMPIsOpenModifier {
         require(sendMPAllDoneForNormalUsers == true, "All send MPs are not yet issued.");
-        require(sendMPAllDoneForInternalTeam == false, "All send Internal Team MPs completely issued.");
+        require(sendMPAllDoneForInternalTeam == false, "All send Internal Team MPs are issued.");
 
         _counter_for_generatelucky_mp_internalteam.increment();
         uint counter = _counter_for_generatelucky_mp_internalteam.current();
 
-        if (counter <= 2) {
-            for (uint i = idxInternalTeam; i < 1000 * counter; i++) {
-                //_winnerTokenNONMPID = (20000-188888)
-                uint24 _winnerTokenNONMPID = uint24(140000 + PRTID + 1 + xrand + uint24(uint32((168888 * i) / 10000))); //updatede here
+        for (uint i = idxInternalTeam; i < 1000 * counter; i++) {
+            //_winnerTokenNONMPID = (20000-188888)
+            uint24 _winnerTokenNONMPID = uint24(140000 + PRTID + 1 + xrand + uint24(uint32((168888 * i) / 10000))); //updatede here
+            uint256 max_nonmpid = PRTID + MAX_SUPPLY_FOR_PRT_TOKEN + MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN;
 
-                address winneraddr = getAddrFromNONMPID(_winnerTokenNONMPID);
-                if (winneraddr != address(0)) {
-                    uint256 tokenID = getNextMPID();
-                    _mint(msg.sender, tokenID, 1, "");
-                    safeTransferFrom(msg.sender, winneraddr, tokenID, 1, "");
-                    emit WinnersMP(winneraddr, tokenID);
-                }
-                uint256 max_nonmpid = PRTID + MAX_SUPPLY_FOR_PRT_TOKEN + MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN;
-                if (_winnerTokenNONMPID > (max_nonmpid - xrand)) {
-                    sendMPAllDoneForInternalTeam = true;
-                    break;
-                }
+            sendMPAllDoneForInternalTeam = _winnerTokenNONMPID > (max_nonmpid - xrand);
 
+            emit SelectedNONMPIDTokens(_winnerTokenNONMPID, (max_nonmpid - xrand), sendMPAllDoneForInternalTeam);
 
-
+            if (sendMPAllDoneForInternalTeam) {
+                break;
             }
-            idxInternalTeam = 1000 * counter;
+            
+            address winneraddr = getAddrFromNONMPID(_winnerTokenNONMPID);
+            if (winneraddr != address(0)) {
+                uint256 tokenID = getNextMPID();
+                _mint(msg.sender, tokenID, 1, "");
+                safeTransferFrom(msg.sender, winneraddr, tokenID, 1, "");
+                emit WinnersMP(winneraddr, tokenID);
+            }
+
+            sendMPAllDoneForInternalTeam = _winnerTokenNONMPID >= (max_nonmpid - xrand);
+            if (sendMPAllDoneForInternalTeam) {
+                break;
+            }
+
         }
+        idxInternalTeam = 1000 * counter;
+
     }
 
     function sendMPAirdrop() public payable onlyAccounts onlyOwner mintAirdropMPIsOpenModifier {
-        require(sendMPAllDoneForNormalUsers == true, "all send MPs are not yet issued.");
-        require(sendMPAllDoneForAirdrop == false, "All sendAirdrop MPs completely issued.");
+        require(sendMPAllDoneForNormalUsers == true, "All send MPs are not yet issued.");
+        require(sendMPAllDoneForAirdrop == false, "All sendAirdrop MPs are issued.");
 
         _counter_for_generatelucky_mp_airdrop.increment();
         uint counter = _counter_for_generatelucky_mp_airdrop.current();
 
-        if (counter <= 1) {
-            for (uint i = idxAirdrop; i < 1000 * counter; i++) {
-                uint24 _winnerTokenNONMPID = uint24(160000 + PRTID + 1 + xrand + uint24(uint32((168888 * i) / 10000))); //updatede here
+        for (uint i = idxAirdrop; i < 1000 * counter; i++) {
+            uint24 _winnerTokenNONMPID = uint24(160000 + PRTID + 1 + xrand + uint24(uint32((168888 * i) / 10000))); //updatede here
+            uint256 max_nonmpid = PRTID + MAX_SUPPLY_FOR_PRT_TOKEN + MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN + MAX_SUPPLY_FOR_AIRDROP_TOKEN;
 
-                address winneraddr = getAddrFromNONMPID(_winnerTokenNONMPID);
-                if (winneraddr != address(0)) {
-                    uint256 tokenID = getNextMPID();
-                    _mint(msg.sender, tokenID, 1, "");
-                    safeTransferFrom(msg.sender, winneraddr, tokenID, 1, "");
-                    emit WinnersMP(winneraddr, tokenID);
-                }
-                uint256 max_nonmpid = PRTID + MAX_SUPPLY_FOR_PRT_TOKEN + MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN + MAX_SUPPLY_FOR_AIRDROP_TOKEN;
-                if (_winnerTokenNONMPID > (max_nonmpid - xrand)) {
-                    sendMPAllDoneForAirdrop = true;
-                    break;
-                }
+            sendMPAllDoneForAirdrop = _winnerTokenNONMPID > (max_nonmpid - xrand);
 
+            emit SelectedNONMPIDTokens(_winnerTokenNONMPID, (max_nonmpid - xrand), sendMPAllDoneForAirdrop);
+
+            if (sendMPAllDoneForAirdrop) {
+                break;
             }
-            idxAirdrop = 1000 * counter;
+
+            address winneraddr = getAddrFromNONMPID(_winnerTokenNONMPID);
+            if (winneraddr != address(0)) {
+                uint256 tokenID = getNextMPID();
+                _mint(msg.sender, tokenID, 1, "");
+                safeTransferFrom(msg.sender, winneraddr, tokenID, 1, "");
+                emit WinnersMP(winneraddr, tokenID);
+            }
+
+            sendMPAllDoneForAirdrop = _winnerTokenNONMPID >= (max_nonmpid - xrand);
+            if (sendMPAllDoneForAirdrop) {
+                break;
+            }
+
         }
+
+        idxAirdrop = 1000 * counter;
+
     }
 
     //sendMP end
