@@ -165,8 +165,8 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
     // events start
     event DitributePRTs(address indexed acc, uint256 minted_amount, uint256 last_minted_NONMPID);
     event WinnersMP(address indexed acc, uint256 winnerTokenPRTID);
-    event SelectedNONMPIDTokens(uint256 _winnerTokenNONMPID, uint256 max_nonmpid_minus_xrand, bool sendMPAllDoneForNormalUsers);
-
+    event SelectedNONMPIDTokens(uint256 _winnerTokenNONMPID, uint256 max_nonmpid_minus_xrand);
+    event MPAllDone(bool sendMPAllDone);
     event mintNONMPIDEvent(address indexed acc, uint256 initID, uint256 _qnt);
 
     // events end
@@ -211,12 +211,12 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
     }
 
     modifier mintAirdropMPIsOpenModifier() {
-        require(mintAirdropMPIsOpen, "Mint airdrop is not open");
+        require(mintAirdropMPIsOpen, "Mint is not open for airdrop");
         _;
     }
 
     modifier mintInternalTeamMPIsOpenModifier() {
-        require(mintInternalTeamMPIsOpen, "Mint internal team is not open");
+        require(mintInternalTeamMPIsOpen, "Mint is not open for internal team");
         _;
     }
 
@@ -300,12 +300,13 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
             uint256 max_nonmpid = PRTID + MAX_SUPPLY_FOR_PRT_TOKEN;
 
             sendMPAllDoneForNormalUsers = _winnerTokenNONMPID > (max_nonmpid - xrand);
-
-            emit SelectedNONMPIDTokens(_winnerTokenNONMPID, (max_nonmpid - xrand), sendMPAllDoneForNormalUsers);
+            emit MPAllDone(sendMPAllDoneForNormalUsers);
 
             if (sendMPAllDoneForNormalUsers) {
                 break;
             }
+
+            emit SelectedNONMPIDTokens(_winnerTokenNONMPID, (max_nonmpid - xrand));
 
             address winneraddr = getAddrFromNONMPID(_winnerTokenNONMPID);
 
@@ -317,9 +318,13 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
             }
 
             sendMPAllDoneForNormalUsers = _winnerTokenNONMPID >= (max_nonmpid - xrand);
+            emit MPAllDone(sendMPAllDoneForNormalUsers);
+
             if (sendMPAllDoneForNormalUsers) {
                 break;
             }
+
+
 
         }
         
@@ -329,8 +334,8 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
     }
 
     function sendMPInternalTeam() public payable onlyAccounts onlyOwner mintInternalTeamMPIsOpenModifier {
-        require(sendMPAllDoneForNormalUsers == true, "All send MPs are not yet issued.");
-        require(sendMPAllDoneForInternalTeam == false, "All send Internal Team MPs are issued.");
+        require(sendMPAllDoneForNormalUsers == true, "All MPs are not yet issued for normal user");
+        require(sendMPAllDoneForInternalTeam == false, "All MPs are issued for internal team");
 
         _counter_for_generatelucky_mp_internalteam.increment();
         uint counter = _counter_for_generatelucky_mp_internalteam.current();
@@ -341,12 +346,12 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
             uint256 max_nonmpid = PRTID + MAX_SUPPLY_FOR_PRT_TOKEN + MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN;
 
             sendMPAllDoneForInternalTeam = _winnerTokenNONMPID > (max_nonmpid - xrand);
-
-            emit SelectedNONMPIDTokens(_winnerTokenNONMPID, (max_nonmpid - xrand), sendMPAllDoneForInternalTeam);
+            emit MPAllDone(sendMPAllDoneForInternalTeam);
 
             if (sendMPAllDoneForInternalTeam) {
                 break;
             }
+            emit SelectedNONMPIDTokens(_winnerTokenNONMPID, (max_nonmpid - xrand));
             
             address winneraddr = getAddrFromNONMPID(_winnerTokenNONMPID);
             if (winneraddr != address(0)) {
@@ -357,9 +362,13 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
             }
 
             sendMPAllDoneForInternalTeam = _winnerTokenNONMPID >= (max_nonmpid - xrand);
+            emit MPAllDone(sendMPAllDoneForInternalTeam);
+
             if (sendMPAllDoneForInternalTeam) {
                 break;
             }
+
+            
 
         }
         idxInternalTeam = 1000 * counter;
@@ -367,8 +376,8 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
     }
 
     function sendMPAirdrop() public payable onlyAccounts onlyOwner mintAirdropMPIsOpenModifier {
-        require(sendMPAllDoneForNormalUsers == true, "All send MPs are not yet issued.");
-        require(sendMPAllDoneForAirdrop == false, "All sendAirdrop MPs are issued.");
+        require(sendMPAllDoneForNormalUsers == true, "All send MPs are not yet issued");
+        require(sendMPAllDoneForAirdrop == false, "All sendAirdrop MPs are issued");
 
         _counter_for_generatelucky_mp_airdrop.increment();
         uint counter = _counter_for_generatelucky_mp_airdrop.current();
@@ -378,12 +387,13 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
             uint256 max_nonmpid = PRTID + MAX_SUPPLY_FOR_PRT_TOKEN + MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN + MAX_SUPPLY_FOR_AIRDROP_TOKEN;
 
             sendMPAllDoneForAirdrop = _winnerTokenNONMPID > (max_nonmpid - xrand);
-
-            emit SelectedNONMPIDTokens(_winnerTokenNONMPID, (max_nonmpid - xrand), sendMPAllDoneForAirdrop);
+            emit MPAllDone(sendMPAllDoneForAirdrop);
 
             if (sendMPAllDoneForAirdrop) {
                 break;
             }
+
+            emit SelectedNONMPIDTokens(_winnerTokenNONMPID, (max_nonmpid - xrand));
 
             address winneraddr = getAddrFromNONMPID(_winnerTokenNONMPID);
             if (winneraddr != address(0)) {
@@ -394,9 +404,13 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
             }
 
             sendMPAllDoneForAirdrop = _winnerTokenNONMPID >= (max_nonmpid - xrand);
+            emit MPAllDone(sendMPAllDoneForAirdrop);
+
             if (sendMPAllDoneForAirdrop) {
                 break;
             }
+
+
 
         }
 

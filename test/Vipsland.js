@@ -7,6 +7,7 @@ const { BigNumber } = require("ethers");
 const forEach = require('mocha-each');
 chai.use(solidity);
 const fs = require("fs");
+const { doesNotMatch } = require("assert");
 
 
 async function delay(mls) {
@@ -507,49 +508,154 @@ describe("Vipslad contract deploy", function () {
 
   describe("sendMP", function () {
 
-    it.only(`${i++} sendMPNormalUsers() `, async function () {
+    it.only(`${i++} sendMPNormalUsers(), sendMPInternalTeam(), sendMPAirdrop() `, async function () {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
       const [acc] = addrs;
   
       await hardhatVipslad.deployed();
 
-      await expect(hardhatVipslad.connect(owner).sendMPNormalUsers()).to.be.revertedWith("Mint is not open");
-
-      await hardhatVipslad.connect(owner).toggleMintMPIsOpen();
-      const _mintMPIsOpen = await hardhatVipslad.mintMPIsOpen();
-      expect(_mintMPIsOpen).to.equal(true);
-
-      
-      let _sendMPAllDoneForNormalUsers = await hardhatVipslad.sendMPAllDoneForNormalUsers();
-      expect(_sendMPAllDoneForNormalUsers).to.equal(false);
-      
+      //sendMPNormalUsers() start
+      console.log('_sendMPNormalUsers start')
       let _selectedLUCKYNONMPIDTokensForNormalUsers = [];
+      async function _sendMPNormalUsers() {
+        await expect(hardhatVipslad.connect(owner).sendMPNormalUsers()).to.be.revertedWith("Mint is not open");
 
-      while (_sendMPAllDoneForNormalUsers === false) {
-        const tx = await hardhatVipslad.connect(owner).sendMPNormalUsers();
-      
-        //event SelectedNONMPIDTokens(uint256 _winnerTokenNONMPID, uint256 max_nonmpid_minus_xrand, bool sendMPAllDoneForNormalUsers);
-        let receipt = await tx.wait();
-        let result = receipt.events?.filter((x) => {return x.event == "SelectedNONMPIDTokens"});
-        result.map(r => {
-          const {_winnerTokenNONMPID, max_nonmpid_minus_xrand, sendMPAllDoneForNormalUsers} = r.args
-          _sendMPAllDoneForNormalUsers = sendMPAllDoneForNormalUsers;
-          _selectedLUCKYNONMPIDTokensForNormalUsers.push({_winnerTokenNONMPID: Number(_winnerTokenNONMPID), max_nonmpid_minus_xrand: Number(max_nonmpid_minus_xrand), sendMPAllDoneForNormalUsers})
-        });
+        await hardhatVipslad.connect(owner).toggleMintMPIsOpen();
+        const _mintMPIsOpen = await hardhatVipslad.mintMPIsOpen();
+        expect(_mintMPIsOpen).to.equal(true);
+  
+        
+        let _sendMPAllDoneForNormalUsers = await hardhatVipslad.sendMPAllDoneForNormalUsers();
+        expect(_sendMPAllDoneForNormalUsers).to.equal(false);
+        
+        while (_sendMPAllDoneForNormalUsers === false) {
+          const tx = await hardhatVipslad.connect(owner).sendMPNormalUsers();
+        
+            let receipt = await tx.wait();
+            //event SelectedNONMPIDTokens(uint256 _winnerTokenNONMPID, uint256 max_nonmpid_minus_xrand);
+              receipt.events?.filter((x) => {return x.event == "SelectedNONMPIDTokens"}).map(r => {
+                const {_winnerTokenNONMPID, max_nonmpid_minus_xrand} = r.args
+                _selectedLUCKYNONMPIDTokensForNormalUsers.push({_winnerTokenNONMPID: Number(_winnerTokenNONMPID), max_nonmpid_minus_xrand: Number(max_nonmpid_minus_xrand)})
+              });
 
-        }
+            //event MPAllDone(bool sendMPAllDone)
+            receipt.events?.filter((x) => {return x.event == "MPAllDone"}).map(r => {
+              const {sendMPAllDone} = r.args
+              _sendMPAllDoneForNormalUsers = sendMPAllDone;
+            });
+          
+          }
+  
+          _sendMPAllDoneForNormalUsers = await hardhatVipslad.sendMPAllDoneForNormalUsers();
+          expect(_sendMPAllDoneForNormalUsers).to.equal(true);
+          expect(_selectedLUCKYNONMPIDTokensForNormalUsers.length >= 8280).to.equal(true);
+          console.log('_selectedLUCKYNONMPIDTokensForNormalUsers:',{length: _selectedLUCKYNONMPIDTokensForNormalUsers.length});
+          
+          await expect(hardhatVipslad.connect(owner).sendMPNormalUsers()
+          ).to.be.revertedWith('All MPs are issued for normal user');
+      } 
+      await _sendMPNormalUsers();
+      console.log('_sendMPNormalUsers end')
+      //sendMPNormalUsers() end
 
+      //sendMPInternalTeam() start
+      console.log('_sendMPInternalTeam start')
+      let _selectedLUCKYNONMPIDTokensForInternalTeam = [];
+      async function _sendMPInternalTeam () {
+        await expect(hardhatVipslad.connect(owner).sendMPInternalTeam()).to.be.revertedWith("Mint is not open for internal team");
+
+        await hardhatVipslad.connect(owner).toggleMintInternalTeamMPIsOpen();
+        const _mintInternalTeamMPIsOpen = await hardhatVipslad.mintInternalTeamMPIsOpen();
+        expect(_mintInternalTeamMPIsOpen).to.equal(true);
+  
         _sendMPAllDoneForNormalUsers = await hardhatVipslad.sendMPAllDoneForNormalUsers();
         expect(_sendMPAllDoneForNormalUsers).to.equal(true);
-        expect(_selectedLUCKYNONMPIDTokensForNormalUsers.length >= 8289).to.equal(true);
-        console.log('_selectedLUCKYNONMPIDTokensForNormalUsers:',{length: _selectedLUCKYNONMPIDTokensForNormalUsers.length});
-        
-        await expect(hardhatVipslad.connect(owner).sendMPNormalUsers()
-        ).to.be.revertedWith('All MPs are issued for normal user');
 
- 
+        let _sendMPAllDoneForInternalTeam = await hardhatVipslad.sendMPAllDoneForInternalTeam();
+        expect(_sendMPAllDoneForInternalTeam).to.equal(false);
+      
+  
+        while (_sendMPAllDoneForInternalTeam === false) {
+          const tx = await hardhatVipslad.connect(owner).sendMPInternalTeam();
+        
+            let receipt = await tx.wait();
+            //event SelectedNONMPIDTokens(uint256 _winnerTokenNONMPID, uint256 max_nonmpid_minus_xrand);
+            receipt.events?.filter((x) => {return x.event == "SelectedNONMPIDTokens"}).map(r => {
+              const {_winnerTokenNONMPID, max_nonmpid_minus_xrand} = r.args
+              _selectedLUCKYNONMPIDTokensForInternalTeam.push({_winnerTokenNONMPID: Number(_winnerTokenNONMPID), max_nonmpid_minus_xrand: Number(max_nonmpid_minus_xrand)})
+            });
+
+            //event MPAllDone(bool sendMPAllDone)
+            receipt.events?.filter((x) => {return x.event == "MPAllDone"}).map(r => {
+              const {sendMPAllDone} = r.args
+              _sendMPAllDoneForInternalTeam = sendMPAllDone;
+            });
+         
+          }
+  
+          _sendMPAllDoneForInternalTeam = await hardhatVipslad.sendMPAllDoneForInternalTeam();
+          expect(_sendMPAllDoneForInternalTeam).to.equal(true);
+          expect(_selectedLUCKYNONMPIDTokensForInternalTeam.length >= 1184).to.equal(true);
+          console.log('_selectedLUCKYNONMPIDTokensForInternalTeam:',{length: _selectedLUCKYNONMPIDTokensForInternalTeam.length});
+          
+          await expect(hardhatVipslad.connect(owner).sendMPInternalTeam()
+          ).to.be.revertedWith('All MPs are issued for internal team');
+      }
+      await _sendMPInternalTeam();
+      console.log('_sendMPInternalTeam end')
+      //sendMPInternalTeam() end
+
+      //sendMPAirdrop() start
+      console.log('_sendMPAirdrop start')
+      let _selectedLUCKYNONMPIDTokensForAirdrop = [];
+      async function _sendMPAirdrop () {
+        await expect(hardhatVipslad.connect(owner).sendMPAirdrop()).to.be.revertedWith("Mint is not open for airdrop");
+
+        await hardhatVipslad.connect(owner).toggleMintAirdropMPIsOpen();
+        const _mintAirdropMPIsOpen = await hardhatVipslad.mintAirdropMPIsOpen();
+        expect(_mintAirdropMPIsOpen).to.equal(true);
+  
+        _sendMPAllDoneForNormalUsers = await hardhatVipslad.sendMPAllDoneForNormalUsers();
+        expect(_sendMPAllDoneForNormalUsers).to.equal(true);
+
+        let _sendMPAllDoneForAirdrop = await hardhatVipslad.sendMPAllDoneForAirdrop();
+        expect(_sendMPAllDoneForAirdrop).to.equal(false);
+      
+        while (_sendMPAllDoneForAirdrop === false) {
+          const tx = await hardhatVipslad.connect(owner).sendMPAirdrop();
+        
+            let receipt = await tx.wait();
+            //event SelectedNONMPIDTokens(uint256 _winnerTokenNONMPID, uint256 max_nonmpid_minus_xrand);
+            receipt.events?.filter((x) => {return x.event == "SelectedNONMPIDTokens"}).map(r => {
+              const {_winnerTokenNONMPID, max_nonmpid_minus_xrand} = r.args
+              _selectedLUCKYNONMPIDTokensForAirdrop.push({_winnerTokenNONMPID: Number(_winnerTokenNONMPID), max_nonmpid_minus_xrand: Number(max_nonmpid_minus_xrand)})
+            });
+
+            //event MPAllDone(bool sendMPAllDone)
+            receipt.events?.filter((x) => {return x.event == "MPAllDone"}).map(r => {
+              const {sendMPAllDone} = r.args
+              _sendMPAllDoneForAirdrop = sendMPAllDone;
+            });
+
+          }
+  
+          _sendMPAllDoneForAirdrop = await hardhatVipslad.sendMPAllDoneForAirdrop();
+          expect(_sendMPAllDoneForAirdrop).to.equal(true);
+          expect(_selectedLUCKYNONMPIDTokensForAirdrop.length >= 526).to.equal(true);
+          console.log('_selectedLUCKYNONMPIDTokensForAirdrop:', {length: _selectedLUCKYNONMPIDTokensForAirdrop.length});
+          
+          await expect(hardhatVipslad.connect(owner).sendMPAirdrop()
+          ).to.be.revertedWith('All sendAirdrop MPs are issued');            
+      }
+      await _sendMPAirdrop();
+      console.log('_sendMPAirdrop end')
+      //sendMPAirdrop() end
+
+      console.log('_selectedLUCKYNONMPIDTokens TOTAL:', {length: _selectedLUCKYNONMPIDTokensForAirdrop.length + _selectedLUCKYNONMPIDTokensForInternalTeam.length + _selectedLUCKYNONMPIDTokensForNormalUsers.length});
+
     });
+
 
     it(`${i++} WinnersMP for mintNONMPForNomalUser() > sendMPNormalUsers()`, async function () {
 
@@ -612,10 +718,10 @@ describe("Vipslad contract deploy", function () {
             const tx = await hardhatVipslad.connect(owner).sendMPNormalUsers();
             let receipt = await tx.wait();
 
-            //event SelectedNONMPIDTokens(uint256 _winnerTokenNONMPID, uint256 max_nonmpid_minus_xrand, bool sendMPAllDoneForNormalUsers);
+            //event SelectedNONMPIDTokens(uint256 _winnerTokenNONMPID, uint256 max_nonmpid_minus_xrand);
             receipt.events?.filter((x) => {return x.event == "SelectedNONMPIDTokens"}).result_1.map(r => {
-              const {sendMPAllDoneForNormalUsers} = r.args
-              _sendMPAllDoneForNormalUsers = sendMPAllDoneForNormalUsers;
+              const {sendMPAllDone} = r.args
+              _sendMPAllDoneForNormalUsers = sendMPAllDone;
             });
 
             //event WinnersMP(address indexed acc, uint256 winnerTokenPRTID);
