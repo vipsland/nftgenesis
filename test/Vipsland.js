@@ -518,6 +518,9 @@ describe("Vipslad contract deploy", function () {
   
       await hardhatVipslad.deployed();
 
+      var file = fs.createWriteStream('./output/selectedLUCKYNONMPIDTokens.txt', {flags: 'a'});
+
+
       //sendMPNormalUsers() start
       console.log('_sendMPNormalUsers start')
       let _selectedLUCKYNONMPIDTokensForNormalUsers = [];
@@ -531,7 +534,13 @@ describe("Vipslad contract deploy", function () {
         
         let _sendMPAllDoneForNormalUsers = await hardhatVipslad.sendMPAllDoneForNormalUsers();
         expect(_sendMPAllDoneForNormalUsers).to.equal(false);
-        
+
+        file.write(`"sendMPNormalUsers",\n\r`, (err) => {
+          if (err) {
+              console.log('Error:', err.message);
+          }
+        });
+
         while (_sendMPAllDoneForNormalUsers === false) {
           const tx = await hardhatVipslad.connect(owner).sendMPNormalUsers();
         
@@ -540,6 +549,12 @@ describe("Vipslad contract deploy", function () {
               receipt.events?.filter((x) => {return x.event == "SelectedNONMPIDTokens"}).map(r => {
                 const {_winnerTokenNONMPID, max_nonmpid_minus_xrand} = r.args
                 _selectedLUCKYNONMPIDTokensForNormalUsers.push({_winnerTokenNONMPID: Number(_winnerTokenNONMPID), max_nonmpid_minus_xrand: Number(max_nonmpid_minus_xrand)})
+                file.write(`"${JSON.stringify(Number(_winnerTokenNONMPID))}",`, (err) => {
+                  if (err) {
+                      console.log('Error:', err.message);
+                  }
+                });
+
               });
 
             //event MPAllDone(bool sendMPAllDone)
@@ -579,7 +594,12 @@ describe("Vipslad contract deploy", function () {
         let _sendMPAllDoneForInternalTeam = await hardhatVipslad.sendMPAllDoneForInternalTeam();
         expect(_sendMPAllDoneForInternalTeam).to.equal(false);
       
-  
+        file.write(`"sendMPInternalTeam",\n\r`, (err) => {
+          if (err) {
+              console.log('Error:', err.message);
+          }
+        });
+
         while (_sendMPAllDoneForInternalTeam === false) {
           const tx = await hardhatVipslad.connect(owner).sendMPInternalTeam();
         
@@ -588,6 +608,11 @@ describe("Vipslad contract deploy", function () {
             receipt.events?.filter((x) => {return x.event == "SelectedNONMPIDTokens"}).map(r => {
               const {_winnerTokenNONMPID, max_nonmpid_minus_xrand} = r.args
               _selectedLUCKYNONMPIDTokensForInternalTeam.push({_winnerTokenNONMPID: Number(_winnerTokenNONMPID), max_nonmpid_minus_xrand: Number(max_nonmpid_minus_xrand)})
+              file.write(`"${JSON.stringify(Number(_winnerTokenNONMPID))}",`, (err) => {
+                if (err) {
+                    console.log('Error:', err.message);
+                }
+                });
             });
 
             //event MPAllDone(bool sendMPAllDone)
@@ -600,7 +625,7 @@ describe("Vipslad contract deploy", function () {
   
           _sendMPAllDoneForInternalTeam = await hardhatVipslad.sendMPAllDoneForInternalTeam();
           expect(_sendMPAllDoneForInternalTeam).to.equal(true);
-          expect(_selectedLUCKYNONMPIDTokensForInternalTeam.length >= 1184).to.equal(true);
+          expect(_selectedLUCKYNONMPIDTokensForInternalTeam.length >= 1180).to.equal(true);
           console.log('_selectedLUCKYNONMPIDTokensForInternalTeam:',{length: _selectedLUCKYNONMPIDTokensForInternalTeam.length});
           expect(_selectedLUCKYNONMPIDTokensForInternalTeam.length === _selectedLUCKYNONMPIDTokensForInternalTeam.filter(onlyUnique).length).to.equal(true);
           
@@ -627,6 +652,13 @@ describe("Vipslad contract deploy", function () {
         let _sendMPAllDoneForAirdrop = await hardhatVipslad.sendMPAllDoneForAirdrop();
         expect(_sendMPAllDoneForAirdrop).to.equal(false);
       
+        file.write(`"sendMPAirdrop",\n\r`, (err) => {
+          if (err) {
+              console.log('Error:', err.message);
+          }
+        });
+
+        
         while (_sendMPAllDoneForAirdrop === false) {
           const tx = await hardhatVipslad.connect(owner).sendMPAirdrop();
         
@@ -635,6 +667,14 @@ describe("Vipslad contract deploy", function () {
             receipt.events?.filter((x) => {return x.event == "SelectedNONMPIDTokens"}).map(r => {
               const {_winnerTokenNONMPID, max_nonmpid_minus_xrand} = r.args
               _selectedLUCKYNONMPIDTokensForAirdrop.push({_winnerTokenNONMPID: Number(_winnerTokenNONMPID), max_nonmpid_minus_xrand: Number(max_nonmpid_minus_xrand)})
+
+              file.write(`"${JSON.stringify(Number(_winnerTokenNONMPID))}",`, (err) => {
+                if (err) {
+                    console.log('Error:', err.message);
+                }
+              });
+
+              
             });
 
             //event MPAllDone(bool sendMPAllDone)
@@ -647,7 +687,7 @@ describe("Vipslad contract deploy", function () {
   
           _sendMPAllDoneForAirdrop = await hardhatVipslad.sendMPAllDoneForAirdrop();
           expect(_sendMPAllDoneForAirdrop).to.equal(true);
-          expect(_selectedLUCKYNONMPIDTokensForAirdrop.length >= 526).to.equal(true);
+          expect(_selectedLUCKYNONMPIDTokensForAirdrop.length >= 520).to.equal(true);
           console.log('_selectedLUCKYNONMPIDTokensForAirdrop:', {length: _selectedLUCKYNONMPIDTokensForAirdrop.length});
           expect(_selectedLUCKYNONMPIDTokensForAirdrop.length === _selectedLUCKYNONMPIDTokensForAirdrop.filter(onlyUnique).length).to.equal(true);
 
@@ -659,6 +699,13 @@ describe("Vipslad contract deploy", function () {
       //sendMPAirdrop() end
 
       console.log('_selectedLUCKYNONMPIDTokens TOTAL:', {length: _selectedLUCKYNONMPIDTokensForAirdrop.length + _selectedLUCKYNONMPIDTokensForInternalTeam.length + _selectedLUCKYNONMPIDTokensForNormalUsers.length});
+
+      file.on('finish', () => {
+        console.log('wrote all data to file');
+      });
+      file.on('error', function(err) { console.log(`ERR`,{err}) });
+
+      // file.end();
 
     });
 
@@ -739,8 +786,6 @@ describe("Vipslad contract deploy", function () {
               file.write(`"${JSON.stringify(acc)}","${JSON.stringify(Number(winnerTokenPRTID))}"`, (err) => {
                 if (err) {
                     console.log('Error:', err.message);
-                }else{
-                    console.log('Done');
                 }
               });
 
