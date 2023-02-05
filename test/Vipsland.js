@@ -535,7 +535,7 @@ describe("Vipslad contract deploy", function () {
         let _sendMPAllDoneForNormalUsers = await hardhatVipslad.sendMPAllDoneForNormalUsers();
         expect(_sendMPAllDoneForNormalUsers).to.equal(false);
 
-        file.write(`"sendMPNormalUsers",\n\r`, (err) => {
+        file.write(`\n\r"sendMPNormalUsers",\n\r`, (err) => {
           if (err) {
               console.log('Error:', err.message);
           }
@@ -594,7 +594,7 @@ describe("Vipslad contract deploy", function () {
         let _sendMPAllDoneForInternalTeam = await hardhatVipslad.sendMPAllDoneForInternalTeam();
         expect(_sendMPAllDoneForInternalTeam).to.equal(false);
       
-        file.write(`"sendMPInternalTeam",\n\r`, (err) => {
+        file.write(`\n\r"sendMPInternalTeam",\n\r`, (err) => {
           if (err) {
               console.log('Error:', err.message);
           }
@@ -652,7 +652,7 @@ describe("Vipslad contract deploy", function () {
         let _sendMPAllDoneForAirdrop = await hardhatVipslad.sendMPAllDoneForAirdrop();
         expect(_sendMPAllDoneForAirdrop).to.equal(false);
       
-        file.write(`"sendMPAirdrop",\n\r`, (err) => {
+        file.write(`\n\r"sendMPAirdrop",\n\r`, (err) => {
           if (err) {
               console.log('Error:', err.message);
           }
@@ -701,7 +701,7 @@ describe("Vipslad contract deploy", function () {
       console.log('_selectedLUCKYNONMPIDTokens TOTAL:', {length: _selectedLUCKYNONMPIDTokensForAirdrop.length + _selectedLUCKYNONMPIDTokensForInternalTeam.length + _selectedLUCKYNONMPIDTokensForNormalUsers.length});
 
       file.on('finish', () => {
-        console.log('wrote all data to file');
+        console.log('all done');
       });
       file.on('error', function(err) { console.log(`ERR`,{err}) });
 
