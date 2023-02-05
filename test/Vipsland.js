@@ -14,6 +14,9 @@ async function delay(mls) {
   return new Promise(resolve => {setTimeout(() => resolve(),mls)})
 }
 
+function onlyUnique(value, index, self) {
+  return self.indexOf(value) === index;
+}
 
 describe("Vipslad contract deploy", function () {
   async function deployVipslandFixture() {
@@ -551,7 +554,8 @@ describe("Vipslad contract deploy", function () {
           expect(_sendMPAllDoneForNormalUsers).to.equal(true);
           expect(_selectedLUCKYNONMPIDTokensForNormalUsers.length >= 8280).to.equal(true);
           console.log('_selectedLUCKYNONMPIDTokensForNormalUsers:',{length: _selectedLUCKYNONMPIDTokensForNormalUsers.length});
-          
+          expect(_selectedLUCKYNONMPIDTokensForNormalUsers.length === _selectedLUCKYNONMPIDTokensForNormalUsers.filter(onlyUnique).length).to.equal(true);
+
           await expect(hardhatVipslad.connect(owner).sendMPNormalUsers()
           ).to.be.revertedWith('All MPs are issued for normal user');
       } 
@@ -598,6 +602,7 @@ describe("Vipslad contract deploy", function () {
           expect(_sendMPAllDoneForInternalTeam).to.equal(true);
           expect(_selectedLUCKYNONMPIDTokensForInternalTeam.length >= 1184).to.equal(true);
           console.log('_selectedLUCKYNONMPIDTokensForInternalTeam:',{length: _selectedLUCKYNONMPIDTokensForInternalTeam.length});
+          expect(_selectedLUCKYNONMPIDTokensForInternalTeam.length === _selectedLUCKYNONMPIDTokensForInternalTeam.filter(onlyUnique).length).to.equal(true);
           
           await expect(hardhatVipslad.connect(owner).sendMPInternalTeam()
           ).to.be.revertedWith('All MPs are issued for internal team');
@@ -644,7 +649,8 @@ describe("Vipslad contract deploy", function () {
           expect(_sendMPAllDoneForAirdrop).to.equal(true);
           expect(_selectedLUCKYNONMPIDTokensForAirdrop.length >= 526).to.equal(true);
           console.log('_selectedLUCKYNONMPIDTokensForAirdrop:', {length: _selectedLUCKYNONMPIDTokensForAirdrop.length});
-          
+          expect(_selectedLUCKYNONMPIDTokensForAirdrop.length === _selectedLUCKYNONMPIDTokensForAirdrop.filter(onlyUnique).length).to.equal(true);
+
           await expect(hardhatVipslad.connect(owner).sendMPAirdrop()
           ).to.be.revertedWith('All sendAirdrop MPs are issued');            
       }
