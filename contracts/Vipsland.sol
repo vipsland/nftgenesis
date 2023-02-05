@@ -86,7 +86,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
     //NONMP
     mapping(uint256 => address) public prtPerAddress;
-    mapping(address => uint256) public userNONMPs;
+    mapping(address => uint256) public userNONMPs;//each address can get 100/17=~6
 
     function getAddrFromNONMPID(uint256 _winnerTokenNONMPID) internal view returns (address) {
         if (exists(_winnerTokenNONMPID) && balanceOf(prtPerAddress[_winnerTokenNONMPID], _winnerTokenNONMPID) > 0) {
@@ -96,7 +96,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
         return address(0);
     }
 
-    uint256 public constant MAX_PRT_AMOUNT_PER_ACC = 100;//fix: for all stages?
+    uint256 public constant MAX_PRT_AMOUNT_PER_ACC = 100;
     uint256 public constant MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION = 35;
 
     //NONMP NORMAL 20001-160000
@@ -312,7 +312,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
             if (winneraddr != address(0)) {
                 uint256 tokenID = getNextMPID();
-                _mint(msg.sender, tokenID, 1, "");
+                _mint(msg.sender, tokenID, 1, "");//minted one MP 
                 safeTransferFrom(msg.sender, winneraddr, tokenID, 1, "");
                 emit WinnersMP(winneraddr, tokenID);
             }
@@ -509,9 +509,6 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
     }
 
     function mintNONMPForInternalTeam(address acc, uint256 qty) internal {
-        //added:0 //sam, then we have XRAND number which will determine the winning prt id tickets.
-        // require(sendMPAllDoneForNormalUsers == true, "All sendMPs not completely issued."); fix: is it bug here? why this condition here
-
         //added:1
         require(qty <= MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION, "Max mint per transaction is 35 tokens");
         //INTERNAL TEAM - 160001-180000

@@ -469,7 +469,7 @@ describe("Vipslad contract deploy", function () {
       await hardhatVipslad.connect(owner).mintNONMP(owner.address, 5, { value: ethers.utils.parseUnits('0', 'ether')})
 
       let _qnt_minter_by_user;
-      _qnt_minter_by_user = await hardhatVipslad.userNONMPs(owner.address);//fix:userNONMPs ..not suitable for all stages, userNONMPs(owner.address) total 100 for allstages or for each
+      _qnt_minter_by_user = await hardhatVipslad.userNONMPs(owner.address);
       expect(_qnt_minter_by_user).to.equal(75);
 
       await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 30, { value: ethers.utils.parseUnits('0', 'ether')})
@@ -497,7 +497,7 @@ describe("Vipslad contract deploy", function () {
       expect(_mintAirdropMPIsOpen).to.equal(false);
 
       //userNONMPs
-      _qnt_minter_by_user = await hardhatVipslad.userNONMPs(owner.address);//fix:userNONMPs for all stages?
+      _qnt_minter_by_user = await hardhatVipslad.userNONMPs(owner.address);
       expect(_qnt_minter_by_user).to.equal(100);
 
       await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 9, { value: ethers.utils.parseUnits('5', 'ether')})
@@ -511,7 +511,7 @@ describe("Vipslad contract deploy", function () {
 
   describe("sendMP", function () {
 
-    it.only(`${i++} sendMPNormalUsers(), sendMPInternalTeam(), sendMPAirdrop() `, async function () {
+    it(`${i++} sendMPNormalUsers(), sendMPInternalTeam(), sendMPAirdrop() `, async function () {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
       const [acc] = addrs;
@@ -710,7 +710,7 @@ describe("Vipslad contract deploy", function () {
     });
 
 
-    it(`${i++} WinnersMP for mintNONMPForNomalUser() > sendMPNormalUsers()`, async function () {
+    it.only(`${i++} WinnersMP for mintNONMPForNomalUser() > sendMPNormalUsers()`, async function () {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
 
