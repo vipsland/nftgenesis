@@ -535,7 +535,7 @@ describe("Vipslad contract deploy", function () {
         let _sendMPAllDoneForNormalUsers = await hardhatVipslad.sendMPAllDoneForNormalUsers();
         expect(_sendMPAllDoneForNormalUsers).to.equal(false);
 
-        file.write(`\n\r"sendMPNormalUsers",\n\r`, (err) => {
+        file.write(`\n\r"sendMPNormalUsers":\n\r`, (err) => {
           if (err) {
               console.log('Error:', err.message);
           }
@@ -594,7 +594,7 @@ describe("Vipslad contract deploy", function () {
         let _sendMPAllDoneForInternalTeam = await hardhatVipslad.sendMPAllDoneForInternalTeam();
         expect(_sendMPAllDoneForInternalTeam).to.equal(false);
       
-        file.write(`\n\r"sendMPInternalTeam",\n\r`, (err) => {
+        file.write(`\n\r"sendMPInternalTeam":\n\r`, (err) => {
           if (err) {
               console.log('Error:', err.message);
           }
@@ -652,7 +652,7 @@ describe("Vipslad contract deploy", function () {
         let _sendMPAllDoneForAirdrop = await hardhatVipslad.sendMPAllDoneForAirdrop();
         expect(_sendMPAllDoneForAirdrop).to.equal(false);
       
-        file.write(`\n\r"sendMPAirdrop",\n\r`, (err) => {
+        file.write(`\n\r"sendMPAirdrop":\n\r`, (err) => {
           if (err) {
               console.log('Error:', err.message);
           }
