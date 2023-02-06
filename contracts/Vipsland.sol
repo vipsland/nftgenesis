@@ -299,10 +299,11 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
             uint24 _winnerTokenNONMPID = uint24(PRTID + 1 + xrand + uint24(uint32((168888 * i) / 10000))); //updatede here
             uint256 max_nonmpid = PRTID + MAX_SUPPLY_FOR_PRT_TOKEN;
 
-            sendMPAllDoneForNormalUsers = _winnerTokenNONMPID > (max_nonmpid - xrand);
+            sendMPAllDoneForNormalUsers = _winnerTokenNONMPID + xrand > (max_nonmpid);
             emit MPAllDone(sendMPAllDoneForNormalUsers);
 
             if (sendMPAllDoneForNormalUsers) {
+                console.log('_winnerTokenNONMPID', _winnerTokenNONMPID);
                 break;
             }
 
@@ -317,10 +318,11 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
                 emit WinnersMP(winneraddr, tokenID);
             }
 
-            sendMPAllDoneForNormalUsers = _winnerTokenNONMPID >= (max_nonmpid - xrand);
+            sendMPAllDoneForNormalUsers = _winnerTokenNONMPID + xrand >= (max_nonmpid);
             emit MPAllDone(sendMPAllDoneForNormalUsers);
 
             if (sendMPAllDoneForNormalUsers) {
+                console.log('_winnerTokenNONMPID 2', _winnerTokenNONMPID);
                 break;
             }
 
