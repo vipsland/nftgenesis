@@ -511,7 +511,7 @@ describe("Vipslad contract deploy", function () {
 
   describe("sendMP", function () {
 
-    it(`${i++} sendMPNormalUsers(), sendMPInternalTeam(), sendMPAirdrop() `, async function () {
+    it.only(`${i++} sendMPNormalUsers(), sendMPInternalTeam(), sendMPAirdrop() `, async function () {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
       const [acc] = addrs;
@@ -710,7 +710,7 @@ describe("Vipslad contract deploy", function () {
     });
 
 
-    it.only(`${i++} Mint all  mintNONMP() for stage 1,2,3 `, async function () {
+    it(`${i++} Mint all  mintNONMP() for stage 1,2,3 `, async function () {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
       const r = await hardhatVipslad.deployed();

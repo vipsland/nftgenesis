@@ -308,7 +308,11 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
                 console.log("_winnerTokenNONMPID", _winnerTokenNONMPID);
                 console.log("xrand", xrand);
                 console.log("max_nonmpid", max_nonmpid);
-                lastWinnerTokenIDNormalUserDiff = max_nonmpid - _winnerTokenNONMPID - xrand;
+                if (max_nonmpid != _winnerTokenNONMPID) {
+                    lastWinnerTokenIDNormalUserDiff = xrand - (max_nonmpid - _winnerTokenNONMPID);
+                }
+
+                console.log("lastWinnerTokenIDNormalUserDiff", lastWinnerTokenIDNormalUserDiff);
                 break;
             }
 
