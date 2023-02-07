@@ -713,9 +713,11 @@ describe("Vipslad contract deploy", function () {
     it.only(`${i++} Mint all  mintNONMP() for stage 1,2,3 `, async function () {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
-      await hardhatVipslad.deployed();
+      const r = await hardhatVipslad.deployed();
+      console.log(`!!!!`, hardhatVipslad?.address, r?.address, owner?.address);
 
       let _qnt_minter_by_user = {}, _index=0;
+      let acc;
 
       //mintNONMPForNomalUser() start
       console.log("mintNONMPForNomalUser() start")
@@ -723,9 +725,9 @@ describe("Vipslad contract deploy", function () {
       let _mintMPIsOpen;
       _mintMPIsOpen = await hardhatVipslad.mintMPIsOpen();
       expect(_mintMPIsOpen).to.equal(false);
-
-      while (_index <= 1402 && !_mintMPIsOpen) {
-        const acc = addrs[_index];
+      acc = addrs[_index]
+      while (_index <= 1400) {
+        acc = addrs[_index];
         _qnt_minter_by_user[acc?.address] = await hardhatVipslad.userNONMPs(acc?.address);
 
         while(acc?.address && _qnt_minter_by_user[acc?.address] < 100 && !_mintMPIsOpen) {
@@ -760,9 +762,9 @@ describe("Vipslad contract deploy", function () {
        let _mintInternalTeamMPIsOpen;
        _mintInternalTeamMPIsOpen = await hardhatVipslad.mintInternalTeamMPIsOpen();
        expect(_mintInternalTeamMPIsOpen).to.equal(false);
-
-       while (_index <= 1605 && !_mintInternalTeamMPIsOpen) {
-         const acc = addrs[_index];
+       acc = addrs[_index];
+       while (_index <= 1700) {
+          acc = addrs[_index];
          _qnt_minter_by_user[acc?.address] = await hardhatVipslad.userNONMPs(acc?.address);
  
          while(acc?.address && _qnt_minter_by_user[acc?.address] < 100 && !_mintInternalTeamMPIsOpen) {
@@ -798,9 +800,9 @@ describe("Vipslad contract deploy", function () {
         let _mintAirdropMPIsOpen;
         _mintAirdropMPIsOpen = await hardhatVipslad.mintAirdropMPIsOpen();
         expect(_mintAirdropMPIsOpen).to.equal(false);
-
-        while (_index <= 1889 && !_mintAirdropMPIsOpen) {
-          const acc = addrs[_index];
+        acc = addrs[_index];
+        while (_index <= 1800) {
+          acc = addrs[_index];
           _qnt_minter_by_user[acc?.address] = await hardhatVipslad.userNONMPs(acc?.address);
 
           while(acc?.address && _qnt_minter_by_user[acc?.address] < 100 && !_mintAirdropMPIsOpen) {
