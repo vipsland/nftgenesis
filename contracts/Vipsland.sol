@@ -309,9 +309,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
             emit MPAllDone(sendMPAllDoneForNormalUsers);
 
             if (sendMPAllDoneForNormalUsers) {
-                console.log("111 _winnerTokenNONMPID", _winnerTokenNONMPID, "_nextwinnerTokenNONMPID", _nextwinnerTokenNONMPID);
-                console.log("xrand", xrand, "max_nonmpid", max_nonmpid);
-                console.log("_nextwinnerTokenNONMPID", _nextwinnerTokenNONMPID, "DDD", uint24(140000 + PRTID + 1 + xrand));
+
                 lastWinnerTokenIDNormalUserDiff = uint256(_nextwinnerTokenNONMPID);
 
                 uint24 lastDiff = 0;
@@ -322,27 +320,12 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
                     lastDiff = uint24(140000 + PRTID + 1 + xrand) - uint24(lastWinnerTokenIDNormalUserDiff);
                     moreOrLess = 0;
                 }
-                //                for (uint256 i = 0; i < 1000 * 20; i++) {
-                //_winnerTokenNONMPID = (20000-188888)
-                //                    uint24 _winnerTokenNONMPID = uint24(140000 + lastDiff + PRTID + 1 + xrand + uint24(uint32((168888 * i) / 10000))); //updatede here
-                //uint24 _winnerTokenNONMPID = uint24(140000 + PRTID + 1 + xrand + uint24(uint32((168888 * i) / 10000))); //updatede here
-                //                    uint256 max_nonmpid = PRTID + MAX_SUPPLY_FOR_PRT_TOKEN + MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN;
                 if (moreOrLess == 1) {
                     lastWinnerTokenIDAirdropDiff = uint256(140000 + lastDiff + PRTID + 1 + xrand + uint24(uint32((168888 * 1000 * 19) + 1) / 10000));
                 } else {
                     lastWinnerTokenIDAirdropDiff = uint256(140000 - lastDiff + PRTID + 1 + xrand + uint24(uint32((168888 * 1000 * 19) + 1) / 10000));
-                } //                }
-                //                lastWinnerTokenIDAirdropDiff = uint256(_nextwinnerTokenNONMPID);
+                } 
 
-                /*
-                lastWinnerTokenIDAirdropDiff = uint24(140000 + 0 - max_nonmpid + PRTID + 1 + xrand + uint24(uint32(uint256(168888 * 2000) / 10000))); //updatede here
-                console.log("PRTID", PRTID + 1, "xrand", xrand);
-                console.log("vvv", uint24(uint32(uint256(168888 * 2000) / 10000)));
-
-                //            uint24 _winnerTokenNONMPID = uint24(140000 - lastWinnerTokenIDNormalUserDiff + PRTID + 1 + xrand + uint24(uint32((168888 * i) / 10000))); //updatede here
-                //                lastWinnerTokenIDAirdropDiff = lastWinnerTokenIDNormalUserDiff;
-*/
-                console.log("lastWinnerTokenIDNormalUserDiff3", lastWinnerTokenIDNormalUserDiff, "lastWinnerTokenIDAirdropDiff3", lastWinnerTokenIDAirdropDiff);
                 break;
             }
 
@@ -359,15 +342,8 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
             _prevwinnerTokenNONMPID = _winnerTokenNONMPID;
 
-            //            sendMPAllDoneForNormalUsers = _winnerTokenNONMPID + xrand >= (max_nonmpid);
             emit MPAllDone(sendMPAllDoneForNormalUsers);
 
-            //          if (sendMPAllDoneForNormalUsers) {
-            //            console.log("_winnerTokenNONMPID1", _winnerTokenNONMPID);
-            //          console.log("xrand", xrand);
-            //        console.log("max_nonmpid", max_nonmpid);
-            //      break;
-            //  }
         }
 
         //update idx
@@ -380,11 +356,8 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
         _counter_for_generatelucky_mp_internalteam.increment();
         uint256 counter = _counter_for_generatelucky_mp_internalteam.current();
-        //        console.log("LA1", lastWinnerTokenIDNormalUserDiff, "SDASDSAD", uint24(140000 + PRTID + 1 + xrand));
 
         uint24 lastDiff = 0;
-        //uint24(lastWinnerTokenIDNormalUserDiff) - uint24(140000 + PRTID + 1 + xrand);
-        //        console.log("LA2", lastWinnerTokenIDNormalUserDiff, "SDASDSAD", uint24(140000 + PRTID + 1 + xrand));
 
         if (lastWinnerTokenIDNormalUserDiff >= uint24(140000 + PRTID + 1 + xrand)) {
             lastDiff = uint24(lastWinnerTokenIDNormalUserDiff) - uint24(140000 + PRTID + 1 + xrand);
@@ -394,16 +367,14 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
             moreOrLess = 0;
         }
 
-        //        uint24 lastDiff = 0;
         for (uint256 i = idxInternalTeam; i < 1000 * counter; i++) {
-            //_winnerTokenNONMPID = (20000-188888)
             uint24 _winnerTokenNONMPID = 0;
             if (moreOrLess == 1) {
                 _winnerTokenNONMPID = uint24(140000 + lastDiff + PRTID + 1 + xrand + uint24(uint32((168888 * i) / 10000))); //updatede
             } else {
                 _winnerTokenNONMPID = uint24(140000 - lastDiff + PRTID + 1 + xrand + uint24(uint32((168888 * i) / 10000))); //updatede
             }
-            //uint24 _winnerTokenNONMPID = uint24(140000 + PRTID + 1 + xrand + uint24(uint32((168888 * i) / 10000))); //updatede here
+
             uint256 max_nonmpid = PRTID + MAX_SUPPLY_FOR_PRT_TOKEN + MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN;
 
             uint24 _nextwinnerTokenNONMPID = 0;
@@ -412,14 +383,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
             } else {
                 _nextwinnerTokenNONMPID = uint24(140000 - lastDiff + PRTID + 1 + xrand + uint24(uint32((168888 * i + 1) / 10000)));
             }
-            //            if (i == 0) {
-            //              console.log("_nextwinnerTokenNONMPID11111", _winnerTokenNONMPID, "lastWinnerTokenIDNormalUserDiff", lastWinnerTokenIDNormalUserDiff);
-            //        }
-            //            _nextwinnerTokenNONMPID = _nextwinnerTokenNONMPID + uint24(lastWinnerTokenIDNormalUserDiff);
-            //      if (i == 0) {
-            //        console.log("_nextwinnerTokenNONMPID22222", _nextwinnerTokenNONMPID);
-            //  }
-            //            sendMPAllDoneForInternalTeam = (_winnerTokenNONMPID > (max_nonmpid - 17)) && (_winnerTokenNONMPID != max_nonmpid);
+
             sendMPAllDoneForInternalTeam = (_nextwinnerTokenNONMPID > max_nonmpid) || (_winnerTokenNONMPID > max_nonmpid);
 
             emit MPAllDone(sendMPAllDoneForInternalTeam);
@@ -440,16 +404,10 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
                 emit WinnersMP(winneraddr, tokenID);
             }
 
-            //            sendMPAllDoneForInternalTeam = _winnerTokenNONMPID >= (max_nonmpid - xrand);
             emit MPAllDone(sendMPAllDoneForInternalTeam);
 
-            //            if (sendMPAllDoneForInternalTeam) {
-            //              console.log("_winnerTokenNONMPID3", _winnerTokenNONMPID);
-            //            console.log("xrand", xrand);
-            //          console.log("max_nonmpid", max_nonmpid);
-            //        break;
-            //  }
         }
+
         idxInternalTeam = 1000 * counter;
     }
 
@@ -459,11 +417,8 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
         _counter_for_generatelucky_mp_airdrop.increment();
         uint256 counter = _counter_for_generatelucky_mp_airdrop.current();
-        //uint24 lastDiff = uint24(lastWinnerTokenIDNormalUserDiff) - uint24(140000 + PRTID + 1 + xrand);
 
         uint24 lastDiff = 0;
-        //uint24(lastWinnerTokenIDNormalUserDiff) - uint24(140000 + PRTID + 1 + xrand);
-        //        console.log("LA2", lastWinnerTokenIDNormalUserDiff, "SDASDSAD", uint24(140000 + PRTID + 1 + xrand));
 
         if (lastWinnerTokenIDNormalUserDiff >= uint24(140000 + PRTID + 1 + xrand)) {
             lastDiff = uint24(lastWinnerTokenIDNormalUserDiff) - uint24(140000 + PRTID + 1 + xrand);
@@ -487,7 +442,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
             } else {
                 _nextwinnerTokenNONMPID = uint24(160000 - lastDiff + PRTID + 1 + xrand + uint24(uint32((168888 * i + 1) / 10000)));
             }
-            //sendMPAllDoneForAirdrop = (_winnerTokenNONMPID > (max_nonmpid - 17)) && (_winnerTokenNONMPID != max_nonmpid);
+
             sendMPAllDoneForAirdrop = (_nextwinnerTokenNONMPID > max_nonmpid) || (_winnerTokenNONMPID > max_nonmpid);
 
             emit MPAllDone(sendMPAllDoneForAirdrop);
@@ -509,15 +464,8 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
                 emit WinnersMP(winneraddr, tokenID);
             }
 
-            //            sendMPAllDoneForAirdrop = _winnerTokenNONMPID >= (max_nonmpid - xrand);
             emit MPAllDone(sendMPAllDoneForAirdrop);
 
-            //            if (sendMPAllDoneForAirdrop) {
-            //              console.log("_winnerTokenNONMPID5", _winnerTokenNONMPID);
-            //            console.log("xrand", xrand);
-            //          console.log("max_nonmpid", max_nonmpid);
-            //        break;
-            //  }
         }
 
         idxAirdrop = 1000 * counter;
