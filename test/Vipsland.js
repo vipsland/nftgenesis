@@ -719,6 +719,7 @@ describe("Vipslad contract deploy", function () {
       
       let _qnt_minter_by_user = {}, _index= 0;
       let acc;
+      let last_minted_NONMPID;
       
       var file = fs.createWriteStream('./output/all_mintNONMP_mintNONMPForNomalUser.txt', {flags: 'a'});
 
@@ -740,17 +741,18 @@ describe("Vipslad contract deploy", function () {
                 _qnt_minter_by_user[acc?.address] = await hardhatVipslad.userNONMPs(acc?.address);
                 _mintMPIsOpen = await hardhatVipslad.mintMPIsOpen();
                 
+                let [r] = receipt.events?.filter((x) => {return x.event == "DitributePRTs"});
+                _qnt_minter_by_user[acc?.address] = await hardhatVipslad.userNONMPs(acc?.address);
+                last_minted_NONMPID = Number(r.args.last_minted_NONMPID);
                 if (_mintMPIsOpen) {
-                  let [r] = receipt.events?.filter((x) => {return x.event == "DitributePRTs"});
-                  _qnt_minter_by_user[acc?.address] = await hardhatVipslad.userNONMPs(acc?.address);
-                  console.log('mintNONMPForNomalUser() r.args.last_minted_NONMPID', r.args.last_minted_NONMPID);
+                  console.log('mintNONMPForNomalUser() last_minted_NONMPID', last_minted_NONMPID);
                 }
                 
               } catch (err) {
                 _qnt_minter_by_user[acc?.address] = await hardhatVipslad.userNONMPs(acc?.address);
               }
     
-              console.log(`mintNONMPForNomalUser():`, _index, acc?.address, _qnt_minter_by_user[acc?.address])
+              console.log(`mintNONMPForNomalUser():`, _index, acc?.address, _qnt_minter_by_user[acc?.address], {last_minted_NONMPID})
               file.write(`mintNONMPForNomalUser():${JSON.stringify([_index, acc?.address, Number(_qnt_minter_by_user[acc?.address])])}`, (err) => {
                 if (err) {
                     console.log('Error:', err.message);
