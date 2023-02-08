@@ -6,7 +6,7 @@ require("dotenv").config();
 
 const { GOERLI_RPC_URL, PRIVATE_KEY } = process.env;
 
-const {rinkebyApiKey, PK, etherscanApiKey, mnemonic} = require('./secrets.json')
+const { rinkebyApiKey, PK, etherscanApiKey, mnemonic } = require('./secrets.json')
 
 
 /** @type import('hardhat/config').HardhatUserConfig */
@@ -39,9 +39,9 @@ module.exports = {
         mnemonic,
         path: "m/44'/60'/0'/0/",
         initialIndex: 0,
-        count: 1407,
+        count: 1800,
       }
-  },
+    },
   },
   paths: {
     sources: './contracts',
@@ -89,7 +89,7 @@ task("accounts", "Prints the list of accounts", async () => {
   const accounts = await ethers.getSigners();
 
   for (const account of accounts) {
-    console.log({address: account.address, balance: account.balance});
+    console.log({ address: account.address, balance: account.balance });
   }
 });
 

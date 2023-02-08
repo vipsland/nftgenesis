@@ -556,12 +556,14 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
         //added:8
         qtymintnonmpforairdrop += _qnt;
+        console.log('qtymintnonmpforairdrop', qtymintnonmpforairdrop);
         if (qtymintnonmpforairdrop >= MAX_SUPPLY_FOR_AIRDROP_TOKEN) {
             mintAirdropMPIsOpen = true;
         }
         //added:9
         emit DitributePRTs(msg.sender, userNONMPs[msg.sender], ids[_qnt - 1]);
     }
+
 
     function mintNONMPForInternalTeam(address acc, uint qty) internal {
         //added:1
@@ -619,13 +621,15 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
         //added:8
         qtymintnonmpforinternalteam += _qnt;
-        if (qtymintnonmpfornormaluser >= MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN) {
+        console.log('qtymintnonmpforinternalteam', qtymintnonmpforinternalteam);
+        if (qtymintnonmpforinternalteam >= MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN) {
             mintInternalTeamMPIsOpen = true;
         }
 
         //added:9
         emit DitributePRTs(msg.sender, userNONMPs[msg.sender], ids[_qnt - 1]);
     }
+
 
     function mintNONMPForNomalUser(address acc, uint qty) internal {
         //added:1
@@ -691,6 +695,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
         //added:8
         qtymintnonmpfornormaluser += _qnt;
+        console.log('qtymintnonmpfornormaluser', qtymintnonmpfornormaluser);
         if (qtymintnonmpfornormaluser >= MAX_SUPPLY_FOR_PRT_TOKEN) {
             mintMPIsOpen = true;
         }
