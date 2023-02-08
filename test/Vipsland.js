@@ -520,7 +520,6 @@ describe("Vipslad contract deploy", function () {
 
       var file = fs.createWriteStream('./output/selectedLUCKYNONMPIDTokens.txt', {flags: 'a'});
 
-
       //sendMPNormalUsers() start
       console.log('_sendMPNormalUsers start')
       let _selectedLUCKYNONMPIDTokensForNormalUsers = [];
@@ -709,7 +708,7 @@ describe("Vipslad contract deploy", function () {
 
     });
 
-    it.only(`${i++} mintNONMP()  for stage 1, mint all `, async function () {
+    it(`${i++} mintNONMP()  for stage 1, mint all `, async function () {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
       const r = await hardhatVipslad.deployed();
@@ -717,7 +716,7 @@ describe("Vipslad contract deploy", function () {
       console.log(`r.address`, r.address);
       //r.address 0xc38835D68a4d9c1a81799dAd11f2C7646aC33bad
       
-      let _qnt_minter_by_user = {}, _index= 0;
+      let _qnt_minter_by_user = {}, _index= 1;
       let acc;
       let last_minted_NONMPID;
       
@@ -752,8 +751,8 @@ describe("Vipslad contract deploy", function () {
                 _qnt_minter_by_user[acc?.address] = await hardhatVipslad.userNONMPs(acc?.address);
               }
     
-              console.log(`mintNONMPForNomalUser():`, _index, acc?.address, _qnt_minter_by_user[acc?.address], {last_minted_NONMPID})
-              file.write(`mintNONMPForNomalUser():${JSON.stringify([_index, acc?.address, Number(_qnt_minter_by_user[acc?.address])])}`, (err) => {
+              console.log(`mintNONMPForNomalUser():`, _index, acc?.address, Number(_qnt_minter_by_user[acc?.address]), last_minted_NONMPID)
+              file.write(`mintNONMPForNomalUser():${JSON.stringify([_index, acc?.address, Number(_qnt_minter_by_user[acc?.address]), last_minted_NONMPID])}`, (err) => {
                 if (err) {
                     console.log('Error:', err.message);
                 }
@@ -777,8 +776,148 @@ describe("Vipslad contract deploy", function () {
 
     });
 
+    it.only(`${i++} All mintNONMP() for stage 2, mint all `, async function () {
 
-    it(`${i++} All mintNONMP() for stage 1,2,3 `, async function () {
+      const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
+      const r = await hardhatVipslad.deployed();
+      //sold all for contract 0xc38835D68a4d9c1a81799dAd11f2C7646aC33bad  owner 0x99fEDB8bB1A0d4aa63D825a8333B7275A04d5ed8
+      console.log(`r.address`, r.address);
+      //r.address 0xc38835D68a4d9c1a81799dAd11f2C7646aC33bad
+      
+      let _qnt_minter_by_user = {}, _index=1400;
+      let acc;
+      let last_minted_NONMPID;
+      
+      var file = fs.createWriteStream('./output/all_mintNONMP_mintNONMPForInternalTeam.txt', {flags: 'a'});
+
+      async function _mintNONMPForInternalTeam (_last_index) {
+        console.log("mintNONMPForInternalTeam() start")
+        await hardhatVipslad.connect(owner).setPreSalePRT(2);//stage1
+        let _mintInternalTeamMPIsOpen;
+        _mintInternalTeamMPIsOpen = await hardhatVipslad.mintInternalTeamMPIsOpen();
+        expect(_mintInternalTeamMPIsOpen).to.equal(false);
+        acc = addrs[_index];
+        while (_index <= _last_index && !_mintInternalTeamMPIsOpen) {
+          acc = addrs[_index];
+          _qnt_minter_by_user[acc?.address] = await hardhatVipslad.userNONMPs(acc?.address);
+  
+          while(acc?.address && _qnt_minter_by_user[acc?.address] < 100 && !_mintInternalTeamMPIsOpen) {
+            try {
+              const tx = await hardhatVipslad.connect(acc).mintNONMP(acc?.address, 25, { value: ethers.utils.parseUnits('10', 'ether')});
+              const receipt = await tx.wait();
+              _qnt_minter_by_user[acc?.address] = await hardhatVipslad.userNONMPs(acc?.address);
+              _mintInternalTeamMPIsOpen = await hardhatVipslad.mintInternalTeamMPIsOpen();
+              
+              
+              let [r] = receipt.events?.filter((x) => {return x.event == "DitributePRTs"});
+              _qnt_minter_by_user[acc?.address] = await hardhatVipslad.userNONMPs(acc?.address);
+              last_minted_NONMPID = Number(r.args.last_minted_NONMPID);
+
+              if (_mintInternalTeamMPIsOpen) {
+                console.log('mintNONMPForInternalTeam() r.args.last_minted_NONMPID', last_minted_NONMPID);
+              }
+              
+            } catch (err) {
+              _qnt_minter_by_user[acc?.address] = await hardhatVipslad.userNONMPs(acc?.address);
+            }
+  
+            console.log(`mintNONMPForInternalTeam():`, _index, acc?.address, Number(_qnt_minter_by_user[acc?.address]), last_minted_NONMPID)
+            file.write(`mintNONMPForInternalTeam():${JSON.stringify([_index, acc?.address, Number(_qnt_minter_by_user[acc?.address]), last_minted_NONMPID])}`, (err) => {
+              if (err) {
+                  console.log('Error:', err.message);
+              }
+            });
+    
+          }
+          _index++;
+        }
+        console.log('mintNONMPForInternalTeam() end', _index, acc?.address);
+      }
+      await _mintNONMPForInternalTeam(1600);
+       
+            
+      file.on('finish', () => {
+        console.log('all done');
+      });
+      file.on('error', function(err) { console.log(`ERR`,{err}) });
+
+      // file.end();
+      
+
+    });
+
+
+    it(`${i++} All mintNONMP() for stage 3, mint all `, async function () {
+
+      const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
+      const r = await hardhatVipslad.deployed();
+      //sold all for contract 0xc38835D68a4d9c1a81799dAd11f2C7646aC33bad  owner 0x99fEDB8bB1A0d4aa63D825a8333B7275A04d5ed8
+      console.log(`r.address`, r.address);
+      //r.address 0xc38835D68a4d9c1a81799dAd11f2C7646aC33bad
+      
+      let _qnt_minter_by_user = {}, _index=1600;
+      let acc;
+      let last_minted_NONMPID;
+      
+      var file = fs.createWriteStream('./output/all_mintNONMP_mintNONMPForAIRDROP.txt', {flags: 'a'});
+
+      async function _mintNONMPForAIRDROP (_last_index) {
+        console.log("mintNONMPForAIRDROP() start")
+        await hardhatVipslad.connect(owner).setPreSalePRT(3);//stage1
+        let _mintAirdropMPIsOpen;
+        _mintAirdropMPIsOpen = await hardhatVipslad.mintAirdropMPIsOpen();
+        expect(_mintAirdropMPIsOpen).to.equal(false);
+        acc = addrs[_index];
+        while (_index <= _last_index && !_mintAirdropMPIsOpen) {
+          acc = addrs[_index];
+          _qnt_minter_by_user[acc?.address] = await hardhatVipslad.userNONMPs(acc?.address);
+          while(acc?.address && _qnt_minter_by_user[acc?.address] < 100 && !_mintAirdropMPIsOpen) {
+            try {
+              const tx = await hardhatVipslad.connect(acc).mintNONMP(acc?.address, 25, { value: ethers.utils.parseUnits('10', 'ether')});
+              const receipt = await tx.wait();
+              _qnt_minter_by_user[acc?.address] = await hardhatVipslad.userNONMPs(acc?.address);
+              _mintAirdropMPIsOpen = await hardhatVipslad.mintAirdropMPIsOpen();
+              
+              let [r] = receipt.events?.filter((x) => {return x.event == "DitributePRTs"});
+              _qnt_minter_by_user[acc?.address] = await hardhatVipslad.userNONMPs(acc?.address);
+              last_minted_NONMPID = Number(r.args.last_minted_NONMPID);
+  
+              if (_mintAirdropMPIsOpen) {
+                console.log('mintNONMPForAIRDROP() r.args.last_minted_NONMPID', last_minted_NONMPID);
+
+              }
+              
+            } catch (err) {
+              _qnt_minter_by_user[acc?.address] = await hardhatVipslad.userNONMPs(acc?.address);
+            }
+
+            console.log(`mintNONMPForAIRDROP():`, _index, acc?.address, Number(_qnt_minter_by_user[acc?.address]), last_minted_NONMPID);
+            file.write(`mintNONMPForAIRDROP():${JSON.stringify([_index, acc?.address, Number(_qnt_minter_by_user[acc?.address]), last_minted_NONMPID])}`, (err) => {
+              if (err) {
+                  console.log('Error:', err.message);
+              }
+            });
+          
+          }
+          _index++;
+        }
+        console.log('mintNONMPForAIRDROP() end', _index, acc?.address);
+
+      }
+      await _mintNONMPForAIRDROP(1700)
+
+      file.on('finish', () => {
+        console.log('all done');
+      });
+      file.on('error', function(err) { console.log(`ERR`,{err}) });
+
+      // file.end();
+      
+
+    });
+
+
+    it.skip(`${i++} All mintNONMP() for stage 1,2,3 `, async function () {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
       const r = await hardhatVipslad.deployed();
