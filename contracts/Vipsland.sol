@@ -539,11 +539,9 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
         //added:5
         uint[] memory ids = new uint[](_qnt);
-        for (uint i = 0; i < _qnt; i++) {
-            ids[i] = initID + i;
-        }
         uint[] memory amounts = new uint[](_qnt);
         for (uint i = 0; i < _qnt; i++) {
+            ids[i] = initID + i;
             amounts[i] = 1;
         }
 
@@ -617,11 +615,9 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
         //added:5
         uint[] memory ids = new uint[](_qnt);
-        for (uint i = 0; i < _qnt; i++) {
-            ids[i] = initID + i;
-        }
         uint[] memory amounts = new uint[](_qnt);
         for (uint i = 0; i < _qnt; i++) {
+            ids[i] = initID + i;
             amounts[i] = 1;
         }
 
@@ -702,11 +698,9 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
         //added:5
         uint[] memory ids = new uint[](_qnt);
-        for (uint i = 0; i < _qnt; i++) {
-            ids[i] = initID + i;
-        }
         uint[] memory amounts = new uint[](_qnt);
         for (uint i = 0; i < _qnt; i++) {
+            ids[i] = initID + i;
             amounts[i] = 1;
         }
         _mintBatch(msg.sender, ids, amounts, "");
