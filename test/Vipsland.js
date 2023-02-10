@@ -845,7 +845,7 @@ describe("Vipslad contract deploy", function () {
 
     });
 
-    it.only(`${i++} All mintNONMP() for stage 3, mint all `, async function () {
+    it.only(`${i++} All mintNONMP() for stage 3, mint all, should mint 8888 `, async function () {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
       const r = await hardhatVipslad.deployed();
@@ -876,20 +876,33 @@ describe("Vipslad contract deploy", function () {
               _qnt_minter_by_user[acc?.address] = await hardhatVipslad.userNONMPs(acc?.address);
               _mintAirdropMPIsOpen = await hardhatVipslad.mintAirdropMPIsOpen();
 
+
               let [r] = receipt.events?.filter((x) => { return x.event == "DitributePRTs" });
               _qnt_minter_by_user[acc?.address] = await hardhatVipslad.userNONMPs(acc?.address);
               last_minted_NONMPID = Number(r.args.last_minted_NONMPID);
 
-              if (_mintAirdropMPIsOpen) {
-                console.log('mintNONMPForAIRDROP() r.args.last_minted_NONMPID', last_minted_NONMPID);
+
+              let [remaining_qnt] = receipt.events?.filter((x) => { return x.event == "RemainMessageNeeds" });
+              if (remaining_qnt) {
+                console.log('remaining_qnt', remaining_qnt.args.acc, Number(remaining_qnt.args.qnt))
+                file.write(`\n\rmintNONMPForAIRDROP():${JSON.stringify([_index, acc?.address, Number(remaining_qnt.args.qnt)])}\n\r`, (err) => {
+                  if (err) {
+                    console.log('Error:', err.message);
+                  }
+                });
 
               }
 
+              if (_mintAirdropMPIsOpen) {
+                console.log('mintNONMPForAIRDROP() r.args.last_minted_NONMPID', last_minted_NONMPID);
+              }
+
             } catch (err) {
+              _mintAirdropMPIsOpen = await hardhatVipslad.mintAirdropMPIsOpen();
               _qnt_minter_by_user[acc?.address] = await hardhatVipslad.userNONMPs(acc?.address);
             }
 
-            console.log(`mintNONMPForAIRDROP():`, _index, _mintAirdropMPIsOpen, acc?.address, Number(_qnt_minter_by_user[acc?.address]), last_minted_NONMPID);
+            console.log(`mintNONMPForAIRDROP():`, `_index`, _index, _mintAirdropMPIsOpen, acc?.address, Number(_qnt_minter_by_user[acc?.address]), last_minted_NONMPID);
             file.write(`mintNONMPForAIRDROP():${JSON.stringify([_index, acc?.address, Number(_qnt_minter_by_user[acc?.address]), last_minted_NONMPID])}`, (err) => {
               if (err) {
                 console.log('Error:', err.message);
@@ -902,14 +915,14 @@ describe("Vipslad contract deploy", function () {
         console.log('mintNONMPForAIRDROP() end', _index, acc?.address);
 
       }
-      await _mintNONMPForAIRDROP(100)
+      await _mintNONMPForAIRDROP(200);
 
       file.on('finish', () => {
         console.log('all done');
       });
       file.on('error', function (err) { console.log(`ERR`, { err }) });
 
-      // file.end();
+      file.end();
 
 
     });

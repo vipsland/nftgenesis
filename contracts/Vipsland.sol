@@ -171,6 +171,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
     event SelectedNONMPIDTokens(uint _winnerTokenNONMPID, uint max_nonmpid_minus_xrand);
     event MPAllDone(bool sendMPAllDone);
     event mintNONMPIDEvent(address indexed acc, uint initID, uint _qnt);
+    event RemainMessageNeeds(address indexed acc, uint256 qnt);
 
     // events end
 
@@ -501,6 +502,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
     }
 
     function mintNONMPForAIRDROP(address acc, uint qty) internal {
+        bool isRemainMessageNeeds = false;
         //added:1
         require(qty <= MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION, "Max mint per transaction is 35 tokens");
         //AIRDROP8888 - 180001-188888
@@ -512,6 +514,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
             EACH_RAND_SLOT_NUM_TOTAL_FOR_AIRDROP,
             intArrPRTAIRDROP
         );
+        console.log('!!!_qnt', _qnt);
         //added:2
         require(_qnt <= MAX_PRT_AMOUNT_PER_ACC, "Max supply 100 tokens");
         require(userNONMPs[msg.sender] < MAX_PRT_AMOUNT_PER_ACC, "Limit is 100 tokens");
@@ -520,8 +523,11 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
         if (userNONMPs[msg.sender] + _qnt > MAX_PRT_AMOUNT_PER_ACC) {
             uint diff = uint(userNONMPs[msg.sender] + _qnt - MAX_PRT_AMOUNT_PER_ACC);
             _qnt_remain = uint(_qnt - diff);
+            _qnt = _qnt_remain;
+            isRemainMessageNeeds = true;
         }
-        require(userNONMPs[msg.sender] + _qnt <= MAX_PRT_AMOUNT_PER_ACC, _concatenate("The remain qty: ", Strings.toString(_qnt_remain)));
+
+        // require(userNONMPs[msg.sender] + _qnt <= MAX_PRT_AMOUNT_PER_ACC, _concatenate("The remain qty: ", Strings.toString(_qnt_remain)));//remainig item
 
         //added:3
         uint weiBalanceWallet = msg.value;
@@ -542,6 +548,8 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
         }
 
         _mintBatch(msg.sender, ids, amounts, "");
+
+        //add event 
         for (uint i = 0; i < _qnt; i++) {
             prtPerAddress[ids[i]] = msg.sender;
         }
@@ -556,12 +564,17 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
         //added:8
         qtymintnonmpforairdrop += _qnt;
-        console.log('qtymintnonmpforairdrop', qtymintnonmpforairdrop);
+
+        console.log('!!! qtymintnonmpforairdrop', qtymintnonmpforairdrop, 'MAX_SUPPLY_FOR_AIRDROP_TOKEN', MAX_SUPPLY_FOR_AIRDROP_TOKEN);
         if (qtymintnonmpforairdrop >= MAX_SUPPLY_FOR_AIRDROP_TOKEN) {
             mintAirdropMPIsOpen = true;
         }
         //added:9
         emit DitributePRTs(msg.sender, userNONMPs[msg.sender], ids[_qnt - 1]);
+        //show message to user that he mint only remainig quantity
+        if (isRemainMessageNeeds) {
+            emit RemainMessageNeeds(msg.sender, _qnt);
+        }
     }
 
 
