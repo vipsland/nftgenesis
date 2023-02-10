@@ -744,11 +744,24 @@ describe("Vipslad contract deploy", function () {
               let [r] = receipt.events?.filter((x) => { return x.event == "DitributePRTs" });
               _qnt_minter_by_user[acc?.address] = await hardhatVipslad.userNONMPs(acc?.address);
               last_minted_NONMPID = Number(r.args.last_minted_NONMPID);
+
+              let [remaining_qnt] = receipt.events?.filter((x) => { return x.event == "RemainMessageNeeds" });
+              if (remaining_qnt) {
+                console.log('remaining_qnt', remaining_qnt.args.acc, Number(remaining_qnt.args.qnt))
+                file.write(`\n\mintNONMPForNomalUser():${JSON.stringify([_index, acc?.address, Number(remaining_qnt.args.qnt)])}\n\r`, (err) => {
+                  if (err) {
+                    console.log('Error:', err.message);
+                  }
+                });
+
+              }
+
               if (_mintMPIsOpen) {
                 console.log('mintNONMPForNomalUser() last_minted_NONMPID', last_minted_NONMPID);
               }
 
             } catch (err) {
+              _mintMPIsOpen = await hardhatVipslad.mintMPIsOpen();
               _qnt_minter_by_user[acc?.address] = await hardhatVipslad.userNONMPs(acc?.address);
             }
 
@@ -772,7 +785,7 @@ describe("Vipslad contract deploy", function () {
       });
       file.on('error', function (err) { console.log(`ERR`, { err }) });
 
-      // file.end();
+      file.end();
 
 
     });
