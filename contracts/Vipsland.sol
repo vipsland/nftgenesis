@@ -578,8 +578,20 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
 
     function mintNONMPForInternalTeam(address acc, uint qnt) internal {
-        //added:1
+        bool isRemainMessageNeeds = false;
+
+        
+        //added:0
+        require(userNONMPs[msg.sender] < MAX_PRT_AMOUNT_PER_ACC, "Limit is 100 tokens");
         require(qnt <= MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION, "Max mint per transaction is 35 tokens");
+        
+        //added:1
+        if (userNONMPs[msg.sender] + qnt >= MAX_PRT_AMOUNT_PER_ACC) {
+            qnt = uint(MAX_PRT_AMOUNT_PER_ACC - userNONMPs[msg.sender]);
+            isRemainMessageNeeds = true;
+        }
+
+
         //INTERNAL TEAM - 160001-180000
         (uint initID, uint _qnt, uint _numIssued, uint8 _randval) = getNextNONMPID(
             qnt,
@@ -589,20 +601,15 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
             EACH_RAND_SLOT_NUM_TOTAL_FOR_INTERNALTEAM,
             intArrPRTInternalTeam
         );
-        //added:2
-        require(_qnt <= MAX_PRT_AMOUNT_PER_ACC, "Max supply 100 tokens");
-        require(userNONMPs[msg.sender] < MAX_PRT_AMOUNT_PER_ACC, "Limit is 100 tokens");
-
-        uint _qnt_remain;
-        if (userNONMPs[msg.sender] + _qnt >= MAX_PRT_AMOUNT_PER_ACC) {
-            uint diff = uint(userNONMPs[msg.sender] + _qnt - MAX_PRT_AMOUNT_PER_ACC);
-            _qnt_remain = uint(_qnt - diff);
+        if (_qnt != qnt) {
+         isRemainMessageNeeds = true;
         }
-        require(userNONMPs[msg.sender] + _qnt <= MAX_PRT_AMOUNT_PER_ACC, _concatenate("The remain qnt: ", Strings.toString(_qnt_remain)));
+        
+        //added:2
+        // require(userNONMPs[msg.sender] + _qnt <= MAX_PRT_AMOUNT_PER_ACC, _concatenate("The remain qnt: ", Strings.toString(_qnt_remain)));
 
         //added:3
         uint weiBalanceWallet = msg.value;
-        require(weiBalanceWallet >= PRICE_PRT_INTERNALTEAM, "Insufficient funds");
         require(weiBalanceWallet >= PRICE_PRT_INTERNALTEAM * _qnt, "Insufficient funds");
 
         //added:4
@@ -619,6 +626,8 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
         }
 
         _mintBatch(msg.sender, ids, amounts, "");
+        
+        //add event 
         for (uint i = 0; i < _qnt; i++) {
             prtPerAddress[ids[i]] = msg.sender;
         }
@@ -633,13 +642,16 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
         //added:8
         qntmintnonmpforinternalteam += _qnt;
-        console.log('qntmintnonmpforinternalteam', qntmintnonmpforinternalteam);
         if (qntmintnonmpforinternalteam >= MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN) {
             mintInternalTeamMPIsOpen = true;
         }
 
         //added:9
         emit DitributePRTs(msg.sender, userNONMPs[msg.sender], ids[_qnt - 1]);
+        if (isRemainMessageNeeds) {
+            emit RemainMessageNeeds(msg.sender, _qnt);
+        }
+
     }
 
 
