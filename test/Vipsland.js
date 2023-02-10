@@ -709,7 +709,7 @@ describe("Vipslad contract deploy", function () {
 
     });
 
-    it(`${i++} mintNONMP()  for stage 1, mint all `, async function done() {
+    it.only(`${i++} mintNONMP()  for stage 1, mint all `, async function done() {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
       const r = await hardhatVipslad.deployed();
@@ -845,7 +845,7 @@ describe("Vipslad contract deploy", function () {
 
     });
 
-    it.only(`${i++} All mintNONMP() for stage 3, mint all, should mint 8888 `, async function () {
+    it(`${i++} All mintNONMP() for stage 3, mint all, should mint 8888 `, async function () {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
       const r = await hardhatVipslad.deployed();
