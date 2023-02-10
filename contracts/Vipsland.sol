@@ -505,12 +505,12 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
         bool isRemainMessageNeeds = false;
 
         //added:0
+        require(userNONMPs[msg.sender] < MAX_PRT_AMOUNT_PER_ACC, "Limit is 100 tokens");
         require(qty <= MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION, "Max mint per transaction is 35 tokens");
 
         //added:1
         if (userNONMPs[msg.sender] + qty > MAX_PRT_AMOUNT_PER_ACC) {
-            uint diff = uint(userNONMPs[msg.sender] + qty - MAX_PRT_AMOUNT_PER_ACC);
-            qty = uint(qty - diff);
+            qty = uint(MAX_PRT_AMOUNT_PER_ACC - userNONMPs[msg.sender]);
             isRemainMessageNeeds = true;
         }
         
@@ -528,14 +528,10 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
         }
 
         //added:2
-        require(_qnt <= MAX_PRT_AMOUNT_PER_ACC, "Max supply 100 tokens");
-        require(userNONMPs[msg.sender] < MAX_PRT_AMOUNT_PER_ACC, "Limit is 100 tokens");
-
         // require(userNONMPs[msg.sender] + _qnt <= MAX_PRT_AMOUNT_PER_ACC, _concatenate("The remain qty: ", Strings.toString(_qnt_remain)));//remainig item
 
         //added:3
         uint weiBalanceWallet = msg.value;
-        require(weiBalanceWallet >= PRICE_PRT_AIRDROP, "Insufficient funds");
         require(weiBalanceWallet >= PRICE_PRT_AIRDROP * _qnt, "Insufficient funds");
 
         //added:4
