@@ -107,7 +107,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
     }
 
     uint public constant MAX_SUPPLY_FOR_PRT_TOKEN = 140000;
-    uint public qtymintnonmpfornormaluser = 0;
+    uint public qntmintnonmpfornormaluser = 0;
     uint public constant EACH_RAND_SLOT_NUM_TOTAL_FOR_PRT = 10000;
     uint public numIssuedForNormalUser = 0;
     uint public constant STARTINGIDFORPRT = 20001;
@@ -121,7 +121,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
     }
 
     uint public constant MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN = 20000;
-    uint public qtymintnonmpforinternalteam = 0;
+    uint public qntmintnonmpforinternalteam = 0;
     uint public constant EACH_RAND_SLOT_NUM_TOTAL_FOR_INTERNALTEAM = 1000;
     uint public numIssuedForInternalTeamIDs = 0;
     uint public constant STARTINGIDFORINTERNALTEAM = 160001;
@@ -135,7 +135,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
     }
 
     uint public constant MAX_SUPPLY_FOR_AIRDROP_TOKEN = 8888;
-    uint public qtymintnonmpforairdrop = 0;
+    uint public qntmintnonmpforairdrop = 0;
     uint public constant EACH_RAND_SLOT_NUM_TOTAL_FOR_AIRDROP = 1111;
     uint public numIssuedForAIRDROP = 0;
     uint public constant STARTINGIDFORAIRDROP = 180001;
@@ -501,34 +501,34 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
         }
     }
 
-    function mintNONMPForAIRDROP(address acc, uint qty) internal {
+    function mintNONMPForAIRDROP(address acc, uint qnt) internal {
         bool isRemainMessageNeeds = false;
 
         //added:0
         require(userNONMPs[msg.sender] < MAX_PRT_AMOUNT_PER_ACC, "Limit is 100 tokens");
-        require(qty <= MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION, "Max mint per transaction is 35 tokens");
+        require(qnt <= MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION, "Max mint per transaction is 35 tokens");
 
         //added:1
-        if (userNONMPs[msg.sender] + qty > MAX_PRT_AMOUNT_PER_ACC) {
-            qty = uint(MAX_PRT_AMOUNT_PER_ACC - userNONMPs[msg.sender]);
+        if (userNONMPs[msg.sender] + qnt > MAX_PRT_AMOUNT_PER_ACC) {
+            qnt = uint(MAX_PRT_AMOUNT_PER_ACC - userNONMPs[msg.sender]);
             isRemainMessageNeeds = true;
         }
         
         //AIRDROP8888 - 180001-188888
         (uint initID, uint _qnt, uint _numIssued, uint8 _randval) = getNextNONMPID(
-            qty,
+            qnt,
             STARTINGIDFORAIRDROP,
             numIssuedForAIRDROP,
             MAX_SUPPLY_FOR_AIRDROP_TOKEN,
             EACH_RAND_SLOT_NUM_TOTAL_FOR_AIRDROP,
             intArrPRTAIRDROP
         );
-        if (_qnt != qty) {
+        if (_qnt != qnt) {
          isRemainMessageNeeds = true;
         }
 
         //added:2
-        // require(userNONMPs[msg.sender] + _qnt <= MAX_PRT_AMOUNT_PER_ACC, _concatenate("The remain qty: ", Strings.toString(_qnt_remain)));//remainig item
+        // require(userNONMPs[msg.sender] + _qnt <= MAX_PRT_AMOUNT_PER_ACC, _concatenate("The remain qnt: ", Strings.toString(_qnt_remain)));//remainig item
 
         //added:3
         uint weiBalanceWallet = msg.value;
@@ -563,8 +563,8 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
         intArrPRTAIRDROP[_randval] = intArrPRTAIRDROP[_randval] + _qnt;
 
         //added:8
-        qtymintnonmpforairdrop += _qnt;
-        if (qtymintnonmpforairdrop >= MAX_SUPPLY_FOR_AIRDROP_TOKEN) {
+        qntmintnonmpforairdrop += _qnt;
+        if (qntmintnonmpforairdrop >= MAX_SUPPLY_FOR_AIRDROP_TOKEN) {
             mintAirdropMPIsOpen = true;
         }
        
@@ -577,12 +577,12 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
     }
 
 
-    function mintNONMPForInternalTeam(address acc, uint qty) internal {
+    function mintNONMPForInternalTeam(address acc, uint qnt) internal {
         //added:1
-        require(qty <= MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION, "Max mint per transaction is 35 tokens");
+        require(qnt <= MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION, "Max mint per transaction is 35 tokens");
         //INTERNAL TEAM - 160001-180000
         (uint initID, uint _qnt, uint _numIssued, uint8 _randval) = getNextNONMPID(
-            qty,
+            qnt,
             STARTINGIDFORINTERNALTEAM,
             numIssuedForInternalTeamIDs,
             MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN,
@@ -598,7 +598,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
             uint diff = uint(userNONMPs[msg.sender] + _qnt - MAX_PRT_AMOUNT_PER_ACC);
             _qnt_remain = uint(_qnt - diff);
         }
-        require(userNONMPs[msg.sender] + _qnt <= MAX_PRT_AMOUNT_PER_ACC, _concatenate("The remain qty: ", Strings.toString(_qnt_remain)));
+        require(userNONMPs[msg.sender] + _qnt <= MAX_PRT_AMOUNT_PER_ACC, _concatenate("The remain qnt: ", Strings.toString(_qnt_remain)));
 
         //added:3
         uint weiBalanceWallet = msg.value;
@@ -632,9 +632,9 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
         intArrPRTInternalTeam[_randval] = intArrPRTInternalTeam[_randval] + _qnt;
 
         //added:8
-        qtymintnonmpforinternalteam += _qnt;
-        console.log('qtymintnonmpforinternalteam', qtymintnonmpforinternalteam);
-        if (qtymintnonmpforinternalteam >= MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN) {
+        qntmintnonmpforinternalteam += _qnt;
+        console.log('qntmintnonmpforinternalteam', qntmintnonmpforinternalteam);
+        if (qntmintnonmpforinternalteam >= MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN) {
             mintInternalTeamMPIsOpen = true;
         }
 
@@ -643,42 +643,40 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
     }
 
 
-    function mintNONMPForNomalUser(address acc, uint qty) internal {
+    function mintNONMPForNomalUser(address acc, uint qnt) internal {
         bool isRemainMessageNeeds = false;
 
         //added:0
-        require(qty <= MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION, "Max mint per transaction is 35 tokens");
+        require(userNONMPs[msg.sender] <= MAX_PRT_AMOUNT_PER_ACC, "Max supply 100 tokens");
+        require(qnt <= MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION, "Max mint per transaction is 35 tokens");
 
         //added:1
-        if (userNONMPs[msg.sender] + qty > MAX_PRT_AMOUNT_PER_ACC) {
-            uint diff = uint(userNONMPs[msg.sender] + qty - MAX_PRT_AMOUNT_PER_ACC);
-            qty = uint(qty - diff);
+        if (userNONMPs[msg.sender] + qnt > MAX_PRT_AMOUNT_PER_ACC) {
+            qnt = uint(MAX_PRT_AMOUNT_PER_ACC - userNONMPs[msg.sender]);
             isRemainMessageNeeds = true;
         }
 
         //NORMAL 20001-160000
         (uint initID, uint _qnt, uint _numIssued, uint8 _randval) = getNextNONMPID(
-            qty,
+            qnt,
             STARTINGIDFORPRT,
             numIssuedForNormalUser,
             MAX_SUPPLY_FOR_PRT_TOKEN,
             EACH_RAND_SLOT_NUM_TOTAL_FOR_PRT,
             intArrPRT
         );
-        if (_qnt != qty) {
+        if (_qnt != qnt) {
          isRemainMessageNeeds = true;
         }
 
         //added:2
-        require(_qnt <= MAX_PRT_AMOUNT_PER_ACC, "Max supply 100 tokens");
-        require(userNONMPs[msg.sender] < MAX_PRT_AMOUNT_PER_ACC, "Limit is 100 tokens");
-
-        // require(userNONMPs[msg.sender] + _qnt <= MAX_PRT_AMOUNT_PER_ACC, _concatenate("The remain qty: ", Strings.toString(_qnt_remain)));
+        // require(userNONMPs[msg.sender] + _qnt <= MAX_PRT_AMOUNT_PER_ACC, _concatenate("The remain qnt: ", Strings.toString(_qnt_remain)));
 
         //added:3
         uint weiBalanceWallet = msg.value;
-        require(weiBalanceWallet >= PRICE_PRT, "Insufficient funds"); //minimum for one token
+        require(weiBalanceWallet >= PRICE_PRT * _qnt, "Insufficient funds");
 
+        //extra logic only for normal user
         uint _PRICE_PRT = PRICE_PRT;
         if (_qnt >= 5 && _qnt < 10) {
             _PRICE_PRT = (PRICE_PRT * 4) / 5;
@@ -686,7 +684,6 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
             _PRICE_PRT = PRICE_PRT / 2;
         }
 
-        require(weiBalanceWallet >= _PRICE_PRT * _qnt, "Insufficient funds");
 
         //added:4
         payable(owner()).transfer(_PRICE_PRT * _qnt); //Send money to owner of contract, fix: testTransfer event
@@ -701,6 +698,8 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
             amounts[i] = 1;
         }
         _mintBatch(msg.sender, ids, amounts, "");
+
+        //add event
         for (uint i = 0; i < _qnt; i++) {
             prtPerAddress[ids[i]] = msg.sender;
         }
@@ -714,9 +713,9 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
         intArrPRT[_randval] = intArrPRT[_randval] + _qnt;
 
         //added:8
-        qtymintnonmpfornormaluser += _qnt;
-        console.log('qtymintnonmpfornormaluser', qtymintnonmpfornormaluser);
-        if (qtymintnonmpfornormaluser >= MAX_SUPPLY_FOR_PRT_TOKEN) {
+        qntmintnonmpfornormaluser += _qnt;
+        console.log('qntmintnonmpfornormaluser', qntmintnonmpfornormaluser);
+        if (qntmintnonmpfornormaluser >= MAX_SUPPLY_FOR_PRT_TOKEN) {
             mintMPIsOpen = true;
         }
         //added:9
@@ -729,7 +728,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
     }
 
     function getNextNONMPID(
-        uint qty,
+        uint qnt,
         uint initialNum,
         uint numIssued,
         uint max_supply_token,
@@ -766,12 +765,12 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
         uint mpid = (intArray[randval]) + (uint16(randval) * each_rand_slot_num_total);
 
-        if (intArray[randval] + qty > each_rand_slot_num_total) {
-            qty = each_rand_slot_num_total - intArray[randval];
+        if (intArray[randval] + qnt > each_rand_slot_num_total) {
+            qnt = each_rand_slot_num_total - intArray[randval];
         }
 
-        numIssued = qty + numIssued;
-        return (mpid + initialNum, qty, numIssued, randval);
+        numIssued = qnt + numIssued;
+        return (mpid + initialNum, qnt, numIssued, randval);
     }
 
     //NONMP mint end
