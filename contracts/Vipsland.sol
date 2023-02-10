@@ -167,6 +167,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
     // events start
     event DitributePRTs(address indexed acc, uint minted_amount, uint last_minted_NONMPID);
+    event DebugMP(uint tokenMPID);
     event WinnersMP(address indexed acc, uint winnerTokenPRTID);
     event SelectedNONMPIDTokens(uint _winnerTokenNONMPID, uint max_nonmpid_minus_xrand);
     event MPAllDone(bool sendMPAllDone);
@@ -232,6 +233,53 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
         //msg.sender))) % number;
         return uint(blockhash(block.number - 1)) % number;
     }
+
+    function getNextMPIDDebug() external returns (uint) {
+        require(numIssuedForMP < MAX_SUPPLY_MP, "all MPs issued.");
+        //gold supply = ID 1-200, silver supply = 201-2000, bronze = 2001-20000
+        //uint8 randnum = uint8(random(255)); //0 to 254
+
+        uint8 randval = uint8(random(MAX_SUPPLY_MP / NUM_TOTAL_FOR_MP)); //0 to 199
+        console.log('randval????', randval, 'intArr.length', intArr.length);
+        console.log('?', (MAX_SUPPLY_MP / NUM_TOTAL_FOR_MP), MAX_SUPPLY_MP, NUM_TOTAL_FOR_MP);
+
+        /** chk and reassign available IDs left from randomization */
+        uint8 iCheck = 0;
+        //uint8 randvalChk = randval;
+
+        while (iCheck <= uint(MAX_SUPPLY_MP / NUM_TOTAL_FOR_MP)) {
+            console.log('intArr[randval]', intArr[randval], randval);
+            if (intArr[randval] == NUM_TOTAL_FOR_MP) {
+                if (randval == ((MAX_SUPPLY_MP / NUM_TOTAL_FOR_MP) - 1)) {
+                    randval = 0;
+                } else {
+                    randval++;
+                }
+            } else {
+                break;
+            }
+            iCheck++;
+        }
+        /** end chk and reassign IDs */
+        uint mpid;
+
+        if (intArr[randval] < 100) {
+            //intArr[0] = 3; should be placed on top of global variable declaration
+            mpid = (intArr[randval] * 2) + (uint16(randval) * NUM_TOTAL_FOR_MP);
+        } else {
+            if (randval == 0 && intArr[randval] == (MAX_SUPPLY_MP / NUM_TOTAL_FOR_MP)) {
+                intArr[randval] = 102;
+            }
+            mpid = (intArr[randval] - 100) * 2 + 1 + (uint16(randval) * NUM_TOTAL_FOR_MP);
+        }
+
+        intArr[randval] = intArr[randval] + 1;
+        numIssuedForMP++;
+
+        emit DebugMP(mpid);
+        return mpid;
+    }
+
 
     function getNextMPID() internal returns (uint) {
         require(numIssuedForMP < MAX_SUPPLY_MP, "all MPs issued.");
@@ -638,6 +686,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
         //added:8
         qntmintnonmpforinternalteam += _qnt;
+        console.log('qntmintnonmpforinternalteam', qntmintnonmpforinternalteam);
         if (qntmintnonmpforinternalteam >= MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN) {
             mintInternalTeamMPIsOpen = true;
         }

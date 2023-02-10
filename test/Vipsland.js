@@ -709,7 +709,7 @@ describe("Vipslad contract deploy", function () {
 
     });
 
-    it.only(`${i++} mintNONMP()  for stage 1, mint all `, async function done() {
+    it(`${i++} mintNONMP()  for stage 1, mint all `, async function done() {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
       const r = await hardhatVipslad.deployed();
@@ -846,7 +846,7 @@ describe("Vipslad contract deploy", function () {
               _qnt_minter_by_user[acc?.address] = await hardhatVipslad.userNONMPs(acc?.address);
             }
 
-            console.log(`mintNONMPForInternalTeam():`, _index, acc?.address, Number(_qnt_minter_by_user[acc?.address]), last_minted_NONMPID)
+            console.log(`mintNONMPForInternalTeam():`, _index, _mintInternalTeamMPIsOpen, acc?.address, Number(_qnt_minter_by_user[acc?.address]), last_minted_NONMPID)
             file.write(`mintNONMPForInternalTeam():${JSON.stringify(_index, acc?.address, Number(_qnt_minter_by_user[acc?.address]), last_minted_NONMPID)}`, (err) => {
               if (err) {
                 console.log('Error:', err.message);
@@ -953,7 +953,7 @@ describe("Vipslad contract deploy", function () {
     });
 
 
-    it.skip(`${i++} All mintNONMP() for stage 1,2,3 `, async function () {
+    it(`${i++} Fetch all Winners, All mintNONMP() for stage 1,2,3 `, async function () {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
       const r = await hardhatVipslad.deployed();
@@ -1102,6 +1102,49 @@ describe("Vipslad contract deploy", function () {
       file.on('error', function (err) { console.log(`ERR`, { err }) });
 
       // file.end();
+
+
+    });
+
+
+
+    it.only(`${i++} getNextMPIDDebug() `, async function done() {
+
+      const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
+      await hardhatVipslad.deployed();
+
+      let counter = 0;
+
+      var file = fs.createWriteStream('./output/getNextMPIDDebug.txt', { flags: 'a' });
+
+      async function _getNextMPIDDebug(_last_index) {
+        console.log("getNextMPIDDebug() start")
+
+        const tx = await hardhatVipslad.connect(owner).getNextMPIDDebug();
+        const receipt = await tx.wait();
+
+        let [r] = receipt.events?.filter((x) => { return x.event == "DebugMP" });
+        const tokenMPID = Number(r.args.tokenMPID);
+
+        console.log('tokenMPID', tokenMPID)
+        file.write(`\n\r${JSON.stringify(tokenMPID)}\n\r`, (err) => {
+          if (err) {
+            console.log('Error write?:', err.message);
+          }
+        });
+
+
+        console.log("getNextMPIDDebug() end")
+      }
+      await _getNextMPIDDebug(20000)
+
+
+      file.on('finish', () => {
+        console.log('all done');
+      });
+      file.on('error', function (err) { console.log(`ERR`, { err }) });
+
+      file.end();
 
 
     });
