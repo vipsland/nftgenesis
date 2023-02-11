@@ -2,12 +2,12 @@ const { createAlchemyWeb3 } = require('@alch/alchemy-web3')
 import { Network, Alchemy } from 'alchemy-sdk';
 import getRevertReason from 'eth-revert-reason';
 import { ethers } from "ethers";
-const goerliApiKey = process.env.goerliApiKey;
+const GOERLI_API_KEY = process.env.GOERLI_API_KEY;
 
-console.log(`!! goerliApiKey`, process.env.goerliApiKey);
+console.log(`!! GOERLI_API_KEY`, process.env.GOERLI_API_KEY);
 
 const eth_goerli_settings = {
-  apiKey: `${goerliApiKey}`,
+  apiKey: `${GOERLI_API_KEY}`,
   network: Network.ETH_GOERLI,
 
 };
@@ -82,8 +82,8 @@ export const isWinner = async (wallet) => {
 
 
 export const buyPRT = async (prtAmount, wallet) => {
-  
-  
+
+
 
   if (!window.ethereum.selectedAddress) {
     return {
@@ -116,26 +116,26 @@ export const buyPRT = async (prtAmount, wallet) => {
     data: VipslandContract.methods
       .buyPRT(window.ethereum.selectedAddress, prtAmount)
       .encodeABI(),
-    nonce: nonce.toString(16) 
+    nonce: nonce.toString(16)
   }
 
   async function checkStatusTx(txHash) {
     let isPending = true;
 
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       while (isPending) {
-          
+
         const res = await alchemy.core.getTransaction(txHash)
-        const {blockHash, blockNumber, transactionIndex} = res ?? {}
-        isPending =  blockHash === null && blockNumber === null && transactionIndex === null
+        const { blockHash, blockNumber, transactionIndex } = res ?? {}
+        isPending = blockHash === null && blockNumber === null && transactionIndex === null
       }
 
-        if (!isPending) {
+      if (!isPending) {
         const receipt = await alchemy.core.getTransactionReceipt(txHash)
         resolve(receipt)
       }
 
-    });   
+    });
   }
 
   let isReverted = false;
@@ -145,34 +145,34 @@ export const buyPRT = async (prtAmount, wallet) => {
       method: 'eth_sendTransaction',
       params: [tx]
     })
-    console.log({txHash})
+    console.log({ txHash })
     const receipt = await checkStatusTx(txHash)
-    console.log({receipt});
+    console.log({ receipt });
 
 
-    isReverted = receipt.status === 0 
+    isReverted = receipt.status === 0
     if (isReverted) {
-      const reason = await getRevertReason(txHash, 'goerli', receipt?.blockNumber) 
-      console.log({reason})
+      const reason = await getRevertReason(txHash, 'goerli', receipt?.blockNumber)
+      console.log({ reason })
       return {
         success: false,
-        status: '😞 Transaction is reverted:' + reason +  (txHash ? `. https://goerli.etherscan.io/tx/${txHash}` : '')
+        status: '😞 Transaction is reverted:' + reason + (txHash ? `. https://goerli.etherscan.io/tx/${txHash}` : '')
       }
     }
 
     let prtTokens_owned = ''
-    
+
     if (receipt?.logs?.length > 0) {
 
       const parced_logs = receipt?.logs.map(log => {
-        const {data, topics} = log
+        const { data, topics } = log
         const iface = new ethers.utils.Interface(contract.abi)
         const parced = iface.parseLog({ data, topics });
         return parced
       });
 
-      const [ditributePRTs_log] =  parced_logs?.filter(i => i?.name === 'DitributePRTs' ) 
-      prtTokens_owned =  ditributePRTs_log?.args?.list?.map(_BigNumber => _BigNumber?.toString())?.join(', ')
+      const [ditributePRTs_log] = parced_logs?.filter(i => i?.name === 'DitributePRTs')
+      prtTokens_owned = ditributePRTs_log?.args?.list?.map(_BigNumber => _BigNumber?.toString())?.join(', ')
 
       // alchemy.core.getLogs({
       //   address: config.contractAddress,
@@ -189,8 +189,8 @@ export const buyPRT = async (prtAmount, wallet) => {
       success: true,
       status: (
         <a href={`https://goerli.etherscan.io/tx/${txHash}`} rel="noreferrer" target="_blank">
-          <span>✅ Success, check out your transaction on Etherscan:</span><br/>
-          <span>{`https://goerli.etherscan.io/tx/${txHash}`}</span><br/>
+          <span>✅ Success, check out your transaction on Etherscan:</span><br />
+          <span>{`https://goerli.etherscan.io/tx/${txHash}`}</span><br />
           <span>PRT tokens owned: {prtTokens_owned}</span>
         </a>
       )
@@ -207,7 +207,7 @@ export const buyPRT = async (prtAmount, wallet) => {
 }
 
 export const mintNFT = async (wallet) => {
-  
+
   if (!window.ethereum.selectedAddress) {
     return {
       success: false,
@@ -228,7 +228,7 @@ export const mintNFT = async (wallet) => {
     'latest'
   )
 
-    // Set up our Ethereum transaction
+  // Set up our Ethereum transaction
   // const tx = {
   //   to: config.contractAddress,
   //   from: window.ethereum.selectedAddress,
@@ -253,27 +253,27 @@ export const mintNFT = async (wallet) => {
     data: VipslandContract.methods
       .publicSaleMint()
       .encodeABI(),
-    nonce: nonce.toString(16) 
+    nonce: nonce.toString(16)
   }
 
   async function checkStatusTx(txHash) {
     let isPending = true;
 
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       while (isPending) {
-          
+
         const res = await alchemy.core.getTransaction(txHash)
-        const {blockHash, blockNumber, transactionIndex} = res ?? {}
-        isPending =  blockHash === null && blockNumber === null && transactionIndex === null
+        const { blockHash, blockNumber, transactionIndex } = res ?? {}
+        isPending = blockHash === null && blockNumber === null && transactionIndex === null
       }
 
-  
+
       if (!isPending) {
         const receipt = await alchemy.core.getTransactionReceipt(txHash)
         resolve(receipt)
       }
 
-    });   
+    });
   }
 
   let isReverted = false;
@@ -283,35 +283,35 @@ export const mintNFT = async (wallet) => {
       method: 'eth_sendTransaction',
       params: [tx]
     })
-    console.log({txHash})
+    console.log({ txHash })
     const receipt = await checkStatusTx(txHash)
-    console.log({receipt});
+    console.log({ receipt });
 
 
-    isReverted = receipt.status === 0 
+    isReverted = receipt.status === 0
     if (isReverted) {
-      const reason = await getRevertReason(txHash, 'goerli', receipt?.blockNumber) 
-      console.log({reason})
+      const reason = await getRevertReason(txHash, 'goerli', receipt?.blockNumber)
+      console.log({ reason })
       return {
         success: false,
-        status: '😞 Transaction is reverted:' + reason +  (txHash ? `. https://goerli.etherscan.io/tx/${txHash}` : '')
+        status: '😞 Transaction is reverted:' + reason + (txHash ? `. https://goerli.etherscan.io/tx/${txHash}` : '')
       }
     }
 
     let minterLogOutput = {}
-    
+
     if (receipt?.logs?.length > 0) {
 
       const parced_logs = receipt?.logs.map(log => {
-        const {data, topics} = log
+        const { data, topics } = log
         const iface = new ethers.utils.Interface(contract.abi)
         const parced = iface.parseLog({ data, topics });
         return parced
       });
 
-      const arr =  parced_logs?.filter(i => i?.name === 'Minter' ) 
+      const arr = parced_logs?.filter(i => i?.name === 'Minter')
       const [log] = arr
-      minterLogOutput.tokenID =  log?.args?.tokenID?.toString()
+      minterLogOutput.tokenID = log?.args?.tokenID?.toString()
       minterLogOutput.price = log?.args?.price?.toString()
 
       // alchemy.core.getLogs({
@@ -329,8 +329,8 @@ export const mintNFT = async (wallet) => {
       success: true,
       status: (
         <a href={`https://goerli.etherscan.io/tx/${txHash}`} rel="noreferrer" target="_blank">
-          <span>✅ Success, check out your transaction on Etherscan:</span><br/>
-          <span>{`https://goerli.etherscan.io/tx/${txHash}`}</span><br/>
+          <span>✅ Success, check out your transaction on Etherscan:</span><br />
+          <span>{`https://goerli.etherscan.io/tx/${txHash}`}</span><br />
           <span>Minted NFT ID: {minterLogOutput?.tokenID}, price of NFT: {minterLogOutput?.price}</span>
         </a>
       )

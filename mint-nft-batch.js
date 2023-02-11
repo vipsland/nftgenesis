@@ -2,10 +2,10 @@ require('dotenv').config();
 const ethers = require('ethers');
 
 // Get Alchemy API Key
-const API_KEY = process.env.API_KEY;
+const GOERLI_API_KEY = process.env.GOERLI_API_KEY;
 
 // Define an Alchemy Provider
-const provider = new ethers.providers.AlchemyProvider('goerli', API_KEY)
+const provider = new ethers.providers.AlchemyProvider('goerli', GOERLI_API_KEY)
 
 const contract = require("./artifacts/contracts/AwesomeNFTBatch.sol/AwesomeNFTBatch.json");
 

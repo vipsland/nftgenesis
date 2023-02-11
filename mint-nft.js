@@ -2,10 +2,10 @@ require('dotenv').config();
 const ethers = require('ethers');
 
 // Get Alchemy API Key
-const API_KEY = process.env.API_KEY;
+const GOERLI_API_KEY = process.env.GOERLI_API_KEY;
 
 // Define an Alchemy Provider
-const provider = new ethers.providers.AlchemyProvider('goerli', API_KEY)
+const provider = new ethers.providers.AlchemyProvider('goerli', GOERLI_API_KEY)
 
 const contract = require("./artifacts/contracts/AwesomeNFTBatch.sol/AwesomeNFTBatch.json");
 
@@ -29,34 +29,33 @@ const tokenID = 0;
 
 
 // Call mintNFT function
-const mintNFT = async () => 
-{
+const mintNFT = async () => {
     let nftTxn = await awesomeNFTBatch.mintByOwner(71)
     const result = await nftTxn.wait()
     console.log(`NFT Minted! Check it out at: https://goerli.etherscan.io/tx/${nftTxn.hash}`)
-    console.log(`? res `,{result, hash})
-    return {hash: nftTxn.hash}
+    console.log(`? res `, { result, hash })
+    return { hash: nftTxn.hash }
 
 }
 
 
-let index = 0 ;
+let index = 0;
 // Array.from(Array(10).keys())
 
 const mint = () => {
     mintNFT()
-    .then(() => {
-        index++;
-        if(index === 9) {
-            process.exit(0)
-        } else {
-            mint()
-        }
-    })
-    .catch((error) => {
-        console.error(error);
-        process.exit(1);
-    });
+        .then(() => {
+            index++;
+            if (index === 9) {
+                process.exit(0)
+            } else {
+                mint()
+            }
+        })
+        .catch((error) => {
+            console.error(error);
+            process.exit(1);
+        });
 
 }
 

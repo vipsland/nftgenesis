@@ -3,17 +3,17 @@ import injectedModule from '@web3-onboard/injected-wallets'
 import { Network, Alchemy } from 'alchemy-sdk';
 // import { TASK_COMPILE_SOLIDITY_COMPILE } from 'hardhat/builtin-tasks/task-names';
 
-const goerliApiKey = process.env.goerliApiKey;
-const ethMainApiKey = process.env.ethMainApiKey;
+const GOERLI_API_KEY = process.env.GOERLI_API_KEY;
+const ETHMAIN_API_KEY = process.env.ETHMAIN_API_KEY;
 
 
 const eth_goerli_settings = {
-    apiKey: `${goerliApiKey}`,
-    network: Network.ETH_GOERLI,
+  apiKey: `${GOERLI_API_KEY}`,
+  network: Network.ETH_GOERLI,
 };
 
 const eth_mainnet_settings = {
-  apiKey: `${ethMainApiKey}`,
+  apiKey: `${ETHMAIN_API_KEY}`,
   network: Network.ETH_MAINNET,
 };
 
@@ -62,7 +62,7 @@ const initOnboard = init({
     //   rpcUrl: 'https://matic-mainnet.chainstacklabs.com'
     // }
   ],
-  
+
 })
 
 export { initOnboard }
