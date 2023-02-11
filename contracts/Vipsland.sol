@@ -13,7 +13,7 @@ import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
 
 import "hardhat/console.sol";
 
-contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
+contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
     using SafeMath for uint;
     using Counters for Counters.Counter;
 
@@ -175,8 +175,17 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
 
     // events end
 
+    //payment splitter
+    uint256[] private _teamShares = [5, 15]; // 2 PEOPLE IN THE TEAM
+    address[] private _team = [
+        0xEd1CB7ef54321835C53a59cC94a816BCF47fEE11, // miukki account gets 5% of the total revenue
+        0x1Fde442744D300b6405e10A6F63Bf491d94afDE1 // sam Account gets 15% of the total revenue
+    ];
+
+
     constructor()
         ERC1155(notRevealedUri)
+        PaymentSplitter(_team, _teamShares) // Split the payment based on the teamshares percentages
         ReentrancyGuard() //A modifier that can prevent reentrancy during certain functions
     {
         //for mp
