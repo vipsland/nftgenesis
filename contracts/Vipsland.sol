@@ -75,8 +75,8 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
     //MP
     uint public constant PRTID = 20000;
     uint public constant MAX_SUPPLY_MP = 20000;
-    uint public constant NUM_TOTAL_FOR_MP = 200;
-    uint public constant NUM_TOTAL = 100;
+    uint public constant NUM_TOTAL_FOR_MP = 100;
+    // uint public constant NUM_TOTAL = 100;
     uint public xrand = 18;
     Counters.Counter public _counter_for_generatelucky_mp;
     Counters.Counter public _counter_for_generatelucky_mp_internalteam;
@@ -181,7 +181,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
         ReentrancyGuard() //A modifier that can prevent reentrancy during certain functions
     {
         //for mp
-        intArr = new uint16[](MAX_SUPPLY_MP / NUM_TOTAL);
+        intArr = new uint16[](MAX_SUPPLY_MP / NUM_TOTAL_FOR_MP);
         intArr[0] = 3;
 
         //for normal user
