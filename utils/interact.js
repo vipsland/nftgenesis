@@ -22,8 +22,13 @@ const contract = require('../artifacts/contracts/Vipsland.sol/Vipsland.json')
 const VipslandContract = new web3.eth.Contract(contract.abi, config.contractAddress)
 
 
-export const getTotalPRT = async () => {
-  return await VipslandContract.methods.getTotalPRT().call()
+export const getTotalNONMP = async () => {
+  const stage = await VipslandContract.methods.presalePRT().call()
+  if (stage === 1) return await VipslandContract.methods.qntmintnonmpfornormaluser().call()
+  if (stage === 2) return await VipslandContract.methods.qntmintnonmpfornormaluser().call()
+  if (stage === 3) return await VipslandContract.methods.qntmintnonmpfornormaluser().call()
+
+  return 0;
 }
 
 
