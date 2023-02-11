@@ -504,15 +504,15 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
         require(msg.sender != address(0), "Sender is not exist");
 
         if (presalePRT == 3) {
-            mintNONMPForAIRDROP(account, _amount_wanted_able_to_get);
+            mintNONMPForAIRDROP(_amount_wanted_able_to_get);
         } else if (presalePRT == 2) {
-            mintNONMPForInternalTeam(account, _amount_wanted_able_to_get);
+            mintNONMPForInternalTeam(_amount_wanted_able_to_get);
         } else if (presalePRT == 1) {
-            mintNONMPForNomalUser(account, _amount_wanted_able_to_get);
+            mintNONMPForNomalUser(_amount_wanted_able_to_get);
         }
     }
 
-    function mintNONMPForAIRDROP(address acc, uint qnt) internal {
+    function mintNONMPForAIRDROP(uint qnt) internal {
         bool isRemainMessageNeeds = false;
 
         //added:0
@@ -586,7 +586,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
     }
 
 
-    function mintNONMPForInternalTeam(address acc, uint qnt) internal {
+    function mintNONMPForInternalTeam(uint qnt) internal {
         bool isRemainMessageNeeds = false;
 
         
@@ -663,7 +663,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
     }
 
 
-    function mintNONMPForNomalUser(address acc, uint qnt) internal {
+    function mintNONMPForNomalUser(uint qnt) internal {
         bool isRemainMessageNeeds = false;
 
         //added:0
