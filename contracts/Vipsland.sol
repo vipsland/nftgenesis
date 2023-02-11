@@ -249,15 +249,15 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
         //gold supply = ID 1-200, silver supply = 201-2000, bronze = 2001-20000
         //uint8 randnum = uint8(random(255)); //0 to 254
 
-        uint8 randval = uint8(random(MAX_SUPPLY_MP / NUM_TOTAL_FOR_MP)); //0 to 199
-
+        uint8 randval = uint8(random(intArr.length));
+       
         /** chk and reassign available IDs left from randomization */
         uint8 iCheck = 0;
         //uint8 randvalChk = randval;
 
-        while (iCheck != (MAX_SUPPLY_MP / NUM_TOTAL_FOR_MP)) {
-            if (intArr[randval] == NUM_TOTAL_FOR_MP) {
-                if (randval == ((MAX_SUPPLY_MP / NUM_TOTAL_FOR_MP) - 1)) {
+        while (iCheck < uint8(intArr.length)) {
+            if (intArr[randval] == (MAX_SUPPLY_MP / intArr.length)) {
+                if (randval == (intArr.length - 1)) {
                     randval = 0;
                 } else {
                     randval++;
@@ -267,6 +267,11 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
             }
             iCheck++;
         }
+
+        if (iCheck == uint8(intArr.length)) {
+            numIssuedForMP++;
+            return 20000;
+        }
         /** end chk and reassign IDs */
         uint mpid;
 
@@ -274,7 +279,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
             //intArr[0] = 3; should be placed on top of global variable declaration
             mpid = (intArr[randval] * 2) + (uint16(randval) * NUM_TOTAL_FOR_MP);
         } else {
-            if (randval == 0 && intArr[randval] == (MAX_SUPPLY_MP / NUM_TOTAL_FOR_MP)) {
+            if (randval == 0 && intArr[randval] == intArr.length) {
                 intArr[randval] = 102;
             }
             mpid = (intArr[randval] - 100) * 2 + 1 + (uint16(randval) * NUM_TOTAL_FOR_MP);
@@ -282,6 +287,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
 
         intArr[randval] = intArr[randval] + 1;
         numIssuedForMP++;
+
         return mpid;
     }
 
