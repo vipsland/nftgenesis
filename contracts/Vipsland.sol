@@ -9,6 +9,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/finance/PaymentSplitter.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
+import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
 
 import "hardhat/console.sol";
@@ -139,6 +140,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
     uint public numIssuedForAIRDROP = 0;
     uint public constant STARTINGIDFORAIRDROP = 180001;
     uint[] public intArrPRTAIRDROP;
+
 
     //toggle start
     uint public presalePRT = 0;

@@ -1,20 +1,19 @@
 
- require('@nomiclabs/hardhat-etherscan')
- const hre = require('hardhat')
- 
- 
- async function main() {
-   
-   await hre.run('verify:verify', { 
-     address: '0x779380EdbdbfaDB16678056a4948291F5fBd88F1', 
-     constructorArguments: []
-   })
- }
+require('@nomiclabs/hardhat-etherscan')
+const hre = require('hardhat')
 
- main()
-   .then(() => process.exit(0))
-   .catch((error) => {
-     console.error(error)
-     process.exit(1)
-   })
- 
+
+async function main() {
+
+  await hre.run('verify:verify', {
+    address: '0x060d13D347c3C000d6a2d09B92d9D8199822D38F',//latest
+    constructorArguments: []
+  })
+}
+
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error)
+    process.exit(1)
+  })

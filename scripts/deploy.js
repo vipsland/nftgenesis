@@ -1,5 +1,5 @@
 /**
- *  This script will calculate the constructor arguments for PRT.sol and deploy it.
+ *  This script will calculate the constructor arguments for Vipsland.sol and deploy it.
  *  After deploying, you can access the contract on etherscan.io with the deployed contract address.
  */
 
@@ -28,16 +28,16 @@ async function main() {
 
 
   // Deploy the contract
-  const PRTFactory = await hre.ethers.getContractFactory('PRT')
-  const prtContract = await PRTFactory.deploy(
+  const vipslandFactory = await hre.ethers.getContractFactory('Vipsland')
+  const vipslandContract = await vipslandFactory.deploy(
     // BASE_URI,
     // root,
     // proxyRegistryAddressGoerli
   )
 
-  await prtContract.deployed()
+  await vipslandContract.deployed()
 
-  console.log('prtContract deployed to:', prtContract.address)
+  console.log('vipslandContract deployed to:', vipslandContract.address)
 }
 
 // We recommend this pattern to be able to use async/await everywhere
