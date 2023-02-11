@@ -1114,8 +1114,7 @@ describe("Vipslad contract deploy", function () {
       let counter = 0;
 
       var file = fs.createWriteStream('./output/getNextMPIDDebug.txt', { flags: 'a' });
-
-      async function _getNextMPIDDebug(_last_index) {
+      const _getNextMPIDDebug = async (_last_index) => {
         console.log("getNextMPIDDebug() start")
         while (counter <= _last_index) {
 
@@ -1136,13 +1135,16 @@ describe("Vipslad contract deploy", function () {
 
           } catch (err) {
             console.log('Error?:', err.message);
+            if (err.message.indexOf('all MPs issued') >= 0) {
+              break;
+            }
           }
 
           counter++;
         }
         console.log("getNextMPIDDebug() end")
       }
-      await _getNextMPIDDebug(20000)
+      await _getNextMPIDDebug(20000);
 
 
       file.on('finish', () => {
@@ -1152,6 +1154,7 @@ describe("Vipslad contract deploy", function () {
 
       file.end();
 
+      done();
 
     });
 
