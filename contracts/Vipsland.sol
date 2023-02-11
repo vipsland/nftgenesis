@@ -76,7 +76,6 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
     uint public constant PRTID = 20000;
     uint public constant MAX_SUPPLY_MP = 20000;
     uint public constant NUM_TOTAL_FOR_MP = 100;
-    // uint public constant NUM_TOTAL = 100;
     uint public xrand = 18;
     Counters.Counter public _counter_for_generatelucky_mp;
     Counters.Counter public _counter_for_generatelucky_mp_internalteam;
