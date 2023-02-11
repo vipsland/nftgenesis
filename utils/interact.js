@@ -4,8 +4,6 @@ import getRevertReason from 'eth-revert-reason';
 import { ethers } from "ethers";
 const GOERLI_API_KEY = process.env.GOERLI_API_KEY;
 
-console.log(`!! GOERLI_API_KEY`, process.env.GOERLI_API_KEY);
-
 const eth_goerli_settings = {
   apiKey: `${GOERLI_API_KEY}`,
   network: Network.ETH_GOERLI,
@@ -23,10 +21,6 @@ import { config } from '../dapp.config'
 const contract = require('../artifacts/contracts/Vipsland.sol/Vipsland.json')
 const VipslandContract = new web3.eth.Contract(contract.abi, config.contractAddress)
 
-// // Calculate merkle root from the whitelist array
-// const leafNodes = whitelist.map((addr) => keccak256(addr))
-// const merkleTree = new MerkleTree(leafNodes, keccak256, { sortPairs: true })
-// const root = merkleTree.getRoot()
 
 export const getTotalPRT = async () => {
   return await VipslandContract.methods.getTotalPRT().call()
