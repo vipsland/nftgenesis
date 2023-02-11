@@ -6,9 +6,9 @@ import { config } from '../dapp.config'
 import {
   getTotalNONMP,
   getTotalMinted,
-  getMaxSupply,
-  getMaxSupplyForNFT,
-  isPreSalePRT,
+  getMaxSupplyNONMP,
+  getMaxSupplyMP,
+  getisMintNONMP,
   getIsMintIsOpen,
   buyPRT,
   mintNFT,
@@ -24,8 +24,8 @@ export default function Mint() {
   const connectedWallets = useWallets()
 
 
-  const [maxSupply, setMaxSupply] = useState(0)
-  const [maxSupplyForNFT, setMaxSupplyForNFT] = useState(0)
+  const [maxSupplyNONMP, setMaxSupplyNONMP] = useState(0)
+  const [maxSupplyMP, setMaxSupplyMP] = useState(0)
 
 
   const [perAccountPRT, setPerAccountPRT] = useState(0)
@@ -33,11 +33,11 @@ export default function Mint() {
 
 
 
-  const [totalSoldPRT, setTotalSoldNONMP] = useState(0)
+  const [totalSoldNONMP, setTotalSoldNONMP] = useState(0)
   const [totalMintedNFT, setTotalMinted] = useState(0)
 
   const [maxPRTAmount, setMaxPRTAmount] = useState(0)
-  const [isPreSalePrt, setIsPreSalePrt] = useState(false)
+  const [isMintNONMP, setIsMintNONMP] = useState(false)
   const [isMintIsOpen, setIsMintIsOpen] = useState(false)
 
 
@@ -112,15 +112,15 @@ export default function Mint() {
 
   useEffect(() => {
     const init = async () => {
-      setMaxSupply(await getMaxSupply())
-      setMaxSupplyForNFT(await getMaxSupplyForNFT())
+      setMaxSupplyNONMP(await getMaxSupplyNONMP())
+      setMaxSupplyMP(await getMaxSupplyMP())
       setTotalSoldNONMP(await getTotalNONMP())
       setTotalMinted(await getTotalMinted())
-      setIsPreSalePrt(await isPreSalePRT())
+      setIsMintNONMP(await getisMintNONMP())
       setIsMintIsOpen(await getIsMintIsOpen())
 
       setMaxPRTAmount(
-        isPreSalePrt === false ? 0 : config.presaleMaxPRTAmount
+        isMintNONMP === false ? 0 : config.presaleMaxPRTAmount
       )
     }
 
@@ -183,7 +183,7 @@ export default function Mint() {
         <div className="flex flex-col items-center justify-center h-full w-full px-2 md:px-10">
           <div className="relative z-1 md:max-w-3xl w-full bg-gray-900/90 filter backdrop-blur-sm py-4 rounded-md px-2 md:px-10 flex flex-col items-center">
             <h1 className="font-coiny uppercase font-bold text-3xl md:text-4xl bg-gradient-to-br  from-brand-green to-brand-blue bg-clip-text text-transparent mt-3">
-              {isPreSalePrt ? 'Sale PRT' : isMintIsOpen ? 'Mint is life' : 'Sale PRT is not active'}
+              {isMintNONMP ? 'Sale PRT' : isMintIsOpen ? 'Mint is life' : 'Sale PRT is not active'}
             </h1>
             <h3 className="text-sm text-pink-200 tracking-widest">
               {wallet?.accounts[0]?.address
@@ -205,23 +205,23 @@ export default function Mint() {
 
 
 
-            {wallet && (isPreSalePrt || isMintIsOpen) ?
+            {wallet && (isMintNONMP || isMintIsOpen) ?
               <div className="flex flex-col md:flex-row md:space-x-14 w-full mt-10 md:mt-14">
 
                 <div className="relative w-full">
-                  {isPreSalePrt ? <div className="font-coiny z-10 absolute top-2 left-2 opacity-80 filter backdrop-blur-lg text-base px-4 py-2 bg-black border border-brand-purple rounded-md flex items-center justify-center text-white font-semibold">
+                  {isMintNONMP ? <div className="font-coiny z-10 absolute top-2 left-2 opacity-80 filter backdrop-blur-lg text-base px-4 py-2 bg-black border border-brand-purple rounded-md flex items-center justify-center text-white font-semibold">
                     <p>
-                      <span className="text-brand-pink">{totalSoldPRT}</span>{' '}/{' '}{maxSupply}
+                      <span className="text-brand-pink">{totalSoldNONMP}</span>{' '}/{' '}{maxSupplyNONMP}
                     </p>
                   </div> : null}
 
                   {isMintIsOpen && isAccountWinner ? <div className="font-coiny z-10 absolute top-2 left-2 opacity-80 filter backdrop-blur-lg text-base px-4 py-2 bg-black border border-brand-purple rounded-md flex items-center justify-center text-white font-semibold">
                     <p>
-                      <span className="text-brand-pink">{totalMintedNFT}</span>{' '}/{' '}{maxSupplyForNFT}
+                      <span className="text-brand-pink">{totalMintedNFT}</span>{' '}/{' '}{maxSupplyMP}
                     </p>
                   </div> : null}
 
-                  {isAccountWinner || isPreSalePrt ?
+                  {isAccountWinner || isMintNONMP ?
                     <img src="/images/13.png" className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /> : null}
 
                 </div>
@@ -292,14 +292,14 @@ export default function Mint() {
                     </>
                       : null}
 
-                    {isPreSalePrt && wallet ?
+                    {isMintNONMP && wallet ?
                       <>
                         PRT amount possible to buy: {Number(maxPRTAmount - perAccountPRT)}
                       </>
                       : null}
                   </p>
 
-                  {wallet && isPreSalePrt ? <div className="border-t border-b py-4 mt-16 w-full">
+                  {wallet && isMintNONMP ? <div className="border-t border-b py-4 mt-16 w-full">
                     <div className="w-full text-xl font-coiny flex items-center justify-between text-brand-yellow">
                       <p>Total</p>
 
@@ -335,7 +335,7 @@ export default function Mint() {
 
                   {/* Mint Button && Connect Wallet Button */}
 
-                  {wallet && isPreSalePrt ? <button
+                  {wallet && isMintNONMP ? <button
                     className={` ${isPRTing
                       ? 'bg-gray-900 cursor-not-allowed'
                       : 'bg-gradient-to-br from-brand-purple to-brand-pink shadow-lg hover:shadow-pink-400/50'

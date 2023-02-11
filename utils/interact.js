@@ -25,31 +25,38 @@ const VipslandContract = new web3.eth.Contract(contract.abi, config.contractAddr
 export const getTotalNONMP = async () => {
   const stage = await VipslandContract.methods.presalePRT().call()
   if (stage === 1) return await VipslandContract.methods.qntmintnonmpfornormaluser().call()
-  if (stage === 2) return await VipslandContract.methods.qntmintnonmpfornormaluser().call()
-  if (stage === 3) return await VipslandContract.methods.qntmintnonmpfornormaluser().call()
+  if (stage === 2) return await VipslandContract.methods.qntmintnonmpforinternalteam().call()
+  if (stage === 3) return await VipslandContract.methods.qntmintnonmpforairdrop().call()
 
   return 0;
 }
 
 
-export const getTotalMinted = async () => {
-  return await VipslandContract.methods.getTotalMinted().call()
+export const getTotalMinted = async (stage) => {
+  if (stage === 1) return await VipslandContract.methods.qntmintnonmpfornormaluser().call()
+  if (stage === 2) return await VipslandContract.methods.qntmintnonmpforinternalteam().call()
+  if (stage === 3) return await VipslandContract.methods.qntmintmpforairdrop().call()
+
+  return 0;
 }
 
 
-export const getMaxSupply = async () => {
-  const MAX_SUPPLY_PRT = await VipslandContract.methods.MAX_SUPPLY_PRT().call()
-  return MAX_SUPPLY_PRT
+export const getMaxSupplyNONMP = async () => {
+  const stage = await VipslandContract.methods.presalePRT().call()
+  if (stage === 1) return await VipslandContract.methods.MAX_SUPPLY_FOR_PRT_TOKEN().call()
+  if (stage === 2) return await VipslandContract.methods.MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN().call()
+  if (stage === 3) return await VipslandContract.methods.MAX_SUPPLY_FOR_AIRDROP_TOKEN().call()
+  return 0;
 }
 
-export const getMaxSupplyForNFT = async () => {
-  const MAX_SUPPLY_FOR_TOKEN = await VipslandContract.methods.MAX_SUPPLY_FOR_TOKEN().call()
-  return MAX_SUPPLY_FOR_TOKEN
+export const getMaxSupplyMP = async () => {
+  const MAX_SUPPLY_MP = await VipslandContract.methods.MAX_SUPPLY_MP().call()
+  return MAX_SUPPLY_MP
 }
 
-
-export const isPreSalePRT = async () => {
-  return await VipslandContract.methods.presalePRT().call()
+export const getisMintNONMP = async () => {
+  const stage = await VipslandContract.methods.presalePRT().call()
+  return stage === 1 || stage === 2 || stage === 3;
 }
 
 export const getIsMintIsOpen = async () => {

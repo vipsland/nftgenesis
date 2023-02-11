@@ -75,6 +75,9 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
 
     //MP
     uint public constant PRTID = 20000;
+    uint public qntmintmpfornormaluser = 0;
+    uint public qntmintmpforinternalteam = 0;
+    uint public qntmintmpforairdrop = 0;
     uint public constant MAX_SUPPLY_MP = 20000;
     uint public constant NUM_TOTAL_FOR_MP = 100;
     uint public xrand = 18;
@@ -358,6 +361,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
                 uint tokenID = getNextMPID();
                 _mint(msg.sender, tokenID, 1, ""); //minted one MP
                 safeTransferFrom(msg.sender, winneraddr, tokenID, 1, "");
+                qntmintmpfornormaluser += 1;
                 emit WinnersMP(winneraddr, tokenID);
             }
 
@@ -422,6 +426,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
                 uint tokenID = getNextMPID();
                 _mint(msg.sender, tokenID, 1, "");
                 safeTransferFrom(msg.sender, winneraddr, tokenID, 1, "");
+                qntmintmpforinternalteam += 1;
                 emit WinnersMP(winneraddr, tokenID);
             }
 
@@ -482,6 +487,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
                 uint tokenID = getNextMPID();
                 _mint(msg.sender, tokenID, 1, "");
                 safeTransferFrom(msg.sender, winneraddr, tokenID, 1, "");
+                qntmintmpforairdrop += 1;
                 emit WinnersMP(winneraddr, tokenID);
             }
 
