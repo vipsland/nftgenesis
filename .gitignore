@@ -14,3 +14,4 @@ accounts-ganache-cli
 contracts/example.sol
 .env
 output/
+filename.txt

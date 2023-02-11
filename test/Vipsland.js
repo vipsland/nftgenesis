@@ -1121,8 +1121,6 @@ describe("Vipslad contract deploy", function () {
           try {
             console.log(`${i}:`)
             await hardhatVipslad.connect(owner).getNextMPIDDebug();
-
-
           } catch (err) {
             console.log('Error:', err.message);
           }
