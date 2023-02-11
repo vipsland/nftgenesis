@@ -76,7 +76,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
     uint public constant PRTID = 20000;
     uint public constant MAX_SUPPLY_MP = 20000;
     uint public constant NUM_TOTAL_FOR_MP = 200;
-    uint public constant NUM_TOTAL = 1000;
+    uint public constant NUM_TOTAL = 100;
     uint public xrand = 18;
     Counters.Counter public _counter_for_generatelucky_mp;
     Counters.Counter public _counter_for_generatelucky_mp_internalteam;
@@ -240,9 +240,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
         //uint8 randnum = uint8(random(255)); //0 to 254
 
         uint8 randval = uint8(random(MAX_SUPPLY_MP / NUM_TOTAL_FOR_MP)); //0 to 199
-        console.log('randval????', randval, 'intArr.length', intArr.length);
-        console.log('?', (MAX_SUPPLY_MP / NUM_TOTAL_FOR_MP), MAX_SUPPLY_MP, NUM_TOTAL_FOR_MP);
-
+       
         /** chk and reassign available IDs left from randomization */
         uint8 iCheck = 0;
         //uint8 randvalChk = randval;

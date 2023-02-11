@@ -1111,29 +1111,35 @@ describe("Vipslad contract deploy", function () {
     it.only(`${i++} getNextMPIDDebug() `, async function done() {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
-      await hardhatVipslad.deployed();
-
       let counter = 0;
 
       var file = fs.createWriteStream('./output/getNextMPIDDebug.txt', { flags: 'a' });
 
       async function _getNextMPIDDebug(_last_index) {
         console.log("getNextMPIDDebug() start")
+        while (counter <= _last_index) {
 
-        const tx = await hardhatVipslad.connect(owner).getNextMPIDDebug();
-        const receipt = await tx.wait();
+          try {
+            const tx = await hardhatVipslad.connect(owner).getNextMPIDDebug();
+            const receipt = await tx.wait();
 
-        let [r] = receipt.events?.filter((x) => { return x.event == "DebugMP" });
-        const tokenMPID = Number(r.args.tokenMPID);
+            let [r] = receipt.events?.filter((x) => { return x.event == "DebugMP" });
+            const tokenMPID = Number(r.args.tokenMPID);
 
-        console.log('tokenMPID', tokenMPID)
-        file.write(`\n\r${JSON.stringify(tokenMPID)}\n\r`, (err) => {
-          if (err) {
-            console.log('Error write?:', err.message);
+            console.log('tokenMPID', counter, tokenMPID);
+            file.write(`\n\r${[counter, tokenMPID,]}\n\r`, (err) => {
+              if (err) {
+                console.log('Error write?:', err.message);
+              }
+            });
+
+
+          } catch (err) {
+            console.log('Error?:', err.message);
           }
-        });
 
-
+          counter++;
+        }
         console.log("getNextMPIDDebug() end")
       }
       await _getNextMPIDDebug(20000)
