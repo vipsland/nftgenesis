@@ -4,13 +4,9 @@ require('hardhat-contract-sizer');
 require('solidity-coverage');
 require("dotenv").config();
 
-const { GOERLI_RPC_URL, PRIVATE_KEY } = process.env;
-
-const { rinkebyApiKey, PK, etherscanApiKey, mnemonic } = require('./secrets.json')
-
+const { GOERLI_RPC_URL, PRIVATE_KEY, MNEMONIC, etherscanApiKey } = process.env;
 
 /** @type import('hardhat/config').HardhatUserConfig */
-const RINKEBY_RPC_URL = `https://rinkeby.infura.io/v3/${rinkebyApiKey}`
 module.exports = {
   solidity: {
     version: '0.8.17',
@@ -22,11 +18,7 @@ module.exports = {
     }
   },
   networks: {
-    rinkeby: {
-      url: RINKEBY_RPC_URL,
-      accounts: [`0x${PRIVATE_KEY}`],
-      saveDeployments: true,
-    },
+   
 
     goerli: {
       url: GOERLI_RPC_URL,
@@ -36,7 +28,7 @@ module.exports = {
 
     hardhat: {
       accounts: {
-        // mnemonic,
+        // mnemonic: MNEMONIC,
         // path: "m/44'/60'/0'/0/",
         // initialIndex: 0,
         count: 1600,

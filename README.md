@@ -123,7 +123,7 @@ Mnemonic:      ***
 Base HD Path:  m/44'/60'/0'/0/{account_index}
 
 
-npx ganache-cli --deterministic --mnemonic "party south hazard person adult praise agree direct artefact foot breeze prefer"
+npx ganache-cli --deterministic --mnemonic ""
 
 
 ```

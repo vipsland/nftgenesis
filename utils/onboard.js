@@ -2,7 +2,10 @@ import { init, useConnectWallet } from '@web3-onboard/react'
 import injectedModule from '@web3-onboard/injected-wallets'
 import { Network, Alchemy } from 'alchemy-sdk';
 // import { TASK_COMPILE_SOLIDITY_COMPILE } from 'hardhat/builtin-tasks/task-names';
-const {goerliApiKey, ethMainApiKey} = require('../secrets.json')
+
+const goerliApiKey = process.env.goerliApiKey;
+const ethMainApiKey = process.env.ethMainApiKey;
+
 
 const eth_goerli_settings = {
     apiKey: `${goerliApiKey}`,

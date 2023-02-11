@@ -2,12 +2,9 @@ const { createAlchemyWeb3 } = require('@alch/alchemy-web3')
 import { Network, Alchemy } from 'alchemy-sdk';
 import getRevertReason from 'eth-revert-reason';
 import { ethers } from "ethers";
-const {goerliApiKey} = require('../secrets.json')
+const goerliApiKey = process.env.goerliApiKey;
 
-// const { MerkleTree } = require('merkletreejs')
-// const keccak256 = require('keccak256')
-// const whitelist = require('../scripts/whitelist.js')
-
+console.log(`!! goerliApiKey`, process.env.goerliApiKey);
 
 const eth_goerli_settings = {
   apiKey: `${goerliApiKey}`,
@@ -18,15 +15,13 @@ const alchemy = new Alchemy(eth_goerli_settings);
 
 /** @type import('hardhat/config').HardhatUserConfig */
 const GOERLI_RPC_URL = `https://eth-goerli.g.alchemy.com/v2/${eth_goerli_settings.apiKey}`
-// const GANACHE_RPC_URL = `http://localhost:8545`
-
 
 const web3 = createAlchemyWeb3(GOERLI_RPC_URL)
 
 import { config } from '../dapp.config'
 
-const contract = require('../artifacts/contracts/PRT.sol/PRT.json')
-const prtContract = new web3.eth.Contract(contract.abi, config.contractAddress)
+const contract = require('../artifacts/contracts/Vipsland.sol/Vipsland.json')
+const VipslandContract = new web3.eth.Contract(contract.abi, config.contractAddress)
 
 // // Calculate merkle root from the whitelist array
 // const leafNodes = whitelist.map((addr) => keccak256(addr))
@@ -34,37 +29,37 @@ const prtContract = new web3.eth.Contract(contract.abi, config.contractAddress)
 // const root = merkleTree.getRoot()
 
 export const getTotalPRT = async () => {
-  return await prtContract.methods.getTotalPRT().call()
+  return await VipslandContract.methods.getTotalPRT().call()
 }
 
 
 export const getTotalMinted = async () => {
-  return await prtContract.methods.getTotalMinted().call()
+  return await VipslandContract.methods.getTotalMinted().call()
 }
 
 
 export const getMaxSupply = async () => {
-  const MAX_SUPPLY_PRT = await prtContract.methods.MAX_SUPPLY_PRT().call()
+  const MAX_SUPPLY_PRT = await VipslandContract.methods.MAX_SUPPLY_PRT().call()
   return MAX_SUPPLY_PRT
 }
 
 export const getMaxSupplyForNFT = async () => {
-  const MAX_SUPPLY_FOR_TOKEN = await prtContract.methods.MAX_SUPPLY_FOR_TOKEN().call()
+  const MAX_SUPPLY_FOR_TOKEN = await VipslandContract.methods.MAX_SUPPLY_FOR_TOKEN().call()
   return MAX_SUPPLY_FOR_TOKEN
 }
 
 
 export const isPreSalePRT = async () => {
-  return await prtContract.methods.presalePRT().call()
+  return await VipslandContract.methods.presalePRT().call()
 }
 
 export const getIsMintIsOpen = async () => {
-  return await prtContract.methods.mintIsOpen().call()
+  return await VipslandContract.methods.mintIsOpen().call()
 }
 
 
 export const getPrice = async () => {
-  const price = await prtContract.methods.PRICE_PRT().call()
+  const price = await VipslandContract.methods.PRICE_PRT().call()
   return price
 }
 
@@ -73,7 +68,7 @@ export const getPerAccountPRT = async (wallet) => {
     return 0
   }
 
-  const perAccountPRT = await prtContract.methods.perAccountPRT(wallet?.accounts[0]?.address).call()
+  const perAccountPRT = await VipslandContract.methods.perAccountPRT(wallet?.accounts[0]?.address).call()
   return perAccountPRT
 }
 
@@ -82,7 +77,7 @@ export const isWinner = async (wallet) => {
     return 0
   }
 
-  return await prtContract.methods.isWinner(wallet?.accounts[0]?.address).call()
+  return await VipslandContract.methods.isWinner(wallet?.accounts[0]?.address).call()
 }
 
 
@@ -118,7 +113,7 @@ export const buyPRT = async (prtAmount, wallet) => {
     value: parseInt(
       web3.utils.toWei(String(config.price * prtAmount), 'ether')
     ).toString(16), // hex
-    data: prtContract.methods
+    data: VipslandContract.methods
       .buyPRT(window.ethereum.selectedAddress, prtAmount)
       .encodeABI(),
     nonce: nonce.toString(16) 
@@ -135,8 +130,7 @@ export const buyPRT = async (prtAmount, wallet) => {
         isPending =  blockHash === null && blockNumber === null && transactionIndex === null
       }
 
-  
-      if (!isPending) {
+        if (!isPending) {
         const receipt = await alchemy.core.getTransactionReceipt(txHash)
         resolve(receipt)
       }
@@ -241,7 +235,7 @@ export const mintNFT = async (wallet) => {
   //   value: parseInt(
   //     web3.utils.toWei(String(config.price * prtAmount), 'ether')
   //   ).toString(16), // hex
-  //   data: prtContract.methods.publicSaleMint(prtAmount).encodeABI(),
+  //   data: VipslandContract.methods.publicSaleMint(prtAmount).encodeABI(),
   //   nonce: nonce.toString(16)
   // }
 
@@ -256,7 +250,7 @@ export const mintNFT = async (wallet) => {
     value: parseInt(
       web3.utils.toWei(val, 'ether')
     ).toString(16), // hex
-    data: prtContract.methods
+    data: VipslandContract.methods
       .publicSaleMint()
       .encodeABI(),
     nonce: nonce.toString(16) 
