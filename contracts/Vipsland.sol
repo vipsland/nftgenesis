@@ -246,7 +246,6 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
         //uint8 randvalChk = randval;
 
         while (iCheck <= uint(MAX_SUPPLY_MP / NUM_TOTAL_FOR_MP)) {
-            console.log('intArr[randval]', intArr[randval], randval);
             if (intArr[randval] == NUM_TOTAL_FOR_MP) {
                 if (randval == ((MAX_SUPPLY_MP / NUM_TOTAL_FOR_MP) - 1)) {
                     randval = 0;

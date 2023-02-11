@@ -1107,8 +1107,7 @@ describe("Vipslad contract deploy", function () {
     });
 
 
-
-    it.only(`${i++} getNextMPIDDebug() `, async function done() {
+    it(`${i++} getNextMPIDDebug() `, async function done() {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
       let counter = 0;
