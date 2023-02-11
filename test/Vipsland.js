@@ -1107,7 +1107,7 @@ describe("Vipslad contract deploy", function () {
     });
 
 
-    it(`${i++} getNextMPIDDebug() `, async function done() {
+    it.only(`${i++} getNextMPIDDebug() `, async function done() {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
       let counter = 0;
@@ -1115,45 +1115,31 @@ describe("Vipslad contract deploy", function () {
       var file = fs.createWriteStream('./output/getNextMPIDDebug.txt', { flags: 'a' });
       const _getNextMPIDDebug = async (_last_index) => {
         console.log("getNextMPIDDebug() start")
-        while (counter <= _last_index) {
+
+        for (let i = 0; i < _last_index; i++) {
 
           try {
-            const tx = await hardhatVipslad.connect(owner).getNextMPIDDebug();
-            const receipt = await tx.wait();
-
-            let [r] = receipt.events?.filter((x) => { return x.event == "DebugMP" });
-            const tokenMPID = Number(r.args.tokenMPID);
-
-            console.log('tokenMPID', counter, tokenMPID);
-            file.write(`\n\r${[counter, tokenMPID,]}\n\r`, (err) => {
-              if (err) {
-                console.log('Error write?:', err.message);
-              }
-            });
+            console.log(`${i}:`)
+            await hardhatVipslad.connect(owner).getNextMPIDDebug();
 
 
           } catch (err) {
-            console.log('Error?:', err.message);
-            if (err.message.indexOf('all MPs issued') >= 0) {
-              break;
-            }
+            console.log('Error:', err.message);
           }
 
-          counter++;
         }
-        console.log("getNextMPIDDebug() end")
       }
       await _getNextMPIDDebug(20000);
 
 
-      file.on('finish', () => {
-        console.log('all done');
-      });
-      file.on('error', function (err) { console.log(`ERR`, { err }) });
+      // file.on('finish', () => {
+      //   console.log('all done');
+      // });
+      // file.on('error', function (err) { console.log(`ERR`, { err }) });
 
-      file.end();
+      // file.end();
 
-      done();
+      process.exit(0)
 
     });
 

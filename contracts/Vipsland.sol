@@ -273,7 +273,8 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard {
         intArr[randval] = intArr[randval] + 1;
         numIssuedForMP++;
 
-        emit DebugMP(mpid);
+        // emit DebugMP(mpid);
+        console.log(mpid);
         return mpid;
     }
 
