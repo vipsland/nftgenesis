@@ -13,8 +13,8 @@ import {
   getPerAccountNONMPs,
   getMaxNONMPAmount,
   isWinner,
-  buyPRT,
-  mintNFT,
+  mintNONMP,
+  getPriceNONMP
 } from '../utils/interact'
 
 import { ethers } from 'ethers'
@@ -32,8 +32,6 @@ export default function Mint() {
   const [perAccountNONMP, setPerAccountNONMP] = useState(0)
   const [isAccountWinner, setIsWinner] = useState(false)
 
-
-
   const [totalMintedNONMP, setTotalMintedNONMP] = useState(0)
   const [totalMintedMP, setTotalMintedMP] = useState(0)
 
@@ -42,12 +40,13 @@ export default function Mint() {
   const [isMintMP, setisMintMP] = useState(false)
 
 
-  const [status, setStatus] = useState(null)
+  const [priceNONMP, setPriceNONMP] = useState(0)
   const [prtAmount, setPRTAmount] = useState(1)
-  const [isPRTing, setIsPRTing] = useState(false)
-  const [isMinting, setIsMinting] = useState(false)
+  const [isTXIsPending, setTXIsPending] = useState(false)
 
   const [onboard, setOnboard] = useState(null)
+
+  const [status, setStatus] = useState(null)
 
 
   useEffect(() => {
@@ -118,7 +117,7 @@ export default function Mint() {
       setTotalMintedMP(await getTotalMintedMP())
       setisMintNONMP(await getisMintNONMP())
       setisMintMP(await getisMintMP())
-
+      setPriceNONMP(await getPriceNONMP())
       setMaxNONMPAmount(await getMaxNONMPAmount())
     }
 
@@ -137,25 +136,25 @@ export default function Mint() {
     }
   }
 
-  const buyPRTHandler = async () => {
+  const mintNONMPHandler = async () => {
     setStatus(null)
-    setIsPRTing(true)
+    setTXIsPending(true)
 
-    const { success, status } = await buyPRT(prtAmount, wallet)
+    const { success, status } = await mintNONMP(prtAmount, wallet)
 
     setStatus({
       success,
       message: status
     })
 
-    setIsPRTing(false)
+    setTXIsPending(false)
     setTotalMintedNONMP(await getTotalMintedNONMP())
     setPerAccountNONMP(await getPerAccountNONMPs(wallet))
   }
 
-  const mintNFTHandler = async () => {
+  const checkYourMP = async () => {
     setStatus(null)
-    setIsMinting(true)
+    setTXIsPending(true)
 
     const { success, status } = await mintNFT(wallet)
 
@@ -164,7 +163,7 @@ export default function Mint() {
       message: status
     })
 
-    setIsMinting(false)
+    setTXIsPending(false)
     setTotalMintedMP(await getTotalMintedMP())
   }
 
@@ -304,7 +303,7 @@ export default function Mint() {
                       <div className="flex items-center space-x-3">
 
                         <>
-                          {Number.parseFloat(config.price * prtAmount).toFixed(
+                          {Number.parseFloat(priceNONMP * prtAmount).toFixed(
                             2
                           )}{' '}
                           <p>
@@ -334,25 +333,25 @@ export default function Mint() {
                   {/* Mint Button && Connect Wallet Button */}
 
                   {wallet && isMintNONMP ? <button
-                    className={` ${isPRTing
+                    className={` ${isTXIsPending
                       ? 'bg-gray-900 cursor-not-allowed'
                       : 'bg-gradient-to-br from-brand-purple to-brand-pink shadow-lg hover:shadow-pink-400/50'
                       } font-coiny mt-12 w-full px-6 py-3 rounded-md text-2xl text-white  mx-4 tracking-wide uppercase`}
-                    disabled={isPRTing}
-                    onClick={buyPRTHandler}
+                    disabled={isTXIsPending}
+                    onClick={mintNONMPHandler}
                   >
-                    {isPRTing ? <span className='animate-pulse'>Wait, processing...</span> : 'Buy PRTs'}
+                    {isTXIsPending ? <span className='animate-pulse'>Wait, tx is pending...</span> : 'Mint NONMP'}
                   </button> : null}
 
-                  {wallet && isMintMP && isAccountWinner ? <button
-                    className={`${isMinting
+                  {wallet && isMintMP ? <button
+                    className={`${isTXIsPending
                       ? 'bg-gray-900 cursor-not-allowed'
                       : 'bg-gradient-to-br from-brand-purple to-brand-pink shadow-lg hover:shadow-pink-400/50'
                       } font-coiny mt-12 w-full px-6 py-3 rounded-md text-2xl text-white  mx-4 tracking-wide uppercase`}
-                    disabled={isMinting}
-                    onClick={mintNFTHandler}
+                    disabled={isTXIsPending}
+                    onClick={checkYourMP}
                   >
-                    {isMinting ? <span className='animate-pulse'>Wait, processing...</span> : 'Mint NFT'}
+                    {isTXIsPending ? <span className='animate-pulse'>Wait, processing...</span> : 'Check your MP'}
                   </button> : null}
 
 
