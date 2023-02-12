@@ -80,8 +80,8 @@ export const getPerAccountPRT = async (wallet) => {
     return 0
   }
 
-  const perAccountPRT = await VipslandContract.methods.perAccountPRT(wallet?.accounts[0]?.address).call()
-  return perAccountPRT
+  const _qnt_minted_by_user_nonmp = await VipslandContract.methods.userNONMPs(wallet?.accounts[0]?.address).call()
+  return _qnt_minted_by_user_nonmp
 }
 
 export const isWinner = async (wallet) => {
@@ -94,8 +94,6 @@ export const isWinner = async (wallet) => {
 
 
 export const buyPRT = async (prtAmount, wallet) => {
-
-
 
   if (!window.ethereum.selectedAddress) {
     return {
