@@ -63,7 +63,7 @@ export const getisMintNONMP = async () => {
 }
 
 export const getisMintMP = async () => {
-  const stage = await VipslandContract.methods.presalePRT().call()
+  const stage = await VipslandContract.methods.presalePRT().call();
 
   if (stage === 1) return await VipslandContract.methods.mintMPIsOpen().call()
   if (stage === 2) return await VipslandContract.methods.mintInternalTeamMPIsOpen().call()
@@ -79,6 +79,8 @@ export const getMaxNONMPAmount = async () => {
 
 
 export const getPriceNONMP = async () => {
+  const stage = await VipslandContract.methods.presalePRT().call();
+
   if (stage === 1) return await VipslandContract.methods.PRICE_PRT().call()
   if (stage === 2) return await VipslandContract.methods.PRICE_PRT_INTERNALTEAM().call()
   if (stage === 3) return await VipslandContract.methods.PRICE_PRT_AIRDROP().call()
@@ -96,14 +98,18 @@ export const getPerAccountNONMPs = async (wallet) => {
 
 export const isWinner = async (wallet) => {
   if (!wallet?.accounts[0]?.address) {
-    return 0
+    return false
   }
 
-  const tokens_amount = Number(await VipslandContract.methods.perAddressMPs(wallet?.accounts[0]?.address).call());
+  const isMintMP = await getisMintMP()
+
+  if (!isMintMP) {
+    return false
+  }
+  const tokens_amount = await VipslandContract.methods.perAddressMPs(wallet?.accounts[0]?.address).call();
   return tokens_amount > 0;
 
 }
-
 
 export const mintNONMP = async (prtAmount, wallet) => {
 
