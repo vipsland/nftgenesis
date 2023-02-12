@@ -72,11 +72,11 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
     //main nft end
 
     //MP
-    uint public constant PRTID = 20000;
+    uint16 public constant PRTID = 20000;
     uint public qntmintmpfornormaluser = 0;
     uint public qntmintmpforinternalteam = 0;
     uint public qntmintmpforairdrop = 0;
-    uint public constant MAX_SUPPLY_MP = 20000;
+    uint16 public constant MAX_SUPPLY_MP = 20000;
     uint8 public constant NUM_TOTAL_FOR_MP = 100;
     uint8 public xrand = 18;
     Counters.Counter public _counter_for_generatelucky_mp;
@@ -86,11 +86,11 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
     uint16[] public intArr;
 
     //NONMP
-    mapping(address => string) public perAddressMPs;
-    mapping(uint => address) public prtPerAddress;
+    mapping(address => uint8) public perAddressMPs;
+    mapping(uint32 => address) public prtPerAddress;
     mapping(address => uint8) public userNONMPs; //each address can get 100/17=~6
 
-    function getAddrFromNONMPID(uint _winnerTokenNONMPID) internal view returns (address) {
+    function getAddrFromNONMPID(uint32 _winnerTokenNONMPID) internal view returns (address) {
         if (exists(_winnerTokenNONMPID) && balanceOf(prtPerAddress[_winnerTokenNONMPID], _winnerTokenNONMPID) > 0) {
             return prtPerAddress[_winnerTokenNONMPID];
         }
@@ -111,7 +111,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
     uint public constant MAX_SUPPLY_FOR_PRT_TOKEN = 140000;
     uint public qntmintnonmpfornormaluser = 0;
     uint public constant EACH_RAND_SLOT_NUM_TOTAL_FOR_PRT = 10000;
-    uint public numIssuedForNormalUser = 0;
+    uint32 public numIssuedForNormalUser = 0;
     uint public constant STARTINGIDFORPRT = 20001;
     uint[] public intArrPRT;
 
@@ -125,7 +125,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
     uint public constant MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN = 20000;
     uint public qntmintnonmpforinternalteam = 0;
     uint public constant EACH_RAND_SLOT_NUM_TOTAL_FOR_INTERNALTEAM = 1000;
-    uint public numIssuedForInternalTeamIDs = 0;
+    uint32 public numIssuedForInternalTeamIDs = 0;
     uint public constant STARTINGIDFORINTERNALTEAM = 160001;
     uint[] public intArrPRTInternalTeam;
 
@@ -139,7 +139,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
     uint public constant MAX_SUPPLY_FOR_AIRDROP_TOKEN = 8888;
     uint public qntmintnonmpforairdrop = 0;
     uint public constant EACH_RAND_SLOT_NUM_TOTAL_FOR_AIRDROP = 1111;
-    uint public numIssuedForAIRDROP = 0;
+    uint32 public numIssuedForAIRDROP = 0;
     uint public constant STARTINGIDFORAIRDROP = 180001;
     uint[] public intArrPRTAIRDROP;
 
@@ -235,28 +235,17 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
         _;
     }
 
-    //modifier end
-
     //sendMP start, mint MP start
     function random(uint number) public view returns (uint) {
-        //return uint(keccak256(abi.encodePacked(block.timestamp,block.difficulty,
-        //msg.sender))) % number;
         return uint(blockhash(block.number - 1)) % number;
     }
 
     function getNextMPID() internal returns (uint) {
         require(numIssuedForMP < MAX_SUPPLY_MP, "all MPs issued.");
-        //gold supply = ID 1-200, silver supply = 201-2000, bronze = 2001-20000
-        //uint8 randnum = uint8(random(255)); //0 to 254
 
         uint8 randval = uint8(random(intArr.length)); //0 - 199
 
-        /** chk and reassign available IDs left from randomization */
         uint8 iCheck = 0;
-        //uint8 randvalChk = randval;
-        //MAX_SUPPLY_MP == 20000
-        //intArr.length = MAX_SUPPLY_MP / NUM_TOTAL_MP (100) = 200
-        //intArr.length == 200
 
         while (iCheck < uint8(intArr.length)) {
             //below line is perfect if intArr[randval] == 100
@@ -357,7 +346,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
                 _mint(msg.sender, tokenID, 1, ""); //minted one MP
                 safeTransferFrom(msg.sender, winneraddr, tokenID, 1, "");
                 qntmintmpfornormaluser += 1;
-                perAddressMPs[winneraddr] = _concatenate(perAddressMPs[winneraddr], Strings.toString(tokenID));
+                perAddressMPs[winneraddr] += 1;
                 emit WinnersMP(winneraddr, tokenID);
             }
 
@@ -419,7 +408,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
                 _mint(msg.sender, tokenID, 1, "");
                 safeTransferFrom(msg.sender, winneraddr, tokenID, 1, "");
                 qntmintmpforinternalteam += 1;
-                perAddressMPs[winneraddr] = _concatenate(perAddressMPs[winneraddr], Strings.toString(tokenID));
+                perAddressMPs[winneraddr] += 1;
                 emit WinnersMP(winneraddr, tokenID);
             }
 
@@ -477,7 +466,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
                 _mint(msg.sender, tokenID, 1, "");
                 safeTransferFrom(msg.sender, winneraddr, tokenID, 1, "");
                 qntmintmpforairdrop += 1;
-                perAddressMPs[winneraddr] = _concatenate(perAddressMPs[winneraddr], Strings.toString(tokenID));
+                perAddressMPs[winneraddr] += 1;
                 emit WinnersMP(winneraddr, tokenID);
             }
 
@@ -488,11 +477,6 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
     }
 
     //sendMP end
-
-    //NONMP mint start
-    function _concatenate(string memory a, string memory b) private pure returns (string memory) {
-        return string(abi.encodePacked(a, ",", b));
-    }
 
     modifier presalePRTisActive() {
         require(presalePRT > 0, "Presale PRT is not active");
@@ -513,7 +497,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
         }
     }
 
-    function mintNONMPForAIRDROP(uint qnt) internal {
+    function mintNONMPForAIRDROP(uint8 qnt) internal {
         bool isRemainMessageNeeds = false;
 
         //added:0
@@ -522,12 +506,12 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
 
         //added:1
         if (userNONMPs[msg.sender] + qnt > MAX_PRT_AMOUNT_PER_ACC) {
-            qnt = uint(MAX_PRT_AMOUNT_PER_ACC - userNONMPs[msg.sender]);
+            qnt = uint8(MAX_PRT_AMOUNT_PER_ACC - userNONMPs[msg.sender]);
             isRemainMessageNeeds = true;
         }
 
         //AIRDROP8888 - 180001-188888
-        (uint initID, uint _qnt, uint _numIssued, uint8 _randval) = getNextNONMPID(
+        (uint32 initID, uint8 _qnt, uint32 _numIssued, uint8 _randval) = getNextNONMPID(
             qnt,
             STARTINGIDFORAIRDROP,
             numIssuedForAIRDROP,
@@ -540,7 +524,6 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
         }
 
         //added:2
-        // require(userNONMPs[msg.sender] + _qnt <= MAX_PRT_AMOUNT_PER_ACC, _concatenate("The remain qnt: ", Strings.toString(_qnt_remain)));//remainig item
 
         //added:3
         uint weiBalanceWallet = msg.value;
@@ -553,7 +536,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
         uint[] memory ids = new uint[](_qnt);
         uint[] memory amounts = new uint[](_qnt);
         for (uint i = 0; i < _qnt; i++) {
-            ids[i] = initID + i;
+            ids[i] = uint32(initID + i);
             amounts[i] = 1;
         }
 
@@ -561,7 +544,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
 
         //add event
         for (uint i = 0; i < _qnt; i++) {
-            prtPerAddress[ids[i]] = msg.sender;
+            prtPerAddress[uint32(ids[i])] = msg.sender;
         }
 
         //added:6
@@ -586,7 +569,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
         }
     }
 
-    function mintNONMPForInternalTeam(uint qnt) internal {
+    function mintNONMPForInternalTeam(uint8 qnt) internal {
         bool isRemainMessageNeeds = false;
 
         //added:0
@@ -595,12 +578,12 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
 
         //added:1
         if (userNONMPs[msg.sender] + qnt >= MAX_PRT_AMOUNT_PER_ACC) {
-            qnt = uint(MAX_PRT_AMOUNT_PER_ACC - userNONMPs[msg.sender]);
+            qnt = uint8(MAX_PRT_AMOUNT_PER_ACC - userNONMPs[msg.sender]);
             isRemainMessageNeeds = true;
         }
 
         //INTERNAL TEAM - 160001-180000
-        (uint initID, uint _qnt, uint _numIssued, uint8 _randval) = getNextNONMPID(
+        (uint32 initID, uint8 _qnt, uint32 _numIssued, uint8 _randval) = getNextNONMPID(
             qnt,
             STARTINGIDFORINTERNALTEAM,
             numIssuedForInternalTeamIDs,
@@ -613,7 +596,6 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
         }
 
         //added:2
-        // require(userNONMPs[msg.sender] + _qnt <= MAX_PRT_AMOUNT_PER_ACC, _concatenate("The remain qnt: ", Strings.toString(_qnt_remain)));
 
         //added:3
         uint weiBalanceWallet = msg.value;
@@ -634,7 +616,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
 
         //add event
         for (uint i = 0; i < _qnt; i++) {
-            prtPerAddress[ids[i]] = msg.sender;
+            prtPerAddress[uint32(ids[i])] = msg.sender;
         }
 
         //added:6
@@ -658,7 +640,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
         }
     }
 
-    function mintNONMPForNomalUser(uint qnt) internal {
+    function mintNONMPForNomalUser(uint8 qnt) internal {
         bool isRemainMessageNeeds = false;
 
         //added:0
@@ -667,12 +649,12 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
 
         //added:1
         if (userNONMPs[msg.sender] + qnt > MAX_PRT_AMOUNT_PER_ACC) {
-            qnt = uint(MAX_PRT_AMOUNT_PER_ACC - userNONMPs[msg.sender]);
+            qnt = uint8(MAX_PRT_AMOUNT_PER_ACC - userNONMPs[msg.sender]);
             isRemainMessageNeeds = true;
         }
 
         //NORMAL 20001-160000
-        (uint initID, uint _qnt, uint _numIssued, uint8 _randval) = getNextNONMPID(
+        (uint32 initID, uint8 _qnt, uint32 _numIssued, uint8 _randval) = getNextNONMPID(
             qnt,
             STARTINGIDFORPRT,
             numIssuedForNormalUser,
@@ -685,7 +667,6 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
         }
 
         //added:2
-        // require(userNONMPs[msg.sender] + _qnt <= MAX_PRT_AMOUNT_PER_ACC, _concatenate("The remain qnt: ", Strings.toString(_qnt_remain)));
 
         //added:3
         uint weiBalanceWallet = msg.value;
@@ -713,7 +694,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
 
         //add event
         for (uint i = 0; i < _qnt; i++) {
-            prtPerAddress[ids[i]] = msg.sender;
+            prtPerAddress[uint32(ids[i])] = msg.sender;
         }
 
         //added:6
@@ -737,14 +718,15 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
         }
     }
 
+    // (uint32 initID, uint8 _qnt, uint32 _numIssued, uint8 _randval)
     function getNextNONMPID(
-        uint qnt,
+        uint8 qnt,
         uint initialNum,
-        uint numIssued,
+        uint32 numIssued,
         uint max_supply_token,
         uint each_rand_slot_num_total,
         uint[] memory intArray
-    ) public view returns (uint, uint, uint, uint8) {
+    ) public view returns (uint32, uint8, uint32, uint8) {
         require(numIssued < max_supply_token, "all NONMP are issued.");
 
         uint8 randval = uint8(random(max_supply_token / each_rand_slot_num_total)); //0 to 15
@@ -767,11 +749,11 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
         uint mpid = (intArray[randval]) + (uint16(randval) * each_rand_slot_num_total);
 
         if (intArray[randval] + qnt > each_rand_slot_num_total) {
-            qnt = each_rand_slot_num_total - intArray[randval];
+            qnt = uint8(each_rand_slot_num_total - intArray[randval]);
         }
 
-        numIssued = qnt + numIssued;
-        return (mpid + initialNum, qnt, numIssued, randval);
+        numIssued = uint32(qnt + numIssued);
+        return (uint32(mpid + initialNum), qnt, numIssued, randval);
     }
 
     //NONMP mint end
