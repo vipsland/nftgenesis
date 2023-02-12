@@ -6,7 +6,7 @@ const hre = require('hardhat')
 async function main() {
 
   await hre.run('verify:verify', {
-    address: '0xE151a975c8E1feb54bDe977B7ffd91f8989b641d',//latest
+    address: '0xCcc16204d8E631f6ef7f40D25DbE3fd985e3e175',//latest
     constructorArguments: []
   })
 }
