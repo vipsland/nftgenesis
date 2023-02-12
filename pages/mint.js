@@ -9,12 +9,13 @@ import {
   getMaxSupplyNONMP,
   getMaxSupplyMP,
   getisMintNONMP,
+  getStageNONMP,
   getisMintMP,
   getPerAccountNONMPs,
   getMaxNONMPAmount,
   isWinner,
   mintNONMP,
-  getPriceNONMP
+  getPriceNONMPETH
 } from '../utils/interact'
 
 import { ethers } from 'ethers'
@@ -37,6 +38,7 @@ export default function Mint() {
 
   const [maxNONMPAmount, setMaxNONMPAmount] = useState(0)
   const [isMintNONMP, setisMintNONMP] = useState(false)
+  const [stageNONMP, setStageNONMP] = useState(false)
   const [isMintMP, setisMintMP] = useState(false)
 
 
@@ -116,13 +118,16 @@ export default function Mint() {
       setTotalMintedNONMP(await getTotalMintedNONMP())
       setTotalMintedMP(await getTotalMintedMP())
       setisMintNONMP(await getisMintNONMP())
+      setStageNONMP(await getStageNONMP())
+
+
       setisMintMP(await getisMintMP())
-      setPriceNONMP(await getPriceNONMP())
+      setPriceNONMP(await getPriceNONMPETH())
       setMaxNONMPAmount(await getMaxNONMPAmount())
     }
 
     init()
-  }, [wallet])
+  }, [wallet?.accounts[0]?.address])
 
   const incrementPRTAmount = () => {
     if (prtAmount < maxNONMPAmount) {
@@ -180,7 +185,7 @@ export default function Mint() {
         <div className="flex flex-col items-center justify-center h-full w-full px-2 md:px-10">
           <div className="relative z-1 md:max-w-3xl w-full bg-gray-900/90 filter backdrop-blur-sm py-4 rounded-md px-2 md:px-10 flex flex-col items-center">
             <h1 className="font-coiny uppercase font-bold text-3xl md:text-4xl bg-gradient-to-br  from-brand-green to-brand-blue bg-clip-text text-transparent mt-3">
-              {isMintNONMP ? 'MINT NONMP' : isMintMP ? 'Mint MP' : 'NO ACTIVE STAGE'}
+              {isMintNONMP ? `MINT NONMP, stage ${stageNONMP}` : isMintMP ? 'Mint MP' : 'NO ACTIVE STAGE'}
             </h1>
             <h3 className="text-sm text-pink-200 tracking-widest">
               {wallet?.accounts[0]?.address

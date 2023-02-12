@@ -25,7 +25,7 @@ const VipslandContract = new web3.eth.Contract(contract.abi, config.contractAddr
 
 
 export const getTotalMintedNONMP = async () => {
-  const stage = await VipslandContract.methods.presalePRT().call()
+  const stage = Number(await VipslandContract.methods.presalePRT().call());
   if (stage === 1) return await VipslandContract.methods.qntmintnonmpfornormaluser().call()
   if (stage === 2) return await VipslandContract.methods.qntmintnonmpforinternalteam().call()
   if (stage === 3) return await VipslandContract.methods.qntmintnonmpforairdrop().call()
@@ -35,7 +35,7 @@ export const getTotalMintedNONMP = async () => {
 
 
 export const getTotalMintedMP = async () => {
-  const stage = await VipslandContract.methods.presalePRT().call()
+  const stage = Number(await VipslandContract.methods.presalePRT().call());
   if (stage === 1) return await VipslandContract.methods.qntmintmpfornormaluser().call()
   if (stage === 2) return await VipslandContract.methods.qntmintmpforinternalteam().call()
   if (stage === 3) return await VipslandContract.methods.qntmintmpforairdrop().call()
@@ -45,7 +45,7 @@ export const getTotalMintedMP = async () => {
 
 
 export const getMaxSupplyNONMP = async () => {
-  const stage = await VipslandContract.methods.presalePRT().call()
+  const stage = Number(await VipslandContract.methods.presalePRT().call());
   if (stage === 1) return await VipslandContract.methods.MAX_SUPPLY_FOR_PRT_TOKEN().call()
   if (stage === 2) return await VipslandContract.methods.MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN().call()
   if (stage === 3) return await VipslandContract.methods.MAX_SUPPLY_FOR_AIRDROP_TOKEN().call()
@@ -58,12 +58,18 @@ export const getMaxSupplyMP = async () => {
 }
 
 export const getisMintNONMP = async () => {
-  const stage = await VipslandContract.methods.presalePRT().call()
+  const stage = Number(await VipslandContract.methods.presalePRT().call());
   return stage === 1 || stage === 2 || stage === 3;
 }
 
+export const getStageNONMP = async () => {
+  const stage = Number(await VipslandContract.methods.presalePRT().call());
+  return stage;
+}
+
+
 export const getisMintMP = async () => {
-  const stage = await VipslandContract.methods.presalePRT().call();
+  const stage = Number(await VipslandContract.methods.presalePRT().call());
 
   if (stage === 1) return await VipslandContract.methods.mintMPIsOpen().call()
   if (stage === 2) return await VipslandContract.methods.mintInternalTeamMPIsOpen().call()
@@ -78,8 +84,38 @@ export const getMaxNONMPAmount = async () => {
 }
 
 
-export const getPriceNONMP = async () => {
-  const stage = await VipslandContract.methods.presalePRT().call();
+export const getPriceNONMPETH = async () => {
+  const stage = Number(await VipslandContract.methods.presalePRT().call());
+
+  if (stage === 1) {
+
+    const priceWei = await VipslandContract.methods.PRICE_PRT().call();
+    const priceEth = web3.utils.fromWei(`${priceWei}`, 'ether');
+
+    return priceEth;
+
+  }
+
+  if (stage === 2) {
+    const priceWei = await VipslandContract.methods.PRICE_PRT_INTERNALTEAM().call();
+    const priceEth = web3.utils.fromWei(`${priceWei}`, 'ether');
+
+    return priceEth;
+
+
+  }
+  if (stage === 3) {
+
+    const priceWei = await VipslandContract.methods.PRICE_PRT_AIRDROP().call();
+    const priceEth = web3.utils.fromWei(`${priceWei}`, 'ether');
+
+    return priceEth;
+  }
+  return 0;
+}
+
+export const getPriceNONMPWEI = async () => {
+  const stage = Number(await VipslandContract.methods.presalePRT().call());
 
   if (stage === 1) return await VipslandContract.methods.PRICE_PRT().call()
   if (stage === 2) return await VipslandContract.methods.PRICE_PRT_INTERNALTEAM().call()
@@ -113,12 +149,8 @@ export const isWinner = async (wallet) => {
 
 export const mintNONMP = async (prtAmount, wallet) => {
 
-  const priceWei = getPriceNONMP();
-  console.log(`?priceWei`, { priceWei });
-
-  const priceEth = web3.utils.fromWei(`${price}`, 'ether');
-
-  console.log(`?priceEth`, { priceEth });
+  const priceWei = await getPriceNONMPWEI();
+  const priceEth = web3.utils.fromWei(`${priceWei}`, 'ether');
 
   if (!window.ethereum.selectedAddress) {
     return {
@@ -134,17 +166,17 @@ export const mintNONMP = async (prtAmount, wallet) => {
     }
   }
 
-
   const nonce = await web3.eth.getTransactionCount(
     wallet?.accounts[0]?.address,
     'latest'
   )
 
+  console.log(`debug String(priceEth * prtAmount)`, String(priceEth * prtAmount));
   const tx = {
     to: config.contractAddress,
     from: wallet?.accounts[0]?.address,
     value: parseInt(
-      web3.utils.toWei(String(priceEth * prtAmount), 'ether')
+      web3.utils.toWei(`${priceEth * prtAmount}`, 'ether')
     ).toString(16), // hex
     data: VipslandContract.methods
       .mintNONMP(wallet?.accounts[0]?.address, prtAmount)
