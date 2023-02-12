@@ -32,7 +32,8 @@ export const getTotalNONMP = async () => {
 }
 
 
-export const getTotalMinted = async (stage) => {
+export const getTotalMinted = async () => {
+  const stage = await VipslandContract.methods.presalePRT().call()
   if (stage === 1) return await VipslandContract.methods.qntmintnonmpfornormaluser().call()
   if (stage === 2) return await VipslandContract.methods.qntmintnonmpforinternalteam().call()
   if (stage === 3) return await VipslandContract.methods.qntmintmpforairdrop().call()
@@ -60,6 +61,8 @@ export const getisMintNONMP = async () => {
 }
 
 export const getisMintMP = async () => {
+  const stage = await VipslandContract.methods.presalePRT().call()
+
   if (stage === 1) return await VipslandContract.methods.mintMPIsOpen().call()
   if (stage === 2) return await VipslandContract.methods.mintInternalTeamMPIsOpen().call()
   if (stage === 3) return await VipslandContract.methods.mintAirdropMPIsOpen().call()
