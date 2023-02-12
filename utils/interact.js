@@ -99,9 +99,8 @@ export const isWinner = async (wallet) => {
     return 0
   }
 
-  const tokens = await VipslandContract.methods.perAddressMPs(wallet?.accounts[0]?.address).call() || ``;
-  console.log(`tokens debug`, { tokens });
-  return (tokens || '')?.split(',').length > 0;
+  const tokens_amount = Number(await VipslandContract.methods.perAddressMPs(wallet?.accounts[0]?.address).call());
+  return tokens_amount > 0;
 
 }
 
