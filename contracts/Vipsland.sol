@@ -666,11 +666,6 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
         }
 
         //added:2
-
-        //added:3
-        uint weiBalanceWallet = msg.value;
-        require(weiBalanceWallet >= PRICE_PRT * _qnt, "err_19");
-
         //extra logic only for normal user
         uint _PRICE_PRT = PRICE_PRT;
         if (_qnt >= 5 && _qnt < 10) {
@@ -678,6 +673,11 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
         } else if (_qnt >= 10) {
             _PRICE_PRT = PRICE_PRT / 2;
         }
+
+        //added:3
+        uint weiBalanceWallet = msg.value;
+        require(weiBalanceWallet >= _PRICE_PRT * _qnt, "err_19");
+
 
         //added:4
         payable(owner()).transfer(_PRICE_PRT * _qnt); //Send money to owner of contract, fix: testTransfer event
