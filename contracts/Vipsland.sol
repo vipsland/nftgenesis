@@ -40,13 +40,13 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
 
     modifier onlyOnceCanBeMinted(uint tokenId) {
         //for security
-        require(totalSupply(tokenId) == 0, "Only once can be minted");
+        require(totalSupply(tokenId) == 0, "err_1");
         _;
     }
 
     modifier tokenExist(uint tokenId) {
         //for security
-        require(exists(tokenId), "Token is not exist");
+        require(exists(tokenId), "err_2");
         _;
     }
     //manually mint and transfer end
@@ -205,12 +205,12 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
 
     //modifier start
     modifier onlyAccounts() {
-        require(msg.sender == tx.origin, "Not allowed origin");
+        require(msg.sender == tx.origin, "err_3");
         _;
     }
 
     modifier onlyForCaller(address _account) {
-        require(msg.sender == _account, "Only allowed for caller");
+        require(msg.sender == _account, "err_4");
         _;
     }
 
@@ -220,17 +220,17 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
     }
 
     modifier mintMPIsOpenModifier() {
-        require(mintMPIsOpen, "Mint is not open");
+        require(mintMPIsOpen, "err_5");
         _;
     }
 
     modifier mintAirdropMPIsOpenModifier() {
-        require(mintAirdropMPIsOpen, "Mint is not open for airdrop");
+        require(mintAirdropMPIsOpen, "err_6");
         _;
     }
 
     modifier mintInternalTeamMPIsOpenModifier() {
-        require(mintInternalTeamMPIsOpen, "Mint is not open for internal team");
+        require(mintInternalTeamMPIsOpen, "err_7");
         _;
     }
 
@@ -240,7 +240,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
     }
 
     function getNextMPID() internal returns (uint) {
-        require(numIssuedForMP < MAX_SUPPLY_MP, "all MPs issued.");
+        require(numIssuedForMP < MAX_SUPPLY_MP, "err_8");
 
         uint8 randval = uint8(random(intArr.length)); //0 - 199
 
@@ -301,7 +301,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
 
     //call 10 times
     function sendMPNormalUsers() public payable onlyAccounts onlyOwner mintMPIsOpenModifier {
-        require(sendMPAllDoneForNormalUsers == false, "All MPs are issued for normal user");
+        require(sendMPAllDoneForNormalUsers == false, "err_9");
         if (xrand == 18) {
             xrand = uint8(createXRAND(17));
         }
@@ -359,8 +359,8 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
     }
 
     function sendMPInternalTeam() public payable onlyAccounts onlyOwner mintInternalTeamMPIsOpenModifier {
-        require(sendMPAllDoneForNormalUsers == true, "All MPs are not yet issued for normal user");
-        require(sendMPAllDoneForInternalTeam == false, "All MPs are issued for internal team");
+        require(sendMPAllDoneForNormalUsers == true, "err_10");
+        require(sendMPAllDoneForInternalTeam == false, "err_11");
 
         _counter_for_generatelucky_mp_internalteam.increment();
         uint counter = _counter_for_generatelucky_mp_internalteam.current();
@@ -418,8 +418,8 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
     }
 
     function sendMPAirdrop() public payable onlyAccounts onlyOwner mintAirdropMPIsOpenModifier {
-        require(sendMPAllDoneForNormalUsers == true, "All send MPs are not yet issued");
-        require(sendMPAllDoneForAirdrop == false, "All sendAirdrop MPs are issued");
+        require(sendMPAllDoneForNormalUsers == true, "err_12");
+        require(sendMPAllDoneForAirdrop == false, "err_13");
 
         _counter_for_generatelucky_mp_airdrop.increment();
         uint counter = _counter_for_generatelucky_mp_airdrop.current();
@@ -478,14 +478,14 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
     //sendMP end
 
     modifier presalePRTisActive() {
-        require(presalePRT > 0, "Presale PRT is not active");
+        require(presalePRT > 0, "err_14");
         _;
     }
 
     //main function to mint NONMP
     function mintNONMP(address account, uint8 _amount_wanted_able_to_get) external payable onlyForCaller(account) onlyAccounts presalePRTisActive nonReentrant {
-        require(_amount_wanted_able_to_get > 0, "Amount needs to be greater than 0");
-        require(msg.sender != address(0), "Sender is not exist");
+        require(_amount_wanted_able_to_get > 0, "err_15");
+        require(msg.sender != address(0), "err_16");
 
         if (presalePRT == 3) {
             mintNONMPForAIRDROP(_amount_wanted_able_to_get);
@@ -500,8 +500,8 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
         bool isRemainMessageNeeds = false;
 
         //added:0
-        require(userNONMPs[msg.sender] < MAX_PRT_AMOUNT_PER_ACC, "Limit is 100 tokens");
-        require(qnt <= MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION, "Max mint per transaction is 35 tokens");
+        require(userNONMPs[msg.sender] < MAX_PRT_AMOUNT_PER_ACC, "err_17");
+        require(qnt <= MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION, "err_18");
 
         //added:1
         if (userNONMPs[msg.sender] + qnt > MAX_PRT_AMOUNT_PER_ACC) {
@@ -526,7 +526,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
 
         //added:3
         uint weiBalanceWallet = msg.value;
-        require(weiBalanceWallet >= PRICE_PRT_AIRDROP * _qnt, "Insufficient funds");
+        require(weiBalanceWallet >= PRICE_PRT_AIRDROP * _qnt, "err_19");
 
         //added:4
         payable(owner()).transfer(PRICE_PRT_AIRDROP * _qnt); //Send money to owner of contract
@@ -572,8 +572,8 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
         bool isRemainMessageNeeds = false;
 
         //added:0
-        require(userNONMPs[msg.sender] < MAX_PRT_AMOUNT_PER_ACC, "Limit is 100 tokens");
-        require(qnt <= MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION, "Max mint per transaction is 35 tokens");
+        require(userNONMPs[msg.sender] < MAX_PRT_AMOUNT_PER_ACC, "err_17");
+        require(qnt <= MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION, "err_18");
 
         //added:1
         if (userNONMPs[msg.sender] + qnt >= MAX_PRT_AMOUNT_PER_ACC) {
@@ -598,7 +598,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
 
         //added:3
         uint weiBalanceWallet = msg.value;
-        require(weiBalanceWallet >= PRICE_PRT_INTERNALTEAM * _qnt, "Insufficient funds");
+        require(weiBalanceWallet >= PRICE_PRT_INTERNALTEAM * _qnt, "err_19");
 
         //added:4
         payable(owner()).transfer(PRICE_PRT_INTERNALTEAM * _qnt); //Send money to owner of contract
@@ -643,8 +643,8 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
         bool isRemainMessageNeeds = false;
 
         //added:0
-        require(userNONMPs[msg.sender] <= MAX_PRT_AMOUNT_PER_ACC, "Max supply 100 tokens");
-        require(qnt <= MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION, "Max mint per transaction is 35 tokens");
+        require(userNONMPs[msg.sender] <= MAX_PRT_AMOUNT_PER_ACC, "err_17");
+        require(qnt <= MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION, "err_18");
 
         //added:1
         if (userNONMPs[msg.sender] + qnt > MAX_PRT_AMOUNT_PER_ACC) {
@@ -669,7 +669,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
 
         //added:3
         uint weiBalanceWallet = msg.value;
-        require(weiBalanceWallet >= PRICE_PRT * _qnt, "Insufficient funds");
+        require(weiBalanceWallet >= PRICE_PRT * _qnt, "err_19");
 
         //extra logic only for normal user
         uint _PRICE_PRT = PRICE_PRT;
@@ -726,7 +726,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
         uint each_rand_slot_num_total,
         uint[] memory intArray
     ) public view returns (uint, uint8, uint, uint8) {
-        require(numIssued < max_supply_token, "all NONMP are issued.");
+        require(numIssued < max_supply_token, "err_20");
 
         uint8 randval = uint8(random(max_supply_token / each_rand_slot_num_total)); //0 to 15
         uint8 iCheck = 0;
