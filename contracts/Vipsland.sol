@@ -12,8 +12,6 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
 
-import "hardhat/console.sol";
-
 contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
     using SafeMath for uint;
     using Counters for Counters.Counter;
@@ -79,8 +77,8 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
     uint public qntmintmpforinternalteam = 0;
     uint public qntmintmpforairdrop = 0;
     uint public constant MAX_SUPPLY_MP = 20000;
-    uint public constant NUM_TOTAL_FOR_MP = 100;
-    uint public xrand = 18;
+    uint8 public constant NUM_TOTAL_FOR_MP = 100;
+    uint8 public xrand = 18;
     Counters.Counter public _counter_for_generatelucky_mp;
     Counters.Counter public _counter_for_generatelucky_mp_internalteam;
     Counters.Counter public _counter_for_generatelucky_mp_airdrop;
@@ -90,7 +88,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
     //NONMP
     mapping(address => string) public perAddressMPs;
     mapping(uint => address) public prtPerAddress;
-    mapping(address => uint) public userNONMPs; //each address can get 100/17=~6
+    mapping(address => uint8) public userNONMPs; //each address can get 100/17=~6
 
     function getAddrFromNONMPID(uint _winnerTokenNONMPID) internal view returns (address) {
         if (exists(_winnerTokenNONMPID) && balanceOf(prtPerAddress[_winnerTokenNONMPID], _winnerTokenNONMPID) > 0) {
@@ -100,8 +98,8 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
         return address(0);
     }
 
-    uint public constant MAX_PRT_AMOUNT_PER_ACC = 100;
-    uint public constant MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION = 35;
+    uint8 public constant MAX_PRT_AMOUNT_PER_ACC = 100;
+    uint8 public constant MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION = 35;
 
     //NONMP NORMAL 20001-160000
     uint public PRICE_PRT = 0.123 ether;
@@ -289,7 +287,6 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
 
         intArr[randval] += 1;
         numIssuedForMP++;
-        //console.log(mpid);
         return mpid;
     }
 
@@ -318,7 +315,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
     function sendMPNormalUsers() public payable onlyAccounts onlyOwner mintMPIsOpenModifier {
         require(sendMPAllDoneForNormalUsers == false, "All MPs are issued for normal user");
         if (xrand == 18) {
-            xrand = createXRAND(17);
+            xrand = uint8(createXRAND(17));
         }
         _counter_for_generatelucky_mp.increment();
         uint counter = _counter_for_generatelucky_mp.current();
@@ -412,9 +409,6 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
             emit MPAllDone(sendMPAllDoneForInternalTeam);
 
             if (sendMPAllDoneForInternalTeam) {
-                console.log("_winnerTokenNONMPID2", _winnerTokenNONMPID);
-                console.log("xrand", xrand);
-                console.log("max_nonmpid", max_nonmpid);
                 break;
             }
             emit SelectedNONMPIDTokens(_winnerTokenNONMPID, (max_nonmpid - xrand));
@@ -472,9 +466,6 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
             emit MPAllDone(sendMPAllDoneForAirdrop);
 
             if (sendMPAllDoneForAirdrop) {
-                console.log("_winnerTokenNONMPID4", _winnerTokenNONMPID);
-                console.log("xrand", xrand);
-                console.log("max_nonmpid", max_nonmpid);
                 break;
             }
 
@@ -574,7 +565,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
         }
 
         //added:6
-        userNONMPs[msg.sender] = uint(userNONMPs[msg.sender]) + ids.length;
+        userNONMPs[msg.sender] = uint8(userNONMPs[msg.sender] + ids.length);
 
         //added:7
         //update:
@@ -647,7 +638,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
         }
 
         //added:6
-        userNONMPs[msg.sender] = uint(userNONMPs[msg.sender]) + ids.length;
+        userNONMPs[msg.sender] = uint8(userNONMPs[msg.sender] + ids.length);
 
         //added:7
         //update:
@@ -656,7 +647,6 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
 
         //added:8
         qntmintnonmpforinternalteam += _qnt;
-        console.log("qntmintnonmpforinternalteam", qntmintnonmpforinternalteam);
         if (qntmintnonmpforinternalteam >= MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN) {
             mintInternalTeamMPIsOpen = true;
         }
@@ -727,7 +717,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
         }
 
         //added:6
-        userNONMPs[msg.sender] = uint(userNONMPs[msg.sender]) + ids.length;
+        userNONMPs[msg.sender] = uint8(userNONMPs[msg.sender]+ids.length);
 
         //added:7
         //update:
@@ -736,7 +726,6 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
 
         //added:8
         qntmintnonmpfornormaluser += _qnt;
-        console.log("qntmintnonmpfornormaluser", qntmintnonmpfornormaluser);
         if (qntmintnonmpfornormaluser >= MAX_SUPPLY_FOR_PRT_TOKEN) {
             mintMPIsOpen = true;
         }
