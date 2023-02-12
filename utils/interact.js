@@ -59,14 +59,20 @@ export const getisMintNONMP = async () => {
   return stage === 1 || stage === 2 || stage === 3;
 }
 
-export const getIsMintIsOpen = async () => {
-  return await VipslandContract.methods.mintIsOpen().call()
+export const getisMintMP = async () => {
+  if (stage === 1) return await VipslandContract.methods.mintMPIsOpen().call()
+  if (stage === 2) return await VipslandContract.methods.mintInternalTeamMPIsOpen().call()
+  if (stage === 3) return await VipslandContract.methods.mintAirdropMPIsOpen().call()
+
+  return false;
 }
 
 
 export const getPrice = async () => {
-  const price = await VipslandContract.methods.PRICE_PRT().call()
-  return price
+  if (stage === 1) return await VipslandContract.methods.PRICE_PRT().call()
+  if (stage === 2) return await VipslandContract.methods.PRICE_PRT_INTERNALTEAM().call()
+  if (stage === 3) return await VipslandContract.methods.PRICE_PRT_AIRDROP().call()
+  return 0;
 }
 
 export const getPerAccountPRT = async (wallet) => {

@@ -9,7 +9,7 @@ import {
   getMaxSupplyNONMP,
   getMaxSupplyMP,
   getisMintNONMP,
-  getIsMintIsOpen,
+  getisMintMP,
   buyPRT,
   mintNFT,
   getPerAccountPRT,
@@ -37,8 +37,8 @@ export default function Mint() {
   const [totalMintedNFT, setTotalMinted] = useState(0)
 
   const [maxPRTAmount, setMaxPRTAmount] = useState(0)
-  const [isMintNONMP, setIsMintNONMP] = useState(false)
-  const [isMintIsOpen, setIsMintIsOpen] = useState(false)
+  const [isMintNONMP, setisMintNONMP] = useState(false)
+  const [isMintMP, setisMintMP] = useState(false)
 
 
   const [status, setStatus] = useState(null)
@@ -116,8 +116,8 @@ export default function Mint() {
       setMaxSupplyMP(await getMaxSupplyMP())
       setTotalSoldNONMP(await getTotalNONMP())
       setTotalMinted(await getTotalMinted())
-      setIsMintNONMP(await getisMintNONMP())
-      setIsMintIsOpen(await getIsMintIsOpen())
+      setisMintNONMP(await getisMintNONMP())
+      setisMintMP(await getisMintMP())
 
       setMaxPRTAmount(
         isMintNONMP === false ? 0 : config.presaleMaxPRTAmount
@@ -183,7 +183,7 @@ export default function Mint() {
         <div className="flex flex-col items-center justify-center h-full w-full px-2 md:px-10">
           <div className="relative z-1 md:max-w-3xl w-full bg-gray-900/90 filter backdrop-blur-sm py-4 rounded-md px-2 md:px-10 flex flex-col items-center">
             <h1 className="font-coiny uppercase font-bold text-3xl md:text-4xl bg-gradient-to-br  from-brand-green to-brand-blue bg-clip-text text-transparent mt-3">
-              {isMintNONMP ? 'Sale PRT' : isMintIsOpen ? 'Mint is life' : 'Sale PRT is not active'}
+              {isMintNONMP ? 'MINT NONMP' : isMintMP ? 'Mint MP' : 'NO ACTIVE STAGE'}
             </h1>
             <h3 className="text-sm text-pink-200 tracking-widest">
               {wallet?.accounts[0]?.address
@@ -201,11 +201,11 @@ export default function Mint() {
               {connecting ? 'connecting' : wallet ? 'disconnect wallet' : 'connect wallet'}
             </button>
 
-            <div className="border-t border-gray-800 flex flex-col items-center mt-10 py-2 w-full">{wallet && isMintIsOpen && !isAccountWinner ? <span className="text-brand-yellow font-coiny">Sorry! You did not win NFT.</span> : null}</div>
+            <div className="border-t border-gray-800 flex flex-col items-center mt-10 py-2 w-full">{wallet && isMintMP && !isAccountWinner ? <span className="text-brand-yellow font-coiny">Sorry! You did not win NFT.</span> : null}</div>
 
 
 
-            {wallet && (isMintNONMP || isMintIsOpen) ?
+            {wallet && (isMintNONMP || isMintMP) ?
               <div className="flex flex-col md:flex-row md:space-x-14 w-full mt-10 md:mt-14">
 
                 <div className="relative w-full">
@@ -215,7 +215,7 @@ export default function Mint() {
                     </p>
                   </div> : null}
 
-                  {isMintIsOpen && isAccountWinner ? <div className="font-coiny z-10 absolute top-2 left-2 opacity-80 filter backdrop-blur-lg text-base px-4 py-2 bg-black border border-brand-purple rounded-md flex items-center justify-center text-white font-semibold">
+                  {isMintMP && isAccountWinner ? <div className="font-coiny z-10 absolute top-2 left-2 opacity-80 filter backdrop-blur-lg text-base px-4 py-2 bg-black border border-brand-purple rounded-md flex items-center justify-center text-white font-semibold">
                     <p>
                       <span className="text-brand-pink">{totalMintedNFT}</span>{' '}/{' '}{maxSupplyMP}
                     </p>
@@ -229,8 +229,8 @@ export default function Mint() {
                 <div className="flex flex-col items-center w-full px-4 mt-16 md:mt-0">
 
                   {wallet ? <div className="font-coiny flex items-center justify-between w-full">
-                    {isMintIsOpen ? null : <button
-                      disabled={isMintIsOpen}
+                    {isMintMP ? null : <button
+                      disabled={isMintMP}
                       className="w-14 h-10 md:w-16 md:h-12 flex items-center justify-center text-brand-background hover:shadow-lg bg-gray-300 font-bold rounded-md"
                       onClick={incrementPRTAmount}
                     >
@@ -251,11 +251,11 @@ export default function Mint() {
                     </button>}
 
                     <p className="flex items-center justify-center flex-1 grow text-center font-bold text-brand-pink text-3xl md:text-4xl">
-                      {isMintIsOpen ? null : prtAmount}
+                      {isMintMP ? null : prtAmount}
                     </p>
 
-                    {isMintIsOpen ? null : <button
-                      disabled={isMintIsOpen}
+                    {isMintMP ? null : <button
+                      disabled={isMintMP}
                       className="w-14 h-10 md:w-16 md:h-12 flex items-center justify-center text-brand-background hover:shadow-lg bg-gray-300 font-bold rounded-md"
                       onClick={decrementPRTAmount}
                     >
@@ -282,7 +282,7 @@ export default function Mint() {
 
                   <p className="text-sm text-pink-200 tracking-widest mt-3">
 
-                    {wallet && isMintIsOpen ? <>
+                    {wallet && isMintMP ? <>
                       {isAccountWinner ?
                         <>
                           Congratulation! You won NFT, please mint. You can mint only <span className="text-brand-yellow font-coiny">1 NFT</span>.
@@ -319,7 +319,7 @@ export default function Mint() {
                     </div>
                   </div> : null}
 
-                  {wallet && isMintIsOpen && isAccountWinner ? <div className="border-t border-b py-4 mt-16 w-full">
+                  {wallet && isMintMP && isAccountWinner ? <div className="border-t border-b py-4 mt-16 w-full">
                     <div className="w-full text-xl font-coiny flex items-center justify-between text-brand-yellow">
                       <p>Total</p>
 
@@ -346,7 +346,7 @@ export default function Mint() {
                     {isPRTing ? <span className='animate-pulse'>Wait, processing...</span> : 'Buy PRTs'}
                   </button> : null}
 
-                  {wallet && isMintIsOpen && isAccountWinner ? <button
+                  {wallet && isMintMP && isAccountWinner ? <button
                     className={`${isMinting
                       ? 'bg-gray-900 cursor-not-allowed'
                       : 'bg-gradient-to-br from-brand-purple to-brand-pink shadow-lg hover:shadow-pink-400/50'
