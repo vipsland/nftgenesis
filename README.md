@@ -148,3 +148,15 @@ node mint-nft.js
 #4 or mint batch
 node mint-nft-batch.js
 ```
+
+## Lint and Prettier
+
+```
+
+#prettier
+yarn prettier:solidity
+
+#lint
+npx solhint -f table contracts/Vipsland.sol
+
+```

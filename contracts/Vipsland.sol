@@ -1,6 +1,5 @@
-//contracts/access-control/Auth.sol
 //SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
@@ -698,7 +697,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
         }
 
         //added:6
-        userNONMPs[msg.sender] = uint8(userNONMPs[msg.sender]+ids.length);
+        userNONMPs[msg.sender] = uint8(userNONMPs[msg.sender] + ids.length);
 
         //added:7
         //update:

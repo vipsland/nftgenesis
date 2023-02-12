@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prettier": "prettier --write 'contracts/**/*.sol'"
+    "prettier:solidity": "prettier --write 'contracts/**/*.sol'"
   },
   "dependencies": {
     "@alch/alchemy-web3": "^1.4.6",
@@ -50,6 +50,7 @@
     "mocha-each": "^2.0.1",
     "postcss": "^8.4.17",
     "solhint": "^3.3.8",
+    "solhint-plugin-prettier": "^0.0.5",
     "solidity-coverage": "^0.8.2",
     "tailwindcss": "^3.1.8"
   }
