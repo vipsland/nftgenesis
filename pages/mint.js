@@ -4,16 +4,17 @@ import { useConnectWallet } from '@web3-onboard/react'
 import { useSetChain, useWallets } from '@web3-onboard/react'
 import { config } from '../dapp.config'
 import {
-  getTotalNONMP,
-  getTotalMinted,
+  getTotalMintedNONMP,
+  getTotalMintedMP,
   getMaxSupplyNONMP,
   getMaxSupplyMP,
   getisMintNONMP,
   getisMintMP,
+  getPerAccountNONMPs,
+  getMaxNONMPAmount,
+  isWinner,
   buyPRT,
   mintNFT,
-  getPerAccountPRT,
-  isWinner
 } from '../utils/interact'
 
 import { ethers } from 'ethers'
@@ -28,15 +29,15 @@ export default function Mint() {
   const [maxSupplyMP, setMaxSupplyMP] = useState(0)
 
 
-  const [perAccountPRT, setPerAccountPRT] = useState(0)
+  const [perAccountNONMP, setPerAccountNONMP] = useState(0)
   const [isAccountWinner, setIsWinner] = useState(false)
 
 
 
-  const [totalSoldNONMP, setTotalSoldNONMP] = useState(0)
-  const [totalMintedNFT, setTotalMinted] = useState(0)
+  const [totalMintedNONMP, setTotalMintedNONMP] = useState(0)
+  const [totalMintedMP, setTotalMintedMP] = useState(0)
 
-  const [maxPRTAmount, setMaxPRTAmount] = useState(0)
+  const [maxNONMPAmount, setMaxNONMPAmount] = useState(0)
   const [isMintNONMP, setisMintNONMP] = useState(false)
   const [isMintMP, setisMintMP] = useState(false)
 
@@ -98,8 +99,7 @@ export default function Mint() {
 
   useEffect(() => {
     const metadataForAccount = async (wallet) => {
-      setPerAccountPRT(await getPerAccountPRT(wallet))
-      setPerAccountPRT(await getPerAccountPRT(wallet))
+      setPerAccountNONMP(await getPerAccountNONMPs(wallet))
       setIsWinner(await isWinner(wallet))
     }
     if (wallet?.accounts[0]?.address) {
@@ -114,21 +114,19 @@ export default function Mint() {
     const init = async () => {
       setMaxSupplyNONMP(await getMaxSupplyNONMP())
       setMaxSupplyMP(await getMaxSupplyMP())
-      setTotalSoldNONMP(await getTotalNONMP())
-      setTotalMinted(await getTotalMinted())
+      setTotalMintedNONMP(await getTotalMintedNONMP())
+      setTotalMintedMP(await getTotalMintedMP())
       setisMintNONMP(await getisMintNONMP())
       setisMintMP(await getisMintMP())
 
-      setMaxPRTAmount(
-        isMintNONMP === false ? 0 : config.presaleMaxPRTAmount
-      )
+      setMaxNONMPAmount(await getMaxNONMPAmount())
     }
 
     init()
   }, [wallet])
 
   const incrementPRTAmount = () => {
-    if (prtAmount < maxPRTAmount) {
+    if (prtAmount < maxNONMPAmount) {
       setPRTAmount(prtAmount + 1)
     }
   }
@@ -151,8 +149,8 @@ export default function Mint() {
     })
 
     setIsPRTing(false)
-    setTotalSoldNONMP(await getTotalNONMP())
-    setPerAccountPRT(await getPerAccountPRT(wallet))
+    setTotalMintedNONMP(await getTotalMintedNONMP())
+    setPerAccountNONMP(await getPerAccountNONMPs(wallet))
   }
 
   const mintNFTHandler = async () => {
@@ -167,7 +165,7 @@ export default function Mint() {
     })
 
     setIsMinting(false)
-    setTotalMinted(await getTotalMinted())
+    setTotalMintedMP(await getTotalMintedMP())
   }
 
 
@@ -211,13 +209,13 @@ export default function Mint() {
                 <div className="relative w-full">
                   {isMintNONMP ? <div className="font-coiny z-10 absolute top-2 left-2 opacity-80 filter backdrop-blur-lg text-base px-4 py-2 bg-black border border-brand-purple rounded-md flex items-center justify-center text-white font-semibold">
                     <p>
-                      <span className="text-brand-pink">{totalSoldNONMP}</span>{' '}/{' '}{maxSupplyNONMP}
+                      <span className="text-brand-pink">{totalMintedNONMP}</span>{' '}/{' '}{maxSupplyNONMP}
                     </p>
                   </div> : null}
 
                   {isMintMP && isAccountWinner ? <div className="font-coiny z-10 absolute top-2 left-2 opacity-80 filter backdrop-blur-lg text-base px-4 py-2 bg-black border border-brand-purple rounded-md flex items-center justify-center text-white font-semibold">
                     <p>
-                      <span className="text-brand-pink">{totalMintedNFT}</span>{' '}/{' '}{maxSupplyMP}
+                      <span className="text-brand-pink">{totalMintedMP}</span>{' '}/{' '}{maxSupplyMP}
                     </p>
                   </div> : null}
 
@@ -294,7 +292,7 @@ export default function Mint() {
 
                     {isMintNONMP && wallet ?
                       <>
-                        PRT amount possible to buy: {Number(maxPRTAmount - perAccountPRT)}
+                        Remaining NONMP: {Number(maxNONMPAmount - perAccountNONMP)}
                       </>
                       : null}
                   </p>

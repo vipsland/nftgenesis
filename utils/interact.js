@@ -22,7 +22,7 @@ const contract = require('../artifacts/contracts/Vipsland.sol/Vipsland.json')
 const VipslandContract = new web3.eth.Contract(contract.abi, config.contractAddress)
 
 
-export const getTotalNONMP = async () => {
+export const getTotalMintedNONMP = async () => {
   const stage = await VipslandContract.methods.presalePRT().call()
   if (stage === 1) return await VipslandContract.methods.qntmintnonmpfornormaluser().call()
   if (stage === 2) return await VipslandContract.methods.qntmintnonmpforinternalteam().call()
@@ -32,10 +32,10 @@ export const getTotalNONMP = async () => {
 }
 
 
-export const getTotalMinted = async () => {
+export const getTotalMintedMP = async () => {
   const stage = await VipslandContract.methods.presalePRT().call()
-  if (stage === 1) return await VipslandContract.methods.qntmintnonmpfornormaluser().call()
-  if (stage === 2) return await VipslandContract.methods.qntmintnonmpforinternalteam().call()
+  if (stage === 1) return await VipslandContract.methods.qntmintmpfornormaluser().call()
+  if (stage === 2) return await VipslandContract.methods.qntmintmpforinternalteam().call()
   if (stage === 3) return await VipslandContract.methods.qntmintmpforairdrop().call()
 
   return 0;
@@ -71,6 +71,11 @@ export const getisMintMP = async () => {
 }
 
 
+export const getMaxNONMPAmount = async () => {
+  return await VipslandContract.methods.MAX_PRT_AMOUNT_PER_ACC().call();
+}
+
+
 export const getPrice = async () => {
   if (stage === 1) return await VipslandContract.methods.PRICE_PRT().call()
   if (stage === 2) return await VipslandContract.methods.PRICE_PRT_INTERNALTEAM().call()
@@ -92,7 +97,10 @@ export const isWinner = async (wallet) => {
     return 0
   }
 
-  return await VipslandContract.methods.isWinner(wallet?.accounts[0]?.address).call()
+  const tokens = await VipslandContract.methods.perAddressMPs(wallet?.accounts[0]?.address).call() || [];
+  console.log(`tokens debug`, { tokens });
+  return tokens?.length > 0;
+
 }
 
 
