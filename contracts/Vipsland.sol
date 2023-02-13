@@ -143,12 +143,12 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
     uint[] public intArrPRTAIRDROP;
 
     //toggle start
-    uint8 public presalePRT = 0;
+    uint public presalePRT = 0;
     bool public mintMPIsOpen = false;
     bool public mintInternalTeamMPIsOpen = false;
     bool public mintAirdropMPIsOpen = false;
 
-    function setPreSalePRT(uint8 num) public onlyOwner onlyAllowedNum(num) {
+    function setPreSalePRT(uint num) public onlyOwner onlyAllowedNum(num) {
         presalePRT = num;
     }
 

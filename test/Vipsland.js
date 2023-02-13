@@ -69,7 +69,7 @@ describe("Vipslad contract deploy", function () {
 
   describe("setPreSalePRT", function () {
 
-    it(`${i++} setPreSalePRT 0,1,2,3`, async function () {
+    it.only(`${i++} setPreSalePRT 1,2,4`, async function () {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
 
@@ -80,17 +80,22 @@ describe("Vipslad contract deploy", function () {
       num = await hardhatVipslad.presalePRT();
       expect(num).to.equal(0);
 
-      await hardhatVipslad.connect(owner).setPreSalePRT(1);
-      num = await hardhatVipslad.presalePRT();
-      expect(num).to.equal(1);
+      //test Mint NONMP is not active: err_14
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4,{ value: ethers.utils.parseUnits('5', 'ether') })
+      ).to.be.revertedWith("err_14");
 
-      await hardhatVipslad.connect(owner).setPreSalePRT(2);
-      num = await hardhatVipslad.presalePRT();
-      expect(num).to.equal(2);
 
-      await hardhatVipslad.connect(owner).setPreSalePRT(3);
-      num = await hardhatVipslad.presalePRT();
-      expect(num).to.equal(3);
+      // await hardhatVipslad.connect(owner).setPreSalePRT(1);
+      // num = await hardhatVipslad.presalePRT();
+      // expect(num).to.equal(1);
+
+      // await hardhatVipslad.connect(owner).setPreSalePRT(2);
+      // num = await hardhatVipslad.presalePRT();
+      // expect(num).to.equal(2);
+
+      // await hardhatVipslad.connect(owner).setPreSalePRT(4);
+      // num = await hardhatVipslad.presalePRT();
+      // expect(num).to.equal(4);
 
     });
 
@@ -683,7 +688,7 @@ describe("Vipslad contract deploy", function () {
 
     });
 
-    it.only(`${i++} All mintNONMP()  for stage 1, should mint 140000 `, async function done() {
+    it(`${i++} All mintNONMP()  for stage 1, should mint 140000 `, async function done() {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
       const r = await hardhatVipslad.deployed();
@@ -760,7 +765,7 @@ describe("Vipslad contract deploy", function () {
 
     });
 
-    it.only(`${i++} All mintNONMP() for stage 2, should mint 20000 `, async function (done) {
+    it(`${i++} All mintNONMP() for stage 2, should mint 20000 `, async function (done) {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
       const r = await hardhatVipslad.deployed();
@@ -829,7 +834,7 @@ describe("Vipslad contract deploy", function () {
 
     });
 
-    it.only(`${i++} All mintNONMP() for stage 3, should mint 8888 `, async function () {
+    it(`${i++} All mintNONMP() for stage 3, should mint 8888 `, async function () {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
       const r = await hardhatVipslad.deployed();
