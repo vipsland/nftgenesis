@@ -19,3 +19,4 @@ Max mint per transaction is 35 tokens: err_18
 Insufficient funds: err_19
 all NONMP are issued: err_20
 Stage not active :err_21
+Not allowed num :err_22

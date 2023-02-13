@@ -11,6 +11,9 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
 
+import "hardhat/console.sol";
+
+
 contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
     using SafeMath for uint;
     using Counters for Counters.Counter;
@@ -215,7 +218,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
     }
 
     modifier onlyAllowedNum(uint num) {
-        require(num >= 0 && num <= 3);
+        require(num >= 0 && num <= 7, "err_22");
         _;
     }
 
@@ -513,13 +516,13 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
         //stage 1 aidropd
         //stage 2 interna
         //stage 4 normal
-        if (stage == 1 && presalePRT & 0x1 == 1) {
+        if (stage == 1) {
             mintNONMPForAIRDROP(_amount_wanted_able_to_get);
         } 
-        if (stage == 2 && presalePRT & 0x2 == 2) {
+        if (stage == 2) {
             mintNONMPForInternalTeam(_amount_wanted_able_to_get);
         }
-        if (stage == 4 && presalePRT & 0x4 == 4) {
+        if (stage == 4) {
             mintNONMPForNomalUser(_amount_wanted_able_to_get);
         }
     }

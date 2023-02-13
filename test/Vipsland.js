@@ -76,20 +76,39 @@ describe("Vipslad contract deploy", function () {
       await hardhatVipslad.deployed();
 
       let num;
+
+
+      //test stage 4 normal user
       await hardhatVipslad.connect(owner).setPreSalePRT(0);
       num = await hardhatVipslad.presalePRT();
       expect(num).to.equal(0);
-
-      //test Mint NONMP is not active: err_14
       await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4,{ value: ethers.utils.parseUnits('5', 'ether') })
       ).to.be.revertedWith("err_14");
 
-      //test stage 4 normal user
+      await hardhatVipslad.connect(owner).setPreSalePRT(4);
+      num = await hardhatVipslad.presalePRT();
+      expect(num).to.equal(4);
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4,{ value: ethers.utils.parseUnits('5', 'ether') })
+      ).not.to.be.reverted;
+
+      await hardhatVipslad.connect(owner).setPreSalePRT(7);
+      num = await hardhatVipslad.presalePRT();
+      expect(num).to.equal(7);
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4,{ value: ethers.utils.parseUnits('5', 'ether') })
+      ).not.to.be.reverted;
+
       await hardhatVipslad.connect(owner).setPreSalePRT(2);
       num = await hardhatVipslad.presalePRT();
       expect(num).to.equal(2);
       await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4,{ value: ethers.utils.parseUnits('5', 'ether') })
-      ).to.be.revertedWith("err_14");
+      ).to.be.revertedWith("err_21");
+
+
+
+      //add tests here for internal user
+
+      //add tests here for airdrop users
+
 
       // await hardhatVipslad.connect(owner).setPreSalePRT(2);
       // num = await hardhatVipslad.presalePRT();
