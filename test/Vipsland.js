@@ -69,7 +69,7 @@ describe("Vipslad contract deploy", function () {
 
   describe("setPreSalePRT", function () {
 
-    it.only(`${i++} setPreSalePRT 1,2,4`, async function () {
+    it.only(`${i++} setPreSalePRT for normal stage`, async function () {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
 
@@ -79,23 +79,17 @@ describe("Vipslad contract deploy", function () {
 
 
       //test stage 4 normal user
-      await hardhatVipslad.connect(owner).setPreSalePRT(0);
+      await hardhatVipslad.connect(owner).setPreSalePRT(0);//0
       num = await hardhatVipslad.presalePRT();
       expect(num).to.equal(0);
       await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4,{ value: ethers.utils.parseUnits('5', 'ether') })
       ).to.be.revertedWith("err_14");
 
-      await hardhatVipslad.connect(owner).setPreSalePRT(4);
+      await hardhatVipslad.connect(owner).setPreSalePRT(1);
       num = await hardhatVipslad.presalePRT();
-      expect(num).to.equal(4);
+      expect(num).to.equal(1);
       await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4,{ value: ethers.utils.parseUnits('5', 'ether') })
-      ).not.to.be.reverted;
-
-      await hardhatVipslad.connect(owner).setPreSalePRT(7);
-      num = await hardhatVipslad.presalePRT();
-      expect(num).to.equal(7);
-      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4,{ value: ethers.utils.parseUnits('5', 'ether') })
-      ).not.to.be.reverted;
+      ).to.be.revertedWith("err_21");
 
       await hardhatVipslad.connect(owner).setPreSalePRT(2);
       num = await hardhatVipslad.presalePRT();
@@ -103,22 +97,58 @@ describe("Vipslad contract deploy", function () {
       await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4,{ value: ethers.utils.parseUnits('5', 'ether') })
       ).to.be.revertedWith("err_21");
 
+      await hardhatVipslad.connect(owner).setPreSalePRT(3);
+      num = await hardhatVipslad.presalePRT();
+      expect(num).to.equal(3);
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4,{ value: ethers.utils.parseUnits('5', 'ether') })
+      ).to.be.revertedWith("err_21");
+
+      await hardhatVipslad.connect(owner).setPreSalePRT(4);//4 = norm
+      num = await hardhatVipslad.presalePRT();
+      expect(num).to.equal(4);
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4,{ value: ethers.utils.parseUnits('5', 'ether') })
+      ).not.to.be.reverted;
+
+      await hardhatVipslad.connect(owner).setPreSalePRT(5);// 5 = norm + air
+      num = await hardhatVipslad.presalePRT();
+      expect(num).to.equal(5);
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4,{ value: ethers.utils.parseUnits('5', 'ether') })
+      ).not.to.be.reverted;
+
+      await hardhatVipslad.connect(owner).setPreSalePRT(6);// 6 = norm + int
+      num = await hardhatVipslad.presalePRT();
+      expect(num).to.equal(6);
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4,{ value: ethers.utils.parseUnits('5', 'ether') })
+      ).not.to.be.reverted;
 
 
+      await hardhatVipslad.connect(owner).setPreSalePRT(7);//all
+      num = await hardhatVipslad.presalePRT();
+      expect(num).to.equal(7);
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4,{ value: ethers.utils.parseUnits('5', 'ether') })
+      ).not.to.be.reverted;
+
+    });
+
+    it(`${i++} setPreSalePRT for internal stage`, async function () {
+
+      const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
+
+      await hardhatVipslad.deployed();
+
+      let num;
+
+
+     
       //add tests here for internal user
 
       //add tests here for airdrop users
 
 
-      // await hardhatVipslad.connect(owner).setPreSalePRT(2);
-      // num = await hardhatVipslad.presalePRT();
-      // expect(num).to.equal(2);
-
-      // await hardhatVipslad.connect(owner).setPreSalePRT(4);
-      // num = await hardhatVipslad.presalePRT();
-      // expect(num).to.equal(4);
-
     });
+
+
+
 
 
   });
