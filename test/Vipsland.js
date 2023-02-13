@@ -84,10 +84,12 @@ describe("Vipslad contract deploy", function () {
       await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4,{ value: ethers.utils.parseUnits('5', 'ether') })
       ).to.be.revertedWith("err_14");
 
-
-      // await hardhatVipslad.connect(owner).setPreSalePRT(1);
-      // num = await hardhatVipslad.presalePRT();
-      // expect(num).to.equal(1);
+      //test stage 4 normal user
+      await hardhatVipslad.connect(owner).setPreSalePRT(2);
+      num = await hardhatVipslad.presalePRT();
+      expect(num).to.equal(2);
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4,{ value: ethers.utils.parseUnits('5', 'ether') })
+      ).to.be.revertedWith("err_14");
 
       // await hardhatVipslad.connect(owner).setPreSalePRT(2);
       // num = await hardhatVipslad.presalePRT();
