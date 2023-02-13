@@ -11,10 +11,11 @@ All MPs are not yet issued for normal user: err_10
 All MPs are issued for internal team: err_11
 All send MPs are not yet issued: err_12
 All sendAirdrop MPs are issued: err_13
-Presale PRT is not active: err_14
+Mint NONMP is not active: err_14
 Amount needs to be greater than 0: err_15
 Sender is not exist: err_16
 Max supply 100 tokens: err_17
 Max mint per transaction is 35 tokens: err_18
 Insufficient funds: err_19
 all NONMP are issued: err_20
+Stage not active :err_21

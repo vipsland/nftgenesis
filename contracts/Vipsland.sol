@@ -478,20 +478,48 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
     //sendMP end
 
     modifier presalePRTisActive() {
-        require(presalePRT > 0, "err_14");
+        require(presalePRT != 0, "err_14");
         _;
     }
 
+    
     //main function to mint NONMP
-    function mintNONMP(address account, uint8 _amount_wanted_able_to_get) external payable onlyForCaller(account) onlyAccounts presalePRTisActive nonReentrant {
+    function mintNONMP(address account, uint8 _amount_wanted_able_to_get, uint8 stage) external payable onlyForCaller(account) onlyAccounts presalePRTisActive nonReentrant {
         require(_amount_wanted_able_to_get > 0, "err_15");
         require(msg.sender != address(0), "err_16");
 
-        if (presalePRT == 3) {
+
+        //000 = 0 //presale prt is not active.
+        //111 = 7 //open for everyone.
+        //
+        //        1 = airdrop
+        //      1 0 = internal team
+        //    1 0 0 = normal user
+        // e.g.
+        // 1 = airdrop
+        // 2 = internal team
+        // 3 = air + int
+        // 4 = norm usr
+        // 5 = norm + air
+        // 6 = norm + int
+        // 7 = everybody
+        // internal team + normal = binary 1 1 0 = 4 + 2 = 6
+        // airdrop + internal team = binary 1 1 = 2 + 1 = 3
+        // normal user + airdrop = binary 1 0 1 = 4 + 1 = 5
+        // internal team + normal = binary 1 1 0 = 4 + 2 = 6
+        // binary 1 0 0 = dec 4 = normal user
+        // decimal 0 - 7
+
+        //stage 1 aidropd
+        //stage 2 interna
+        //stage 4 normal
+        if (stage == 1 && presalePRT & 0x1 == 1) {
             mintNONMPForAIRDROP(_amount_wanted_able_to_get);
-        } else if (presalePRT == 2) {
+        } 
+        if (stage == 2 && presalePRT & 0x2 == 2) {
             mintNONMPForInternalTeam(_amount_wanted_able_to_get);
-        } else if (presalePRT == 1) {
+        }
+        if (stage == 4 && presalePRT & 0x4 == 4) {
             mintNONMPForNomalUser(_amount_wanted_able_to_get);
         }
     }
