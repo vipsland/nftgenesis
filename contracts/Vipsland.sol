@@ -528,6 +528,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
         bool isRemainMessageNeeds = false;
 
         //added:0
+        require(presalePRT & 0x1 == 1, "err_21");
         require(userNONMPs[msg.sender] <= MAX_PRT_AMOUNT_PER_ACC, "err_17");
         require(qnt <= MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION, "err_18");
 
@@ -600,6 +601,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
         bool isRemainMessageNeeds = false;
 
         //added:0
+        require(presalePRT & 0x2 == 2, "err_21");
         require(userNONMPs[msg.sender] <= MAX_PRT_AMOUNT_PER_ACC, "err_17");
         require(qnt <= MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION, "err_18");
 
@@ -671,6 +673,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
         bool isRemainMessageNeeds = false;
 
         //added:0
+        require(presalePRT & 0x4 == 4, "err_21");
         require(userNONMPs[msg.sender] <= MAX_PRT_AMOUNT_PER_ACC, "err_17");
         require(qnt <= MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION, "err_18");
 
