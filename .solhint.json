@@ -4,11 +4,11 @@
     "prettier"
   ],
   "rules": {
-    "avoid-throw": false,
+    "avoid-throw": "off",
     "avoid-suicide": "error",
     "avoid-sha3": "warn",
-    "var-name-mixedcase": false,
-    "func-name-mixedcase": false,
+    "var-name-mixedcase": "off",
+    "func-name-mixedcase": "off",
     "compiler-version": [
       "error",
       "^0.8.17"

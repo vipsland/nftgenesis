@@ -4,8 +4,6 @@ import getRevertReason from 'eth-revert-reason';
 import { ethers } from "ethers";
 const GOERLI_API_KEY = 'da4QudLrjNs6-NR8EurK-N0ikxP6ZTVR';
 
-console.log(`??? process.env.GOERLI_API_KEY`, process.env.GOERLI_API_KEY)
-
 const eth_goerli_settings = {
   apiKey: `${GOERLI_API_KEY}`,
   network: Network.ETH_GOERLI,
@@ -15,10 +13,13 @@ const alchemy = new Alchemy(eth_goerli_settings);
 
 /** @type import('hardhat/config').HardhatUserConfig */
 const GOERLI_RPC_URL = `https://eth-goerli.g.alchemy.com/v2/${eth_goerli_settings.apiKey}`
+console.log({GOERLI_RPC_URL})
 
 const web3 = createAlchemyWeb3(GOERLI_RPC_URL)
 
 import { config } from '../dapp.config'
+
+console.log({config})
 
 const contract = require('../artifacts/contracts/Vipsland.sol/Vipsland.json')
 const VipslandContract = new web3.eth.Contract(contract.abi, config.contractAddress)
@@ -57,9 +58,9 @@ export const getMaxSupplyMP = async () => {
   return MAX_SUPPLY_MP
 }
 
-export const getisMintNONMP = async () => {
+export const getisMintNONMPForNormalUser = async () => {
   const stage = Number(await VipslandContract.methods.presalePRT().call());
-  return stage === 1 || stage === 2 || stage === 3;
+  return stage === 4 || stage === 5 || stage === 6 || stage === 6;
 }
 
 export const getStageNONMP = async () => {
@@ -179,7 +180,7 @@ export const mintNONMP = async (prtAmount, wallet) => {
       web3.utils.toWei(`${priceEth * prtAmount}`, 'ether')
     ).toString(16), // hex
     data: VipslandContract.methods
-      .mintNONMP(wallet?.accounts[0]?.address, prtAmount)
+      .mintNONMP(wallet?.accounts[0]?.address, prtAmount, 4)
       .encodeABI(),
     nonce: nonce.toString(16)
   }

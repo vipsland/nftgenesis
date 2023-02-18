@@ -152,6 +152,27 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
     bool public mintAirdropMPIsOpen = false;
 
     function setPreSalePRT(uint8 num) public onlyOwner onlyAllowedNum(num) {
+                //000 = 0 //presale prt is not active.
+        //111 = 7 //open for everyone.
+        //
+        //        1 = airdrop
+        //      1 0 = internal team
+        //    1 0 0 = normal user
+        // e.g.
+        // 1 = airdrop
+        // 2 = internal team
+        // 3 = air + int
+        // 4 = norm usr
+        // 5 = norm + air
+        // 6 = norm + int
+        // 7 = everybody
+        // internal team + normal = binary 1 1 0 = 4 + 2 = 6
+        // airdrop + internal team = binary 1 1 = 2 + 1 = 3
+        // normal user + airdrop = binary 1 0 1 = 4 + 1 = 5
+        // internal team + normal = binary 1 1 0 = 4 + 2 = 6
+        // binary 1 0 0 = dec 4 = normal user
+        // decimal 0 - 7
+        
         presalePRT = num;
     }
 
@@ -491,27 +512,6 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
         require(_amount_wanted_able_to_get > 0, "err_15");
         require(msg.sender != address(0), "err_16");
 
-
-        //000 = 0 //presale prt is not active.
-        //111 = 7 //open for everyone.
-        //
-        //        1 = airdrop
-        //      1 0 = internal team
-        //    1 0 0 = normal user
-        // e.g.
-        // 1 = airdrop
-        // 2 = internal team
-        // 3 = air + int
-        // 4 = norm usr
-        // 5 = norm + air
-        // 6 = norm + int
-        // 7 = everybody
-        // internal team + normal = binary 1 1 0 = 4 + 2 = 6
-        // airdrop + internal team = binary 1 1 = 2 + 1 = 3
-        // normal user + airdrop = binary 1 0 1 = 4 + 1 = 5
-        // internal team + normal = binary 1 1 0 = 4 + 2 = 6
-        // binary 1 0 0 = dec 4 = normal user
-        // decimal 0 - 7
 
         //stage 1 aidropd
         //stage 2 interna

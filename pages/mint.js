@@ -8,7 +8,7 @@ import {
   getTotalMintedMP,
   getMaxSupplyNONMP,
   getMaxSupplyMP,
-  getisMintNONMP,
+  getisMintNONMPForNormalUser,
   getStageNONMP,
   getisMintMP,
   getPerAccountNONMPs,
@@ -17,8 +17,6 @@ import {
   mintNONMP,
   getPriceNONMPETH
 } from '../utils/interact'
-
-import { ethers } from 'ethers'
 
 export default function Mint() {
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet()
@@ -37,7 +35,7 @@ export default function Mint() {
   const [totalMintedMP, setTotalMintedMP] = useState(0)
 
   const [maxNONMPAmount, setMaxNONMPAmount] = useState(0)
-  const [isMintNONMP, setisMintNONMP] = useState(false)
+  const [isMintNONMPForNormalUser, setisMintNONMPForNormalUser] = useState(false)
   const [stageNONMP, setStageNONMP] = useState(false)
   const [isMintMP, setisMintMP] = useState(false)
 
@@ -117,7 +115,7 @@ export default function Mint() {
       setMaxSupplyMP(await getMaxSupplyMP())
       setTotalMintedNONMP(await getTotalMintedNONMP())
       setTotalMintedMP(await getTotalMintedMP())
-      setisMintNONMP(await getisMintNONMP())
+      setisMintNONMPForNormalUser(await getisMintNONMPForNormalUser())
       setStageNONMP(await getStageNONMP())
 
 
@@ -185,7 +183,7 @@ export default function Mint() {
         <div className="flex flex-col items-center justify-center h-full w-full px-2 md:px-10">
           <div className="relative z-1 md:max-w-3xl w-full bg-gray-900/90 filter backdrop-blur-sm py-4 rounded-md px-2 md:px-10 flex flex-col items-center">
             <h1 className="font-coiny uppercase font-bold text-3xl md:text-4xl bg-gradient-to-br  from-brand-green to-brand-blue bg-clip-text text-transparent mt-3">
-              {isMintNONMP ? `MINT NONMP, stage ${stageNONMP}` : isMintMP ? 'Mint MP' : 'NO ACTIVE STAGE'}
+              {isMintNONMPForNormalUser ? `MINT NONMP for Normal user, stage ${stageNONMP}` : isMintMP ? 'Mint MP' : 'NO ACTIVE STAGE'}
             </h1>
             <h3 className="text-sm text-pink-200 tracking-widest">
               {wallet?.accounts[0]?.address
@@ -207,11 +205,11 @@ export default function Mint() {
 
 
 
-            {wallet && (isMintNONMP || isMintMP) ?
+            {wallet && (isMintNONMPForNormalUser || isMintMP) ?
               <div className="flex flex-col md:flex-row md:space-x-14 w-full mt-10 md:mt-14">
 
                 <div className="relative w-full">
-                  {isMintNONMP ? <div className="font-coiny z-10 absolute top-2 left-2 opacity-80 filter backdrop-blur-lg text-base px-4 py-2 bg-black border border-brand-purple rounded-md flex items-center justify-center text-white font-semibold">
+                  {isMintNONMPForNormalUser ? <div className="font-coiny z-10 absolute top-2 left-2 opacity-80 filter backdrop-blur-lg text-base px-4 py-2 bg-black border border-brand-purple rounded-md flex items-center justify-center text-white font-semibold">
                     <p>
                       <span className="text-brand-pink">{totalMintedNONMP}</span>{' '}/{' '}{maxSupplyNONMP}
                     </p>
@@ -223,7 +221,7 @@ export default function Mint() {
                     </p>
                   </div> : null}
 
-                  {isAccountWinner || isMintNONMP ?
+                  {isAccountWinner || isMintNONMPForNormalUser ?
                     <img src="/images/13.png" className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /> : null}
 
                 </div>
@@ -294,14 +292,14 @@ export default function Mint() {
                     </>
                       : null}
 
-                    {isMintNONMP && wallet ?
+                    {isMintNONMPForNormalUser && wallet ?
                       <>
                         Remaining NONMP: {Number(maxNONMPAmount - perAccountNONMP)}
                       </>
                       : null}
                   </p>
 
-                  {wallet && isMintNONMP ? <div className="border-t border-b py-4 mt-16 w-full">
+                  {wallet && isMintNONMPForNormalUser ? <div className="border-t border-b py-4 mt-16 w-full">
                     <div className="w-full text-xl font-coiny flex items-center justify-between text-brand-yellow">
                       <p>Total</p>
 
@@ -337,7 +335,7 @@ export default function Mint() {
 
                   {/* Mint Button && Connect Wallet Button */}
 
-                  {wallet && isMintNONMP ? <button
+                  {wallet && isMintNONMPForNormalUser ? <button
                     className={` ${isTXIsPending
                       ? 'bg-gray-900 cursor-not-allowed'
                       : 'bg-gradient-to-br from-brand-purple to-brand-pink shadow-lg hover:shadow-pink-400/50'
