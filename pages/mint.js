@@ -11,8 +11,9 @@ import {
   getisMintNONMPForNormalUser,
   getStageNONMP,
   getisMintMP,
-  getPerAccountNONMPs,
-  getMaxNONMPAmount,
+  getPerAccountMintedNONMPs,
+  getMaxNONMPAmountPerAcc,
+  getMaxNONMPAmountPerAccPerTransaction,
   isWinner,
   mintNONMP,
   getPriceNONMPETH
@@ -28,13 +29,16 @@ export default function Mint() {
   const [maxSupplyMP, setMaxSupplyMP] = useState(0)
 
 
-  const [perAccountNONMP, setPerAccountNONMP] = useState(0)
+  const [perAccountMintedNONMP, setPerAccountMintedNONMPs] = useState(0)
   const [isAccountWinner, setIsWinner] = useState(false)
 
   const [totalMintedNONMP, setTotalMintedNONMP] = useState(0)
   const [totalMintedMP, setTotalMintedMP] = useState(0)
 
-  const [maxNONMPAmount, setMaxNONMPAmount] = useState(0)
+  const [maxNONMPAmountPerAcc, setMaxNONMPAmountPerAcc] = useState(0)
+  const [maxNONMPAmountPerAccPerTransaction, setMaxNONMPAmountPerAccPerTransaction] = useState(0)
+  
+
   const [isMintNONMPForNormalUser, setisMintNONMPForNormalUser] = useState(false)
   const [stageNONMP, setStageNONMP] = useState(false)
   const [isMintMP, setisMintMP] = useState(false)
@@ -98,7 +102,7 @@ export default function Mint() {
 
   useEffect(() => {
     const metadataForAccount = async (wallet) => {
-      setPerAccountNONMP(await getPerAccountNONMPs(wallet))
+      setPerAccountMintedNONMPs(await getPerAccountMintedNONMPs(wallet))
       setIsWinner(await isWinner(wallet))
     }
     if (wallet?.accounts[0]?.address) {
@@ -117,18 +121,17 @@ export default function Mint() {
       setTotalMintedMP(await getTotalMintedMP())
       setisMintNONMPForNormalUser(await getisMintNONMPForNormalUser())
       setStageNONMP(await getStageNONMP())
-
-
       setisMintMP(await getisMintMP())
       setPriceNONMP(await getPriceNONMPETH())
-      setMaxNONMPAmount(await getMaxNONMPAmount())
+      setMaxNONMPAmountPerAcc(await getMaxNONMPAmountPerAcc())
+      setMaxNONMPAmountPerAccPerTransaction(await getMaxNONMPAmountPerAccPerTransaction())
     }
 
-    init()
-  }, [wallet?.accounts[0]?.address])
+    init();//when no need wallet pub key details
+  }, [])
 
   const incrementPRTAmount = () => {
-    if (prtAmount < maxNONMPAmount) {
+    if (prtAmount < maxNONMPAmountPerAccPerTransaction) {
       setPRTAmount(prtAmount + 1)
     }
   }
@@ -152,7 +155,7 @@ export default function Mint() {
 
     setTXIsPending(false)
     setTotalMintedNONMP(await getTotalMintedNONMP())
-    setPerAccountNONMP(await getPerAccountNONMPs(wallet))
+    setPerAccountMintedNONMPs(await getPerAccountMintedNONMPs(wallet))
   }
 
   const checkYourMP = async () => {
@@ -294,7 +297,7 @@ export default function Mint() {
 
                     {isMintNONMPForNormalUser && wallet ?
                       <>
-                        Remaining NONMP: {Number(maxNONMPAmount - perAccountNONMP)}
+                        Remaining NONMP: {Number(maxNONMPAmountPerAcc - perAccountMintedNONMP)}
                       </>
                       : null}
                   </p>

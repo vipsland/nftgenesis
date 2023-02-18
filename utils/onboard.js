@@ -2,9 +2,9 @@ import { init, useConnectWallet } from '@web3-onboard/react'
 import injectedModule from '@web3-onboard/injected-wallets'
 import { Network, Alchemy } from 'alchemy-sdk';
 // import { TASK_COMPILE_SOLIDITY_COMPILE } from 'hardhat/builtin-tasks/task-names';
+const GOERLI_API_KEY = 'da4QudLrjNs6-NR8EurK-N0ikxP6ZTVR';
 
-const GOERLI_API_KEY = process.env.GOERLI_API_KEY;
-const ETHMAIN_API_KEY = process.env.ETHMAIN_API_KEY;
+// const ETHMAIN_API_KEY = process.env.ETHMAIN_API_KEY;
 
 
 const eth_goerli_settings = {
@@ -12,29 +12,28 @@ const eth_goerli_settings = {
   network: Network.ETH_GOERLI,
 };
 
-const eth_mainnet_settings = {
-  apiKey: `${ETHMAIN_API_KEY}`,
-  network: Network.ETH_MAINNET,
-};
+// const eth_mainnet_settings = {
+//   apiKey: `${ETHMAIN_API_KEY}`,
+//   network: Network.ETH_MAINNET,
+// };
 
 
 /** @type import('hardhat/config').HardhatUserConfig */
 // old rpc url https://eth-goerli.alchemyapi.io/v2/
 const GOERLI_RPC_URL = `https://eth-goerli.g.alchemy.com/v2/${eth_goerli_settings.apiKey}`
-const MAINNET_RPC_URL = `https://eth-mainnet.g.alchemy.com/v2/${eth_mainnet_settings.apiKey}`
-const GANACHE_RPC_URL = `http://localhost:8545`
+// const MAINNET_RPC_URL = `https://eth-mainnet.g.alchemy.com/v2/${eth_mainnet_settings.apiKey}`
 
 const injected = injectedModule()
 
 const initOnboard = init({
   wallets: [injected],
   chains: [
-    {
-      id: '0x1',
-      token: 'ETH',
-      label: 'Ethereum Mainnet',
-      rpcUrl: MAINNET_RPC_URL
-    },
+    // {
+    //   id: '0x1',
+    //   token: 'ETH',
+    //   label: 'Ethereum Mainnet',
+    //   rpcUrl: MAINNET_RPC_URL
+    // },
     // {
     //   id: '0x3',
     //   token: 'tROP',

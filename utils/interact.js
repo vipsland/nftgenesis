@@ -60,7 +60,7 @@ export const getMaxSupplyMP = async () => {
 
 export const getisMintNONMPForNormalUser = async () => {
   const stage = Number(await VipslandContract.methods.presalePRT().call());
-  return stage === 4 || stage === 5 || stage === 6 || stage === 6;
+  return stage === 4 || stage === 5 || stage === 6 || stage === 7;
 }
 
 export const getStageNONMP = async () => {
@@ -80,8 +80,12 @@ export const getisMintMP = async () => {
 }
 
 
-export const getMaxNONMPAmount = async () => {
+export const getMaxNONMPAmountPerAcc = async () => {
   return await VipslandContract.methods.MAX_PRT_AMOUNT_PER_ACC().call();
+}
+
+export const getMaxNONMPAmountPerAccPerTransaction = async () => {
+  return await VipslandContract.methods.MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION().call();
 }
 
 
@@ -121,16 +125,16 @@ export const getPriceNONMPWEI = async () => {
   if (stage === 1) return await VipslandContract.methods.PRICE_PRT().call()
   if (stage === 2) return await VipslandContract.methods.PRICE_PRT_INTERNALTEAM().call()
   if (stage === 3) return await VipslandContract.methods.PRICE_PRT_AIRDROP().call()
+
   return 0;
 }
 
-export const getPerAccountNONMPs = async (wallet) => {
+export const getPerAccountMintedNONMPs = async (wallet) => {
   if (!wallet?.accounts[0]?.address) {
     return 0
   }
 
-  const _qnt_minted_by_user_nonmp = await VipslandContract.methods.userNONMPs(wallet?.accounts[0]?.address).call()
-  return _qnt_minted_by_user_nonmp
+  return await VipslandContract.methods.userNONMPs(wallet?.accounts[0]?.address).call();
 }
 
 export const isWinner = async (wallet) => {
