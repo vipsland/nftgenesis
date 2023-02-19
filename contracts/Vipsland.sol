@@ -201,21 +201,12 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
 
     // events end
 
-    //payment splitter
-    address[] private _team = [
-        0xEd1CB7ef54321835C53a59cC94a816BCF47fEE11, // miukki account gets 5% of the total revenue
-        0x1Fde442744D300b6405e10A6F63Bf491d94afDE1 // sam Account gets 15% of the total revenue
-    ];
-    uint[] private _teamShares = [5, 15]; // 2 PEOPLE IN THE TEAM
-    uint private teamLength;
     
-    constructor()
+    constructor(address[] memory _team, uint[] memory _teamShares)
         ERC1155(notRevealedUri)
         PaymentSplitter(_team, _teamShares) // Split the payment based on the teamshares percentages
         ReentrancyGuard() //A modifier that can prevent reentrancy during certain functions
     {
-        //PaymentSplitter
-        teamLength = _team.length;
 
         //for mp
         intArr = new uint[](MAX_SUPPLY_MP / NUM_TOTAL_FOR_MP);
@@ -231,12 +222,6 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
         intArrPRTAIRDROP = new uint[](MAX_SUPPLY_FOR_AIRDROP_TOKEN / EACH_RAND_SLOT_NUM_TOTAL_FOR_AIRDROP);
     }
     
-     function releaseAll() external onlyOwner nonReentrant() {
-        for(uint i = 0; i < teamLength; i++) {
-            release(payable(payee(i)));
-        }
-    }
-
     //modifier start
     modifier onlyAccounts() {
         require(msg.sender == tx.origin, "err_3");
