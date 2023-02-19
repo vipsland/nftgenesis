@@ -69,7 +69,7 @@ describe("Vipslad contract deploy", function () {
 
   describe("setPreSalePRT", function () {
 
-    it.only(`${i++} setPreSalePRT for normal stage`, async function () {
+    it(`${i++} setPreSalePRT for normal user, main stage 4, {4,5,6,7}`, async function () {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
 
@@ -79,58 +79,58 @@ describe("Vipslad contract deploy", function () {
 
 
       //test stage 4 normal user
-      await hardhatVipslad.connect(owner).setPreSalePRT(0);//0
+      await hardhatVipslad.connect(owner).setPreSalePRT(0);
       num = await hardhatVipslad.presalePRT();
       expect(num).to.equal(0);
-      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4,{ value: ethers.utils.parseUnits('5', 'ether') })
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4, { value: ethers.utils.parseUnits('5', 'ether') })
       ).to.be.revertedWith("err_14");
 
       await hardhatVipslad.connect(owner).setPreSalePRT(1);
       num = await hardhatVipslad.presalePRT();
       expect(num).to.equal(1);
-      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4,{ value: ethers.utils.parseUnits('5', 'ether') })
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4, { value: ethers.utils.parseUnits('5', 'ether') })
       ).to.be.revertedWith("err_21");
 
       await hardhatVipslad.connect(owner).setPreSalePRT(2);
       num = await hardhatVipslad.presalePRT();
       expect(num).to.equal(2);
-      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4,{ value: ethers.utils.parseUnits('5', 'ether') })
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4, { value: ethers.utils.parseUnits('5', 'ether') })
       ).to.be.revertedWith("err_21");
 
       await hardhatVipslad.connect(owner).setPreSalePRT(3);
       num = await hardhatVipslad.presalePRT();
       expect(num).to.equal(3);
-      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4,{ value: ethers.utils.parseUnits('5', 'ether') })
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4, { value: ethers.utils.parseUnits('5', 'ether') })
       ).to.be.revertedWith("err_21");
 
       await hardhatVipslad.connect(owner).setPreSalePRT(4);//4 = norm
       num = await hardhatVipslad.presalePRT();
       expect(num).to.equal(4);
-      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4,{ value: ethers.utils.parseUnits('5', 'ether') })
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4, { value: ethers.utils.parseUnits('5', 'ether') })
       ).not.to.be.reverted;
 
       await hardhatVipslad.connect(owner).setPreSalePRT(5);// 5 = norm + air
       num = await hardhatVipslad.presalePRT();
       expect(num).to.equal(5);
-      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4,{ value: ethers.utils.parseUnits('5', 'ether') })
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4, { value: ethers.utils.parseUnits('5', 'ether') })
       ).not.to.be.reverted;
 
       await hardhatVipslad.connect(owner).setPreSalePRT(6);// 6 = norm + int
       num = await hardhatVipslad.presalePRT();
       expect(num).to.equal(6);
-      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4,{ value: ethers.utils.parseUnits('5', 'ether') })
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4, { value: ethers.utils.parseUnits('5', 'ether') })
       ).not.to.be.reverted;
 
 
       await hardhatVipslad.connect(owner).setPreSalePRT(7);//all
       num = await hardhatVipslad.presalePRT();
       expect(num).to.equal(7);
-      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4,{ value: ethers.utils.parseUnits('5', 'ether') })
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 4, { value: ethers.utils.parseUnits('5', 'ether') })
       ).not.to.be.reverted;
 
     });
 
-    it(`${i++} setPreSalePRT for internal stage`, async function () {
+    it(`${i++} setPreSalePRT for internal user, main stage 2, {2,3,6,7}`, async function () {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
 
@@ -139,16 +139,122 @@ describe("Vipslad contract deploy", function () {
       let num;
 
 
-     
-      //add tests here for internal user
+      //test stage 2 internal user
+      await hardhatVipslad.connect(owner).setPreSalePRT(0);
+      num = await hardhatVipslad.presalePRT();
+      expect(num).to.equal(0);
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 2, { value: ethers.utils.parseUnits('5', 'ether') })
+      ).to.be.revertedWith("err_14");
 
-      //add tests here for airdrop users
+      await hardhatVipslad.connect(owner).setPreSalePRT(1);
+      num = await hardhatVipslad.presalePRT();
+      expect(num).to.equal(1);
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 2, { value: ethers.utils.parseUnits('5', 'ether') })
+      ).to.be.revertedWith("err_21");
+
+      await hardhatVipslad.connect(owner).setPreSalePRT(2);//success normal
+      num = await hardhatVipslad.presalePRT();
+      expect(num).to.equal(2);
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 2, { value: ethers.utils.parseUnits('5', 'ether') })
+      ).not.to.be.reverted;
+
+      await hardhatVipslad.connect(owner).setPreSalePRT(3);//success  air + int
+      num = await hardhatVipslad.presalePRT();
+      expect(num).to.equal(3);
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 2, { value: ethers.utils.parseUnits('5', 'ether') })
+      ).not.to.be.reverted;
+
+      await hardhatVipslad.connect(owner).setPreSalePRT(4);//4
+      num = await hardhatVipslad.presalePRT();
+      expect(num).to.equal(4);
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 2, { value: ethers.utils.parseUnits('5', 'ether') })
+      ).to.be.revertedWith("err_21");
+
+      await hardhatVipslad.connect(owner).setPreSalePRT(5);// 5 
+      num = await hardhatVipslad.presalePRT();
+      expect(num).to.equal(5);
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 2, { value: ethers.utils.parseUnits('5', 'ether') })
+      ).to.be.revertedWith("err_21");
+
+      await hardhatVipslad.connect(owner).setPreSalePRT(6);// 6 = norm + int
+      num = await hardhatVipslad.presalePRT();
+      expect(num).to.equal(6);
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 2, { value: ethers.utils.parseUnits('5', 'ether') })
+      ).not.to.be.reverted;
+
+
+      await hardhatVipslad.connect(owner).setPreSalePRT(7);//all
+      num = await hardhatVipslad.presalePRT();
+      expect(num).to.equal(7);
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 2, { value: ethers.utils.parseUnits('5', 'ether') })
+      ).not.to.be.reverted;
+
 
 
     });
 
+    it.only(`${i++} setPreSalePRT for airdrop user, main stage 1, {1,3,5,7}`, async function () {
+
+      const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
+
+      await hardhatVipslad.deployed();
+
+      let num;
 
 
+      //test stage 1 air user
+      await hardhatVipslad.connect(owner).setPreSalePRT(0);
+      num = await hardhatVipslad.presalePRT();
+      expect(num).to.equal(0);
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 1, { value: ethers.utils.parseUnits('5', 'ether') })
+      ).to.be.revertedWith("err_14");
+
+      await hardhatVipslad.connect(owner).setPreSalePRT(1);//success air
+      num = await hardhatVipslad.presalePRT();
+      expect(num).to.equal(1);
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 1, { value: ethers.utils.parseUnits('5', 'ether') })
+      ).not.to.be.reverted;
+
+      await hardhatVipslad.connect(owner).setPreSalePRT(2);
+      num = await hardhatVipslad.presalePRT();
+      expect(num).to.equal(2);
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 1, { value: ethers.utils.parseUnits('5', 'ether') })
+      ).to.be.revertedWith("err_21");
+
+      await hardhatVipslad.connect(owner).setPreSalePRT(3);//success  air + int
+      num = await hardhatVipslad.presalePRT();
+      expect(num).to.equal(3);
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 1, { value: ethers.utils.parseUnits('5', 'ether') })
+      ).not.to.be.reverted;
+
+      await hardhatVipslad.connect(owner).setPreSalePRT(4);//4
+      num = await hardhatVipslad.presalePRT();
+      expect(num).to.equal(4);
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 1, { value: ethers.utils.parseUnits('5', 'ether') })
+      ).to.be.revertedWith("err_21");
+
+      await hardhatVipslad.connect(owner).setPreSalePRT(5);// 5 norm + air
+      num = await hardhatVipslad.presalePRT();
+      expect(num).to.equal(5);
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 1, { value: ethers.utils.parseUnits('5', 'ether') })
+      ).not.to.be.reverted;
+
+      await hardhatVipslad.connect(owner).setPreSalePRT(6);// 6
+      num = await hardhatVipslad.presalePRT();
+      expect(num).to.equal(6);
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 1, { value: ethers.utils.parseUnits('5', 'ether') })
+      ).to.be.revertedWith("err_21");
+
+
+      await hardhatVipslad.connect(owner).setPreSalePRT(7);//all
+      num = await hardhatVipslad.presalePRT();
+      expect(num).to.equal(7);
+      await expect(hardhatVipslad.connect(owner).mintNONMP(owner.address, 1, 1, { value: ethers.utils.parseUnits('5', 'ether') })
+      ).not.to.be.reverted;
+
+
+
+    });
 
 
   });

@@ -8,7 +8,7 @@ import {
   getTotalMintedMP,
   getMaxSupplyNONMP,
   getMaxSupplyMP,
-  getisMintNONMPForNormalUser,
+  getisMintNONMP,
   getStageNONMP,
   getisMintMP,
   getPerAccountMintedNONMPs,
@@ -18,6 +18,8 @@ import {
   mintNONMP,
   getPriceNONMPETH
 } from '../utils/interact'
+
+const MAIN_STAGE = 4;//normal user
 
 export default function Mint() {
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet()
@@ -37,9 +39,9 @@ export default function Mint() {
 
   const [maxNONMPAmountPerAcc, setMaxNONMPAmountPerAcc] = useState(0)
   const [maxNONMPAmountPerAccPerTransaction, setMaxNONMPAmountPerAccPerTransaction] = useState(0)
-  
 
-  const [isMintNONMPForNormalUser, setisMintNONMPForNormalUser] = useState(false)
+
+  const [isMintNONMP, setisMintNONMP] = useState(false)
   const [stageNONMP, setStageNONMP] = useState(false)
   const [isMintMP, setisMintMP] = useState(false)
 
@@ -101,34 +103,41 @@ export default function Mint() {
   // });
 
   useEffect(() => {
-    const metadataForAccount = async (wallet) => {
+    const init = async (wallet) => {
       setPerAccountMintedNONMPs(await getPerAccountMintedNONMPs(wallet))
-      setIsWinner(await isWinner(wallet))
+      setIsWinner(await isWinner(wallet, MAIN_STAGE))
     }
     if (wallet?.accounts[0]?.address) {
 
-      metadataForAccount(wallet)
+      init(wallet)
 
     }
-  }, [wallet?.accounts[0]?.address])
+  }, [wallet?.accounts[0]?.address])//when need connect wallet
 
 
   useEffect(() => {
     const init = async () => {
-      setMaxSupplyNONMP(await getMaxSupplyNONMP())
+      setMaxSupplyNONMP(await getMaxSupplyNONMP(MAIN_STAGE))
+      setTotalMintedNONMP(await getTotalMintedNONMP(MAIN_STAGE))
+      setTotalMintedMP(await getTotalMintedMP(MAIN_STAGE))
+      setisMintNONMP(await getisMintNONMP(MAIN_STAGE))
+      setisMintMP(await getisMintMP(MAIN_STAGE))
+      setPriceNONMP(await getPriceNONMPETH(MAIN_STAGE))
+    }
+
+    init();
+  }, [])//when no need wallet pub key details with staeg
+
+  useEffect(() => {
+    const init = async () => {
       setMaxSupplyMP(await getMaxSupplyMP())
-      setTotalMintedNONMP(await getTotalMintedNONMP())
-      setTotalMintedMP(await getTotalMintedMP())
-      setisMintNONMPForNormalUser(await getisMintNONMPForNormalUser())
       setStageNONMP(await getStageNONMP())
-      setisMintMP(await getisMintMP())
-      setPriceNONMP(await getPriceNONMPETH())
       setMaxNONMPAmountPerAcc(await getMaxNONMPAmountPerAcc())
       setMaxNONMPAmountPerAccPerTransaction(await getMaxNONMPAmountPerAccPerTransaction())
     }
 
-    init();//when no need wallet pub key details
-  }, [])
+    init();
+  }, [])//when no need wallet pub key details with  no staeg
 
   const incrementPRTAmount = () => {
     if (prtAmount < maxNONMPAmountPerAccPerTransaction) {
@@ -146,31 +155,31 @@ export default function Mint() {
     setStatus(null)
     setTXIsPending(true)
 
-    const { success, status } = await mintNONMP(prtAmount, wallet)
+    const { success, status: message } = await mintNONMP({ prtAmount, wallet, main_stage: MAIN_STAGE })
 
     setStatus({
       success,
-      message: status
+      message
     })
 
     setTXIsPending(false)
-    setTotalMintedNONMP(await getTotalMintedNONMP())
+    setTotalMintedNONMP(await getTotalMintedNONMP(MAIN_STAGE))
     setPerAccountMintedNONMPs(await getPerAccountMintedNONMPs(wallet))
   }
 
-  const checkYourMP = async () => {
+  const mintMPHandler = async () => {
     setStatus(null)
     setTXIsPending(true)
 
-    const { success, status } = await mintNFT(wallet)
+    const { success, status: message } = await mintNFT(wallet)
 
     setStatus({
       success,
-      message: status
+      message
     })
 
     setTXIsPending(false)
-    setTotalMintedMP(await getTotalMintedMP())
+    setTotalMintedMP(await getTotalMintedMP(MAIN_STAGE))
   }
 
 
@@ -186,7 +195,7 @@ export default function Mint() {
         <div className="flex flex-col items-center justify-center h-full w-full px-2 md:px-10">
           <div className="relative z-1 md:max-w-3xl w-full bg-gray-900/90 filter backdrop-blur-sm py-4 rounded-md px-2 md:px-10 flex flex-col items-center">
             <h1 className="font-coiny uppercase font-bold text-3xl md:text-4xl bg-gradient-to-br  from-brand-green to-brand-blue bg-clip-text text-transparent mt-3">
-              {isMintNONMPForNormalUser ? `MINT NONMP for Normal user, stage ${stageNONMP}` : isMintMP ? 'Mint MP' : 'NO ACTIVE STAGE'}
+              {isMintNONMP ? `MINT NONMP for Normal user, stage ${stageNONMP}` : isMintMP ? 'Mint MP' : 'NO ACTIVE STAGE'}
             </h1>
             <h3 className="text-sm text-pink-200 tracking-widest">
               {wallet?.accounts[0]?.address
@@ -208,11 +217,11 @@ export default function Mint() {
 
 
 
-            {wallet && (isMintNONMPForNormalUser || isMintMP) ?
+            {wallet && (isMintNONMP || isMintMP) ?
               <div className="flex flex-col md:flex-row md:space-x-14 w-full mt-10 md:mt-14">
 
                 <div className="relative w-full">
-                  {isMintNONMPForNormalUser ? <div className="font-coiny z-10 absolute top-2 left-2 opacity-80 filter backdrop-blur-lg text-base px-4 py-2 bg-black border border-brand-purple rounded-md flex items-center justify-center text-white font-semibold">
+                  {isMintNONMP ? <div className="font-coiny z-10 absolute top-2 left-2 opacity-80 filter backdrop-blur-lg text-base px-4 py-2 bg-black border border-brand-purple rounded-md flex items-center justify-center text-white font-semibold">
                     <p>
                       <span className="text-brand-pink">{totalMintedNONMP}</span>{' '}/{' '}{maxSupplyNONMP}
                     </p>
@@ -224,7 +233,7 @@ export default function Mint() {
                     </p>
                   </div> : null}
 
-                  {isAccountWinner || isMintNONMPForNormalUser ?
+                  {isAccountWinner || isMintNONMP ?
                     <img src="/images/13.png" className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /> : null}
 
                 </div>
@@ -295,14 +304,14 @@ export default function Mint() {
                     </>
                       : null}
 
-                    {isMintNONMPForNormalUser && wallet ?
+                    {isMintNONMP && wallet ?
                       <>
                         Remaining NONMP: {Number(maxNONMPAmountPerAcc - perAccountMintedNONMP)}
                       </>
                       : null}
                   </p>
 
-                  {wallet && isMintNONMPForNormalUser ? <div className="border-t border-b py-4 mt-16 w-full">
+                  {wallet && isMintNONMP ? <div className="border-t border-b py-4 mt-16 w-full">
                     <div className="w-full text-xl font-coiny flex items-center justify-between text-brand-yellow">
                       <p>Total</p>
 
@@ -310,7 +319,7 @@ export default function Mint() {
 
                         <>
                           {Number.parseFloat(priceNONMP * prtAmount).toFixed(
-                            2
+                            3
                           )}{' '}
                           <p>
                             ETH
@@ -338,7 +347,7 @@ export default function Mint() {
 
                   {/* Mint Button && Connect Wallet Button */}
 
-                  {wallet && isMintNONMPForNormalUser ? <button
+                  {wallet && isMintNONMP ? <button
                     className={` ${isTXIsPending
                       ? 'bg-gray-900 cursor-not-allowed'
                       : 'bg-gradient-to-br from-brand-purple to-brand-pink shadow-lg hover:shadow-pink-400/50'
@@ -355,7 +364,7 @@ export default function Mint() {
                       : 'bg-gradient-to-br from-brand-purple to-brand-pink shadow-lg hover:shadow-pink-400/50'
                       } font-coiny mt-12 w-full px-6 py-3 rounded-md text-2xl text-white  mx-4 tracking-wide uppercase`}
                     disabled={isTXIsPending}
-                    onClick={checkYourMP}
+                    onClick={mintMPHandler}
                   >
                     {isTXIsPending ? <span className='animate-pulse'>Wait, processing...</span> : 'Check your MP'}
                   </button> : null}

@@ -58,6 +58,8 @@ npx hardhat test --network hardhat
 #one file
 npx hardhat test --network hardhat ./test/Vipsland.js
 
+#with write log from console to file
+npx hardhat test --network hardhat ./test/Vipsland.js &> output.txt     
 ```
 
 # Faucet

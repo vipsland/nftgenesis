@@ -571,6 +571,7 @@ contract Vipsland is ERC1155Supply, Ownable, ReentrancyGuard, PaymentSplitter {
             amounts[i] = 1;
         }
 
+        // _safeMintBatch(ids, amounts, _qnt);fix:add this 
         _mintBatch(msg.sender, ids, amounts, "");
 
         //add event
