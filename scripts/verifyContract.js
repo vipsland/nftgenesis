@@ -18,12 +18,14 @@ const _team = [
 ];
 const _teamShares = [5, 15]; // 2 PEOPLE IN THE TEAM
 
+const _notRevealedUri = "https://ipfs.vipsland.com/nft/collections/genesis/json/hidden.json";
+const _revealedUri = "https://ipfs.vipsland.com/nft/collections/genesis/json/";
 
 async function main() {
 
   await hre.run('verify:verify', {
     address: '0x0FC2d6D8b713e3dCC210e3411E695C8C997C0049',//latest
-    constructorArguments: [_team, _teamShares]
+    constructorArguments: [_team, _teamShares, _notRevealedUri, _revealedUri]
   })
 }
 

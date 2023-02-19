@@ -55,8 +55,9 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
     //manually mint and transfer end
 
     //reveal start
-    string public notRevealedUri = "https://ipfs.vipsland.com/nft/collections/genesis/json/hidden.json";
-    bool public revealed = false;
+    string internal notRevealedUri;
+    string internal revealedUri;
+    bool internal revealed = false;
     mapping(uint => string) private _uris;
 
     function toggleReveal() public onlyOwner {
@@ -67,7 +68,7 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
         if (revealed == false) {
             return notRevealedUri;
         }
-        return (string(abi.encodePacked("https://ipfs.vipsland.com/nft/collections/genesis/json/", "{id}", ".json")));
+        return (string(abi.encodePacked(revealedUri, "{id}", ".json")));
     }
 
     //reveal end
@@ -201,11 +202,16 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
     // events end
 
     
-    constructor(address[] memory _team, uint[] memory _teamShares)
-        ERC1155(notRevealedUri)
+    constructor(address[] memory _team, uint[] memory _teamShares, string memory _notRevealedUri, string memory _revealedUri)
+        ERC1155(_notRevealedUri)
         PaymentSplitter(_team, _teamShares) // Split the payment based on the teamshares percentages
         ReentrancyGuard() //A modifier that can prevent reentrancy during certain functions
+
     {
+
+        //metadata
+        notRevealedUri = _notRevealedUri;
+        revealedUri = _revealedUri;
 
         //for mp
         intArr = new uint[](MAX_SUPPLY_MP / NUM_TOTAL_FOR_MP);

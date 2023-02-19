@@ -34,6 +34,10 @@ async function main() {
   ];
   const _teamShares = [5, 15]; // 2 PEOPLE IN THE TEAM
 
+  const _notRevealedUri = "https://ipfs.vipsland.com/nft/collections/genesis/json/hidden.json";
+  const _revealedUri = "https://ipfs.vipsland.com/nft/collections/genesis/json/";
+
+
 
   // Deploy the contract
   const PRTFactory = await hre.ethers.getContractFactory('Vipsland')
@@ -42,7 +46,9 @@ async function main() {
     // root,
     // proxyRegistryAddressGoerli
     _team,
-    _teamShares
+    _teamShares,
+    _notRevealedUri,
+    _revealedUri
   )
 
   await prtContract.deployed()
