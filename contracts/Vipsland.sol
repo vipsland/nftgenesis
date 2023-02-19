@@ -57,7 +57,7 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
     //reveal start
     string internal notRevealedUri;
     string internal revealedUri;
-    bool internal revealed = false;
+    bool public revealed = false;
     mapping(uint => string) private _uris;
 
     function toggleReveal() public onlyOwner {
