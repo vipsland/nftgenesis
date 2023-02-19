@@ -1,6 +1,6 @@
 Only once can be minted: err_1
 Token is not exist: err_2
-Not allowed origin: err_3
+Cannot be called by a contract: err_3
 Only allowed for caller: err_4
 Mint is not open: err_5
 Mint is not open for airdrop: err_6
