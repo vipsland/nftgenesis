@@ -196,7 +196,6 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
     event WinnersMP(address indexed acc, uint winnerTokenPRTID);
     event SelectedNONMPIDTokens(uint _winnerTokenNONMPID, uint max_nonmpid_minus_xrand);
     event MPAllDone(bool sendMPAllDone);
-    event mintNONMPIDEvent(address indexed acc, uint initID, uint _qnt);
     event RemainMessageNeeds(address indexed acc, uint256 qnt);
 
     // events end
