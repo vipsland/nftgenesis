@@ -55,6 +55,8 @@ export default function Mint() {
   const [status, setStatus] = useState(null)
 
 
+  const remainingNONMP = Number(maxNONMPAmountPerAcc - perAccountMintedNONMP);
+
   useEffect(() => {
     setOnboard(initOnboard)
   }, [])
@@ -140,8 +142,8 @@ export default function Mint() {
   }, [])//when no need wallet pub key details with  no staeg
 
   const incrementPRTAmount = () => {
-    if (prtAmount < maxNONMPAmountPerAccPerTransaction) {
-      setPRTAmount(prtAmount + 1)
+    if (prtAmount < maxNONMPAmountPerAccPerTransaction && prtAmount < remainingNONMP) {
+      setPRTAmount(prtAmount + 1)//
     }
   }
 
@@ -165,6 +167,7 @@ export default function Mint() {
     setTXIsPending(false)
     setTotalMintedNONMP(await getTotalMintedNONMP(MAIN_STAGE))
     setPerAccountMintedNONMPs(await getPerAccountMintedNONMPs(wallet))
+    setPRTAmount(1);
   }
 
   const mintMPHandler = async () => {
@@ -181,7 +184,6 @@ export default function Mint() {
     setTXIsPending(false)
     setTotalMintedMP(await getTotalMintedMP(MAIN_STAGE))
   }
-
 
   return (
 
@@ -242,7 +244,7 @@ export default function Mint() {
 
                   {wallet ? <div className="font-coiny flex items-center justify-between w-full">
                     {isMintMP ? null : <button
-                      disabled={isMintMP}
+                      disabled={isMintMP || remainingNONMP === 0}
                       className="w-14 h-10 md:w-16 md:h-12 flex items-center justify-center text-brand-background hover:shadow-lg bg-gray-300 font-bold rounded-md"
                       onClick={incrementPRTAmount}
                     >
@@ -263,11 +265,11 @@ export default function Mint() {
                     </button>}
 
                     <p className="flex items-center justify-center flex-1 grow text-center font-bold text-brand-pink text-3xl md:text-4xl">
-                      {isMintMP ? null : prtAmount}
+                      {isMintMP ? null : remainingNONMP === 0 ? 0 : prtAmount}
                     </p>
 
                     {isMintMP ? null : <button
-                      disabled={isMintMP}
+                      disabled={isMintMP || remainingNONMP === 0}
                       className="w-14 h-10 md:w-16 md:h-12 flex items-center justify-center text-brand-background hover:shadow-lg bg-gray-300 font-bold rounded-md"
                       onClick={decrementPRTAmount}
                     >
@@ -306,7 +308,7 @@ export default function Mint() {
 
                     {isMintNONMP && wallet ?
                       <>
-                        Remaining NONMP: {Number(maxNONMPAmountPerAcc - perAccountMintedNONMP)}
+                        Remaining NONMP: {remainingNONMP}
                       </>
                       : null}
                   </p>
@@ -348,11 +350,11 @@ export default function Mint() {
                   {/* Mint Button && Connect Wallet Button */}
 
                   {wallet && isMintNONMP ? <button
-                    className={` ${isTXIsPending
+                    className={` ${isTXIsPending || remainingNONMP === 0
                       ? 'bg-gray-900 cursor-not-allowed'
                       : 'bg-gradient-to-br from-brand-purple to-brand-pink shadow-lg hover:shadow-pink-400/50'
                       } font-coiny mt-12 w-full px-6 py-3 rounded-md text-2xl text-white  mx-4 tracking-wide uppercase`}
-                    disabled={isTXIsPending}
+                    disabled={isTXIsPending || remainingNONMP === 0}
                     onClick={mintNONMPHandler}
                   >
                     {isTXIsPending ? <span className='animate-pulse'>Wait, tx is pending...</span> : 'Mint NONMP'}

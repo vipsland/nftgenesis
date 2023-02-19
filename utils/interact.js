@@ -369,10 +369,9 @@ export const mintNONMP = async ({ prtAmount, wallet, main_stage }) => {
 
 
   } catch (error) {
-    console.log({ error });
     return {
       success: false,
-      status: ('😞 Smth went wrong: ') + (txHash ? `. https://goerli.etherscan.io/tx/${txHash}` : '')
+      status: ('😞 Smth went wrong: ') + error?.message + (txHash ? `. https://goerli.etherscan.io/tx/${txHash}` : '')
     }
   }
 }
