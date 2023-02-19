@@ -4,7 +4,7 @@ require('hardhat-contract-sizer');
 require('solidity-coverage');
 require("dotenv").config();
 
-const { GOERLI_RPC_URL, PRIVATE_KEY, MNEMONIC, etherscanApiKey } = process.env;
+const { GOERLI_RPC_URL, PRIVATE_KEY, MNEMONIC, ETHERSCANAPIKEY } = process.env;
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -46,8 +46,8 @@ module.exports = {
   },
   etherscan: {
     apiKey: {
-      rinkeby: etherscanApiKey,
-      goerli: etherscanApiKey
+      rinkeby: ETHERSCANAPIKEY,
+      goerli: ETHERSCANAPIKEY
     },
     customChains: [
       {
