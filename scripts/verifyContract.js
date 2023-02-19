@@ -24,7 +24,7 @@ const _revealedUri = "https://ipfs.vipsland.com/nft/collections/genesis/json/";
 async function main() {
 
   await hre.run('verify:verify', {
-    address: '0x0FC2d6D8b713e3dCC210e3411E695C8C997C0049',//latest
+    address: '0xeB783A657d1dEB30b3603Eb99fc0a97352Ac27FD',//latest
     constructorArguments: [_team, _teamShares, _notRevealedUri, _revealedUri]
   })
 }
