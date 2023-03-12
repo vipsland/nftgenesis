@@ -318,7 +318,7 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
     uint8 moreOrLess = 0;
 
     //call 10 times
-    function sendMPNormalUsers() public payable onlyAccounts onlyOwner mintMPIsOpenModifier {
+    function sendMPNormalUsers() public  onlyAccounts onlyOwner mintMPIsOpenModifier {//fix
         require(sendMPAllDoneForNormalUsers == false, "err_9");
         if (xrand == 18) {
             xrand = uint8(createXRAND(17));
@@ -376,7 +376,7 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
         idx = 1000 * counter;
     }
 
-    function sendMPInternalTeam() public payable onlyAccounts onlyOwner mintInternalTeamMPIsOpenModifier {
+    function sendMPInternalTeam() public onlyAccounts onlyOwner mintInternalTeamMPIsOpenModifier {
         require(sendMPAllDoneForNormalUsers == true, "err_10");
         require(sendMPAllDoneForInternalTeam == false, "err_11");
 
@@ -435,7 +435,7 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
         idxInternalTeam = 1000 * counter;
     }
 
-    function sendMPAirdrop() public payable onlyAccounts onlyOwner mintAirdropMPIsOpenModifier {
+    function sendMPAirdrop() public onlyAccounts onlyOwner mintAirdropMPIsOpenModifier {
         require(sendMPAllDoneForNormalUsers == true, "err_12");
         require(sendMPAllDoneForAirdrop == false, "err_13");
 
