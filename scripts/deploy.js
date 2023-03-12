@@ -17,7 +17,7 @@ async function main() {
   // const leafNodes = whitelist.map((addr) => keccak256(addr))
   // const merkleTree = new MerkleTree(leafNodes, keccak256, { sortPairs: true })
   // const root = merkleTree.getRoot()
-  // Deploying contracts with the account: 0x99fEDB8bB1A0d4aa63D825a8333B7275A04d5ed8
+  // Deploying contracts with the account: 0x2ea8659d8143357e89828F4C8c0C51d423c259C4
 
   const signers = await ethers.getSigners()
   const [deployer] = signers
@@ -29,8 +29,8 @@ async function main() {
 
   //payment splitter
   const _team = [
-    '0xEd1CB7ef54321835C53a59cC94a816BCF47fEE11', // miukki account gets 5% of the total revenue
-    '0x1Fde442744D300b6405e10A6F63Bf491d94afDE1' // sam Account gets 15% of the total revenue
+    '0x1090C62B584c1c9a56E3D8AFd70cf9F2ECee17CC', // miukki account gets 5% of the total revenue
+    '0x06f10E01E97718730179F53Bc6f8ff6625ACB2f1' // sam Account gets 15% of the total revenue
   ];
   const _teamShares = [5, 15]; // 2 PEOPLE IN THE TEAM
 

@@ -107,7 +107,7 @@ export default function Mint() {
   useEffect(() => {
     const init = async (wallet) => {
       setPerAccountMintedNONMPs(await getPerAccountMintedNONMPs(wallet))
-      setIsWinner(await isWinner(wallet, MAIN_STAGE))
+      setIsWinner(await isWinner(wallet, MAIN_STAGE))//test winner
     }
     if (wallet?.accounts[0]?.address) {
 
@@ -308,7 +308,8 @@ export default function Mint() {
 
                     {isMintNONMP && wallet ?
                       <>
-                        Remaining NONMP: {remainingNONMP}
+                        Remaining NONMP: {remainingNONMP}<br />
+                        Total minted NONMP: {perAccountMintedNONMP}
                       </>
                       : null}
                   </p>
