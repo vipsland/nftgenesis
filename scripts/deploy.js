@@ -17,7 +17,7 @@ async function main() {
   // const leafNodes = whitelist.map((addr) => keccak256(addr))
   // const merkleTree = new MerkleTree(leafNodes, keccak256, { sortPairs: true })
   // const root = merkleTree.getRoot()
-  // Deploying contracts with the account: 0x2ea8659d8143357e89828F4C8c0C51d423c259C4
+  // Deploying contracts with the account: 0x18DC07CDBa57c63c8f2c1f2CBEBcdd4dc5cE638A
 
   const signers = await ethers.getSigners()
   const [deployer] = signers

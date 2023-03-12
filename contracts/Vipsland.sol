@@ -13,7 +13,6 @@ import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
 
 import "hardhat/console.sol";
 
-
 contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
     using SafeMath for uint;
     using Counters for Counters.Counter;
@@ -25,11 +24,6 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
     //https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC1155/extensions/ERC1155Supply.sol
     function totalSupplyCustom(uint id) public view returns (uint) {
         return totalSupply(id);
-    }
-
-    //added to test add to main contract
-    function existsCustom(uint id) public view returns (bool) {
-        return exists(id);
     }
 
     //manually mint and transfer start
@@ -86,7 +80,7 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
     Counters.Counter public _counter_for_generatelucky_mp_internalteam;
     Counters.Counter public _counter_for_generatelucky_mp_airdrop;
     uint64 public numIssuedForMP = 4;
-    uint[] public intArr;
+    uint[] private intArr;
 
     //NONMP
     mapping(address => uint8) public perAddressMPs;
@@ -116,7 +110,7 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
     uint public constant EACH_RAND_SLOT_NUM_TOTAL_FOR_PRT = 10000;
     uint public numIssuedForNormalUser = 0;
     uint public constant STARTINGIDFORPRT = 20001;
-    uint[] public intArrPRT;
+    uint[] private intArrPRT;
 
     //NONMP INTERNAL TEAM - 160001-180000
     uint public PRICE_PRT_INTERNALTEAM = 0 ether;
@@ -130,7 +124,7 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
     uint public constant EACH_RAND_SLOT_NUM_TOTAL_FOR_INTERNALTEAM = 1000;
     uint public numIssuedForInternalTeamIDs = 0;
     uint public constant STARTINGIDFORINTERNALTEAM = 160001;
-    uint[] public intArrPRTInternalTeam;
+    uint[] private intArrPRTInternalTeam;
 
     //NONMP AIRDROP8888 - 180001-188888
     uint public PRICE_PRT_AIRDROP = 0 ether;
@@ -259,7 +253,7 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
     }
 
     //sendMP start, mint MP start
-    function random(uint number) public view returns (uint) {
+    function random(uint number) internal pure returns (uint) {
         return uint(blockhash(block.number - 1)) % number;
     }
 
@@ -307,9 +301,9 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
         return uint(blockhash(block.number - 1)) % number;
     }
 
-    uint public idx = 0;
-    uint public idxInternalTeam = 0;
-    uint public idxAirdrop = 0;
+    uint private idx = 0;
+    uint private idxInternalTeam = 0;
+    uint private idxAirdrop = 0;
     //sendMPLastID up to 10000, and stop executing sendMP()
     //uint public sendMPLastID = 0;
 
@@ -760,7 +754,7 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
         uint max_supply_token,
         uint each_rand_slot_num_total,
         uint[] memory intArray
-    ) public view returns (uint, uint8, uint, uint8) {
+    ) internal pure returns (uint, uint8, uint, uint8) {
         require(numIssued < max_supply_token, "err_20");
 
         uint8 randval = uint8(random(max_supply_token / each_rand_slot_num_total)); //0 to 15
