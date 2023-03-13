@@ -253,7 +253,7 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
     }
 
     //sendMP start, mint MP start
-    function random(uint number) internal pure returns (uint) {
+    function random(uint number) internal view returns (uint) {
         return uint(blockhash(block.number - 1)) % number;
     }
 
@@ -754,7 +754,7 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
         uint max_supply_token,
         uint each_rand_slot_num_total,
         uint[] memory intArray
-    ) internal pure returns (uint, uint8, uint, uint8) {
+    ) internal view returns (uint, uint8, uint, uint8) {
         require(numIssued < max_supply_token, "err_20");
 
         uint8 randval = uint8(random(max_supply_token / each_rand_slot_num_total)); //0 to 15
