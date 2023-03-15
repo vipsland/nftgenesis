@@ -3,6 +3,7 @@ import { Network, Alchemy, Utils } from 'alchemy-sdk';
 import getRevertReason from 'eth-revert-reason';
 import { ethers } from "ethers";
 const GOERLI_API_KEY = 'da4QudLrjNs6-NR8EurK-N0ikxP6ZTVR';
+const MAX_SUPPLY_MP = 20000;
 
 const eth_goerli_settings = {
   apiKey: `${GOERLI_API_KEY}`,
@@ -196,8 +197,29 @@ export const isWinner = async (wallet, main_stage) => {
   if (!isMintMP) {
     return false
   }
+
+  // let resulst = await Promise.all(
+  //   [...Array.from({ length: 20 }, (_, i) => i + 1)].map(async (tokenId) => {
+  //     const isExist = await VipslandContract.methods.exists(tokenId).call();
+  //     return isExist ? tokenId : null
+  //   }),
+  // );
+  // resulst = resulst.filter(t => t)
+
+  // let resulstwinner = await Promise.all(
+  //   [...resulst].map(async (tokenId) => {
+  //     const balance = await VipslandContract.methods.balanceOf(wallet?.accounts[0]?.address, tokenId).call();
+  //     console.log({ balance })
+  //     return balance
+  //   }),
+  // )
+
+  // resulstwinner = resulstwinner.filter(b => b > 0) || [];
+  // return resulstwinner?.length > 0
+
   const tokens_amount = await VipslandContract.methods.perAddressMPs(wallet?.accounts[0]?.address).call();
-  return Number(tokens_amount) > 0;
+  return true;//Number(tokens_amount) > 0;
+
 
 }
 

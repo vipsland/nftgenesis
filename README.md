@@ -20,6 +20,8 @@ https://docs.ethers.io/v5/
 # Verify
 
 ```
+# for remix abi endcoded for sontructor can use https://abi.hashex.org/
+
 npx hardhat run  ./scripts/verifyContract.js --network goerli
 https://hardhat.org/hardhat-runner/docs/guides/verifying
 

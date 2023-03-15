@@ -174,30 +174,26 @@ export default function Mint() {
     setStatus(null)
     setTXIsPending(true)
 
-    const { success, status: message } = await mintNFT(wallet)
+    // const { success, status: message } = await mintNFT(wallet)
 
-    setStatus({
-      success,
-      message
-    })
+    // setStatus({
+    //   success,
+    //   message
+    // })
 
     setTXIsPending(false)
-    setTotalMintedMP(await getTotalMintedMP(MAIN_STAGE))
   }
 
   return (
 
     <div className="min-h-screen h-full w-full overflow-hidden flex flex-col items-center justify-center bg-brand-background ">
       <div className="relative w-full h-full flex flex-col items-center justify-center">
-        {/* <img
-          src="/images/blur.jpeg"
-          className="animate-pulse-slow absolute inset-auto block w-full min-h-screen object-cover"
-        /> */}
+
 
         <div className="flex flex-col items-center justify-center h-full w-full px-2 md:px-10">
           <div className="relative z-1 md:max-w-3xl w-full bg-gray-900/90 filter py-4 rounded-md px-2 pt-10 pb-10 pr-10 pl-10 flex flex-col items-center">
             <h1 className="font-default uppercase font-bold text-3xl md:text-4xl bg-gradient-to-br  bg-clip-text text-white mt-3 mb-3">
-              {isMintNONMP ? `Mint Normal Pass` : isMintMP ? 'Mint MP' : 'Loading...'}
+              {isMintMP && isMintNONMP ? 'Check your lucky MP' : !isMintMP && isMintNONMP ? `Mint Normal Pass` : null}
               {/* stage ${stageNONMP} */}
             </h1>
             <h3 className="text-sm text-white tracking-widest">
@@ -216,7 +212,10 @@ export default function Mint() {
               {connecting ? 'connecting' : wallet ? 'disconnect wallet' : 'connect wallet'}
             </button>
 
-            <div className="border-t border-gray-800 flex flex-col items-center mt-10 py-2 w-full">{wallet && isMintMP && !isAccountWinner ? <span className="text-brand-yellow font-default">Sorry! You did not win NFT.</span> : null}</div>
+            <div className="border-t border-gray-800 flex flex-col items-center mt-10 py-2 w-full">
+              {wallet && isMintMP && !isAccountWinner ? <span className="text-brand-yellow font-default">Sorry! You did not win NFT.</span> : null}
+              {wallet && isMintMP && isAccountWinner ? <span className="text-brand-yellow font-default">Congratulations! You won MP NFT.</span> : null}
+            </div>
 
 
 
@@ -230,11 +229,7 @@ export default function Mint() {
                     </p>
                   </div> : null}
 
-                  {isMintMP && isAccountWinner ? <div className="font-default z-10 absolute top-2 left-2 opacity-80 filter backdrop-blur-lg text-base px-4 py-2 bg-black border border-brand-black rounded-md flex items-center justify-center text-white font-semibold">
-                    <p>
-                      <span className="text-brand-blue">{totalMintedMP}</span>{' '}/{' '}{maxSupplyMP}
-                    </p>
-                  </div> : null}
+
 
                   {isAccountWinner || isMintNONMP ?
                     <img src="/images/vlarge.gif" className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /> : null}
@@ -297,17 +292,7 @@ export default function Mint() {
 
                   <p className="text-sm text-white tracking-widest mt-3">
 
-                    {wallet && isMintMP ? <>
-                      {isAccountWinner ?
-                        <>
-                          Congratulation! You won NFT, please mint. You can mint only <span className="text-brand-yellow font-default">1 NFT</span>.
-                        </> :
-                        null
-                      }
-                    </>
-                      : null}
-
-                    {isMintNONMP && wallet ?
+                    {!isMintMP && isMintNONMP && wallet ?
                       <>
                         Remaining Normal Pass: {remainingNONMP}<br />
                         Total minted Normal Pass: {perAccountMintedNONMP}
@@ -315,7 +300,7 @@ export default function Mint() {
                       : null}
                   </p>
 
-                  {wallet && isMintNONMP ? <div className="border-t border-b py-4 mt-16 w-full">
+                  {!isMintMP && isMintNONMP && wallet ? <div className="border-t border-b py-4 mt-16 w-full">
                     <div className="w-full text-xl font-default flex items-center justify-between text-brand-yellow">
                       <p>Total</p>
 
@@ -335,23 +320,10 @@ export default function Mint() {
                     </div>
                   </div> : null}
 
-                  {wallet && isMintMP && isAccountWinner ? <div className="border-t border-b py-4 mt-16 w-full">
-                    <div className="w-full text-l font-default flex items-center justify-between text-brand-yellow">
-                      <p>Total</p>
-
-                      <div className="flex items-center space-x-3">
-
-                        <p>0 ETH</p>
-
-                        <span className="text-gray-400">+ GAS</span>
-                      </div>
-                    </div>
-                  </div> : null}
-
 
                   {/* Mint Button && Connect Wallet Button */}
 
-                  {wallet && isMintNONMP ? <button
+                  {!isMintMP && isMintNONMP && wallet ? <button
 
                     className={` ${isTXIsPending || remainingNONMP === 0
                       ? 'bg-gray-900 cursor-not-allowed'
@@ -364,11 +336,12 @@ export default function Mint() {
                   </button> : null}
 
                   {wallet && isMintMP ? <button
-                    className={`${isTXIsPending
+                    className={` ${isTXIsPending || remainingNONMP === 0
                       ? 'bg-gray-900 cursor-not-allowed'
-                      : 'bg-gradient-to-br from-brand-black to-brand-pink shadow-lg hover:shadow-pink-400/50'
-                      } font-default mt-12 w-full px-6 py-3 rounded-md text-2xl text-white  mx-4 tracking-wide uppercase`}
-                    disabled={isTXIsPending}
+                      : 'bg-green-600 '
+                      } w-full mt-3 bg-mt-4 right-4 transition duration-200 ease-in-out font-chalk shadow-lg hover:shadow-black active:shadow-none px-4 py-2 rounded-md text-sm text-white tracking-wide uppercase`}
+                    disabled={isTXIsPending || remainingNONMP === 0}
+
                     onClick={mintMPHandler}
                   >
                     {isTXIsPending ? <span className='animate-pulse'>Wait, processing...</span> : 'Check your MP'}
