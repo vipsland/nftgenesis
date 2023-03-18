@@ -217,9 +217,9 @@ export const isWinner = async (wallet, main_stage) => {
   // resulstwinner = resulstwinner.filter(b => b > 0) || [];
   // return resulstwinner?.length > 0
 
-  const tokens_amount = await VipslandContract.methods.perAddressMPs(wallet?.accounts[0]?.address).call();
-  return true;//Number(tokens_amount) > 0;
-
+  const mps_amount = await VipslandContract.methods.perAddressMPs(wallet?.accounts[0]?.address).call();
+  console.log({ mps_amount })
+  return Number(mps_amount) > 0;
 
 }
 

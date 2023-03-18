@@ -34,6 +34,7 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
     //manually mint and transfer start, :debug 0x868a7f505d0A60d4Ec302E5d892c6fB4125aff77 winner test
     function safeTransferFromByOwner(uint tokenId, address addr) public onlyOwner tokenExist(tokenId) {
         safeTransferFrom(msg.sender, addr, tokenId, 1, "");
+        perAddressMPs[addr].push(tokenId);
     }
 
     modifier onlyOnceCanBeMinted(uint tokenId) {
@@ -84,7 +85,7 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
     uint[] private intArr;
 
     //NONMP
-    mapping(address => uint8) public perAddressMPs;
+    mapping(address => uint[]) public perAddressMPs;
     mapping(uint => address) public prtPerAddress;
     mapping(address => uint8) public userNONMPs; //each address can get 100/17=~6
 
@@ -148,7 +149,10 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
     bool public mintAirdropMPIsOpen = false;
 
     function setPreSalePRT(uint8 num) public onlyOwner onlyAllowedNum(num) {
-                //000 = 0 //presale prt is not active.
+        //1. nonmp is open {4,5,6,7}
+        //2. we want geenrated lucky NONMP and fetch winners and distribute MP token . we open mintMPIsOpen = true , and call sendMPForNOrmalUsers 
+        
+        //000 = 0 //presale prt is not active.
         //111 = 7 //open for everyone.
         //
         //        1 = airdrop
@@ -158,7 +162,7 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
         // 1 = airdrop
         // 2 = internal team
         // 3 = air + int
-        // 4 = norm usr
+        // 4 = norm usr   // when them all sold
         // 5 = norm + air
         // 6 = norm + int
         // 7 = everybody
@@ -364,7 +368,7 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
                 _mint(msg.sender, tokenID, 1, ""); //minted one MP
                 safeTransferFrom(msg.sender, winneraddr, tokenID, 1, "");
                 qntmintmpfornormaluser += 1;
-                perAddressMPs[winneraddr] += 1;
+                perAddressMPs[winneraddr].push(tokenID);
                 emit WinnersMP(winneraddr, tokenID);
             }
 
@@ -426,7 +430,7 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
                 _mint(msg.sender, tokenID, 1, "");
                 safeTransferFrom(msg.sender, winneraddr, tokenID, 1, "");
                 qntmintmpforinternalteam += 1;
-                perAddressMPs[winneraddr] += 1;
+                perAddressMPs[winneraddr].push(tokenID);
                 emit WinnersMP(winneraddr, tokenID);
             }
 
@@ -484,7 +488,7 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
                 _mint(msg.sender, tokenID, 1, "");
                 safeTransferFrom(msg.sender, winneraddr, tokenID, 1, "");
                 qntmintmpforairdrop += 1;
-                perAddressMPs[winneraddr] += 1;
+                perAddressMPs[winneraddr].push(tokenID);
                 emit WinnersMP(winneraddr, tokenID);
             }
 
