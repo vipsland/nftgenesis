@@ -20,3 +20,4 @@ Insufficient funds: err_19
 all NONMP are issued: err_20
 Stage not active :err_21
 Not allowed num :err_22
+MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION_INTERNAL should be <= than MAX_PRT_AMOUNT_PER_ACC_INTERNAL :err_23

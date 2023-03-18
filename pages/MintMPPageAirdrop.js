@@ -9,7 +9,7 @@ import {
   getisMintMP
 } from '../utils/interact'
 
-const MAIN_STAGE = 4;//normal user
+const MAIN_STAGE = 1;//main airdrop
 
 export function MintMPPageNormalUser() {
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet()

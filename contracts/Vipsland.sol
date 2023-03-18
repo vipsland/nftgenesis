@@ -97,8 +97,30 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
         return address(0);
     }
 
+    // limit normal user
     uint8 public constant MAX_PRT_AMOUNT_PER_ACC = 100;
     uint8 public constant MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION = 35;
+
+    // limits aidrop
+    uint8 public constant MAX_PRT_AMOUNT_PER_ACC_AIRDROP = 3;
+    uint8 public constant MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION_AIRDROP = 3;
+
+    // limits interal
+    uint8 public MAX_PRT_AMOUNT_PER_ACC_INTERNAL = 25;
+    uint8 public MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION_INTERNAL = 25;
+
+    modifier set_limits_for_internal_team(uint8 num) {
+        require(num <= MAX_PRT_AMOUNT_PER_ACC_INTERNAL, "err_23");
+        _;
+    }
+
+    function set_MAX_PRT_AMOUNT_PER_ACC_INTERNAL(uint8 num) public onlyOwner {
+        MAX_PRT_AMOUNT_PER_ACC_INTERNAL = num;
+    }
+    
+    function set_MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION_INTERNAL(uint8 num) public onlyOwner set_limits_for_internal_team(num) {
+        MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION_INTERNAL = num;
+    }
 
     //NONMP NORMAL 20001-160000
     uint public PRICE_PRT = 0.123 ether;

@@ -130,12 +130,34 @@ export const getisMintMP = async (main_stage) => {
 }
 
 
-export const getMaxNONMPAmountPerAcc = async () => {
-  return await VipslandContract.methods.MAX_PRT_AMOUNT_PER_ACC().call();
+export const getMaxNONMPAmountPerAcc = async (main_stage) => {
+  if (main_stage === 4 && NORMAL_ST.indexOf(stage) > -1) {
+    return await VipslandContract.methods.MAX_PRT_AMOUNT_PER_ACC().call();
+  }
+
+  if (main_stage === 2 && INT_ST.indexOf(stage) > -1) {
+    return await VipslandContract.methods.MAX_PRT_AMOUNT_PER_ACC_INTERNAL().call();
+  }
+
+  if (main_stage === 1 && AIR_ST.indexOf(stage) > -1) {
+    return await VipslandContract.methods.MAX_PRT_AMOUNT_PER_ACC_AIRDROP().call();
+  }
 }
 
-export const getMaxNONMPAmountPerAccPerTransaction = async () => {
-  return await VipslandContract.methods.MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION().call();
+export const getMaxNONMPAmountPerAccPerTransaction = async (main_stage) => {
+
+  if (main_stage === 4 && NORMAL_ST.indexOf(stage) > -1) {
+    return await VipslandContract.methods.MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION().call();
+  }
+
+  if (main_stage === 2 && INT_ST.indexOf(stage) > -1) {
+    return await VipslandContract.methods.MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION_INTERNAL().call();
+  }
+
+  if (main_stage === 1 && AIR_ST.indexOf(stage) > -1) {
+    return await VipslandContract.methods.MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION_AIRDROP().call();
+  }
+
 }
 
 
@@ -397,56 +419,6 @@ export const mintNONMP = async ({ prtAmount, wallet, main_stage }) => {
     }
   }
 }
-
-// export const mintNFT = async (wallet) => {
-
-//   if (!window.ethereum.selectedAddress) {
-//     return {
-//       success: false,
-//       status: 'To be able to buy, you need to connect your wallet.'
-//     }
-//   }
-
-//   if (window.ethereum.selectedAddress !== wallet?.accounts[0]?.address) {
-//     return {
-//       success: false,
-//       status: 'Select correct account in metamask.'
-//     }
-//   }
-
-
-//   const nonce = await web3.eth.getTransactionCount(
-//     window.ethereum.selectedAddress,
-//     'latest'
-//   )
-
-//   // Set up our Ethereum transaction
-//   // const tx = {
-//   //   to: config.contractAddress,
-//   //   from: window.ethereum.selectedAddress,
-//   //   value: parseInt(
-//   //     web3.utils.toWei(String(config.price * prtAmount), 'ether')
-//   //   ).toString(16), // hex
-//   //   data: VipslandContract.methods.publicSaleMint(prtAmount).encodeABI(),
-//   //   nonce: nonce.toString(16)
-//   // }
-
-//   // Set up our Ethereum transaction
-//   // function buyPRT (address account, uint8 _amount_wanted_able_to_get)
-//   const counterTokenID = await getTotalMinted()
-//   const val = counterTokenID < 1000 ? String(0) : String(config.priceNFT * 1)
-
-//   const tx = {
-//     to: config.contractAddress,
-//     from: window.ethereum.selectedAddress,
-//     value: parseInt(
-//       web3.utils.toWei(val, 'ether')
-//     ).toString(16), // hex
-//     data: VipslandContract.methods
-//       .publicSaleMint()
-//       .encodeABI(),
-//     nonce: nonce.toString(16)
-//   }
 
 
 
