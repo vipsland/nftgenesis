@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { MintNONMPPageAirdrop } from './MintNONMPPageAirdrop'
-import { MintMPPageAirdrop } from './MintMPPageAirdrop'
+import MintNONMPPageAirdrop from './MintNONMPPageAirdrop'
+import MintMPPageAirdrop from './MintMPPageAirdrop'
 
 import {
   getisMintNONMP,

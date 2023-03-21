@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { MintNONMPPageNormalUser } from './MintNONMPPageNormalUser'
-import { MintMPPageNormalUser } from './MintMPPageNormalUser'
+import MintNONMPPageNormalUser from './MintNONMPPageNormalUser'
+import MintMPPageNormalUser from './MintMPPageNormalUser'
 
 import {
   getisMintNONMP,

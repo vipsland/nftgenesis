@@ -16,7 +16,7 @@ import {
 
 const MAIN_STAGE = 4;//normal user
 
-export function MintNONMPPageNormalUser() {
+export default function MintNONMPPageNormalUser() {
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet()
   const connectedWallets = useWallets()
 

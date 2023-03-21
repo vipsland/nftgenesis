@@ -11,7 +11,7 @@ import {
 
 const MAIN_STAGE = 1;//main airdrop
 
-export function MintMPPageAirdrop() {
+export default function MintMPPageAirdrop() {
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet()
   const connectedWallets = useWallets()
 
