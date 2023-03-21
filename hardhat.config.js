@@ -3,7 +3,7 @@ require('hardhat-contract-sizer');
 require('solidity-coverage');
 require("dotenv").config();
 
-const { GOERLI_RPC_URL, PRIVATE_KEY, MNEMONIC, ETHERSCANAPIKEY } = process.env;
+const { SEPOLIA_RPC_URL, GOERLI_RPC_URL, PRIVATE_KEY, ETHERSCANAPIKEY } = process.env;
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -18,6 +18,11 @@ module.exports = {
   },
   networks: {
 
+    sepolia: {
+      url: SEPOLIA_RPC_URL,
+      accounts: [`0x${PRIVATE_KEY}`],
+      saveDeployments: true,
+    },
 
     goerli: {
       url: GOERLI_RPC_URL,
@@ -46,7 +51,8 @@ module.exports = {
   etherscan: {
     apiKey: {
       rinkeby: ETHERSCANAPIKEY,
-      goerli: ETHERSCANAPIKEY
+      goerli: ETHERSCANAPIKEY,
+      sepolia: ETHERSCANAPIKEY
     },
     customChains: [
       {
@@ -64,8 +70,17 @@ module.exports = {
           apiURL: "https://api-goerli.etherscan.io/api",
           browserURL: "https://goerli.etherscan.io"
         }
+      },
+      {
+        network: "sepolia",
+        chainId: 11155111,
+        urls: {
+          apiURL: "https://api-sepolia.etherscan.io/api",
+          browserURL: "https://sepolia.etherscan.io"
+        }
       }
     ]
+
   },
   contractSizer: {
     alphaSort: true,

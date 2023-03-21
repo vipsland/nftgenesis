@@ -2,21 +2,21 @@ const { createAlchemyWeb3 } = require('@alch/alchemy-web3')
 import { Network, Alchemy, Utils } from 'alchemy-sdk';
 import getRevertReason from 'eth-revert-reason';
 import { ethers } from "ethers";
-const GOERLI_API_KEY = 'da4QudLrjNs6-NR8EurK-N0ikxP6ZTVR';
+const SEPOLIA_API_KEY = 'APHYuD5d3CUhp4yJTdpRQm1Q8rkAljG7';
 const MAX_SUPPLY_MP = 20000;
 
-const eth_goerli_settings = {
-  apiKey: `${GOERLI_API_KEY}`,
-  network: Network.ETH_GOERLI,
+const eth_sepolia_settings = {
+  apiKey: `${SEPOLIA_API_KEY}`,
+  network: Network.ETH_SEPOLIA,
 
 };
-const alchemy = new Alchemy(eth_goerli_settings);
+const alchemy = new Alchemy(eth_sepolia_settings);
 
 /** @type import('hardhat/config').HardhatUserConfig */
-const GOERLI_RPC_URL = `https://eth-goerli.g.alchemy.com/v2/${eth_goerli_settings.apiKey}`
-console.log({ GOERLI_RPC_URL })
+const SEPOLIA_RPC_URL = `https://eth-sepolia.g.alchemy.com/v2/${eth_sepolia_settings.apiKey}`
+console.log({ SEPOLIA_RPC_URL })
 
-const web3 = createAlchemyWeb3(GOERLI_RPC_URL)
+const web3 = createAlchemyWeb3(SEPOLIA_RPC_URL)
 
 import { config } from '../dapp.config'
 
@@ -328,7 +328,7 @@ export const mintNONMP = async ({ prtAmount, wallet, main_stage }) => {
       .waitForTransaction(
         `${txHash}`
       )
-    console.log('waitForTransaction', res)
+    console.log('waitForTransaction!!!', res)
 
     // const receipt = await alchemy.core.getTransactionReceipt(txHash)
 
@@ -344,10 +344,10 @@ export const mintNONMP = async ({ prtAmount, wallet, main_stage }) => {
     const isSuccess = res?.status === 1
 
     if (!isSuccess) {
-      const reason = await getRevertReason(txHash, 'goerli', res?.blockNumber)
+      const reason = await getRevertReason(txHash, 'sepolia', res?.blockNumber)
       return {
         success: false,
-        status: '😞 Transaction is reverted:' + reason + (txHash ? `. https://goerli.etherscan.io/tx/${txHash}` : '')
+        status: '😞 Transaction is reverted:' + reason + (txHash ? `. https://sepolia.etherscan.io/tx/${txHash}` : '')
       }
     }
 
@@ -401,9 +401,9 @@ export const mintNONMP = async ({ prtAmount, wallet, main_stage }) => {
     return {
       success: true,
       status: (
-        <a href={`https://goerli.etherscan.io/tx/${txHash}`} rel="noreferrer" target="_blank">
+        <a href={`https://sepolia.etherscan.io/tx/${txHash}`} rel="noreferrer" target="_blank">
           <span>✅ Success, check out your transaction on Etherscan:</span><br />
-          <span>{`https://goerli.etherscan.io/tx/${txHash}`}</span><br />
+          <span>{`https://sepolia.etherscan.io/tx/${txHash}`}</span><br />
           {minted_amount ? <><span>Total minted NONMP: {minted_amount}</span><br /></> : null}
           {token_ids ? <span>Tokens minted per this transaction: {token_ids}</span> : null}
         </a>
@@ -415,7 +415,7 @@ export const mintNONMP = async ({ prtAmount, wallet, main_stage }) => {
   } catch (error) {
     return {
       success: false,
-      status: ('😞 Smth went wrong: ') + error?.message + (txHash ? `. https://goerli.etherscan.io/tx/${txHash}` : '')
+      status: ('😞 Smth went wrong: ') + error?.message + (txHash ? `. https://sepolia.etherscan.io/tx/${txHash}` : '')
     }
   }
 }
@@ -436,11 +436,11 @@ export const mintNONMP = async ({ prtAmount, wallet, main_stage }) => {
 
 //     isReverted = receipt.status === 0
 //     if (isReverted) {
-//       const reason = await getRevertReason(txHash, 'goerli', receipt?.blockNumber)
+//       const reason = await getRevertReason(txHash, 'sepolia', receipt?.blockNumber)
 //       console.log({ reason })
 //       return {
 //         success: false,
-//         status: '😞 Transaction is reverted:' + reason + (txHash ? `. https://goerli.etherscan.io/tx/${txHash}` : '')
+//         status: '😞 Transaction is reverted:' + reason + (txHash ? `. https://sepolia.etherscan.io/tx/${txHash}` : '')
 //       }
 //     }
 
@@ -474,9 +474,9 @@ export const mintNONMP = async ({ prtAmount, wallet, main_stage }) => {
 //     return {
 //       success: true,
 //       status: (
-//         <a href={`https://goerli.etherscan.io/tx/${txHash}`} rel="noreferrer" target="_blank">
+//         <a href={`https://sepolia.etherscan.io/tx/${txHash}`} rel="noreferrer" target="_blank">
 //           <span>✅ Success, check out your transaction on Etherscan:</span><br />
-//           <span>{`https://goerli.etherscan.io/tx/${txHash}`}</span><br />
+//           <span>{`https://sepolia.etherscan.io/tx/${txHash}`}</span><br />
 //           <span>Minted NFT ID: {minterLogOutput?.tokenID}, price of NFT: {minterLogOutput?.price}</span>
 //         </a>
 //       )
@@ -487,7 +487,7 @@ export const mintNONMP = async ({ prtAmount, wallet, main_stage }) => {
 //   } catch (error) {
 //     return {
 //       success: false,
-//       status: (isReverted ? '😞 Transaction is reverted: ' : '😞 Smth went wrong: ') + error.message + (txHash ? `. https://goerli.etherscan.io/tx/${txHash}` : '')
+//       status: (isReverted ? '😞 Transaction is reverted: ' : '😞 Smth went wrong: ') + error.message + (txHash ? `. https://sepolia.etherscan.io/tx/${txHash}` : '')
 //     }
 //   }
 // }

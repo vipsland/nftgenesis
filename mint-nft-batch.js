@@ -2,10 +2,10 @@ require('dotenv').config();
 const ethers = require('ethers');
 
 // Get Alchemy API Key
-const GOERLI_API_KEY = process.env.GOERLI_API_KEY;
+const SEPOLIA_API_KEY = process.env.SEPOLIA_API_KEY;
 
 // Define an Alchemy Provider
-const provider = new ethers.providers.AlchemyProvider('goerli', GOERLI_API_KEY)
+const provider = new ethers.providers.AlchemyProvider('sepolia', SEPOLIA_API_KEY)
 
 const contract = require("./artifacts/contracts/AwesomeNFTBatch.sol/AwesomeNFTBatch.json");
 
@@ -47,7 +47,7 @@ console.log({ totalChunks })
 const mintNFTBatch = async (chunk, counts) => {
     let nftTxn = await awesomeNFTBatch.mintNFTBatch(chunk, counts)
     await nftTxn.wait()
-    console.log(`NFT Minted! Check it out at: https://goerli.etherscan.io/tx/${nftTxn.hash}`)
+    console.log(`NFT Minted! Check it out at: https://sepolia.etherscan.io/tx/${nftTxn.hash}`)
     return { hash: nftTxn.hash }
 }
 

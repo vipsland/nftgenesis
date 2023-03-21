@@ -799,12 +799,12 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
         return msg.value;
     }
 
-    //fix: test in goerli
+    //fix: test
     function contractBalance() public view onlyOwner returns (uint) {
         return address(this).balance; //This function allows the owner to withdraw from the contract
     }
 
-    //fix: test in goerli
+    //fix: test
     function withdraw() public payable onlyOwner {
         payable(msg.sender).transfer(address(this).balance); //This function allows the owner to withdraw from the contract
     }
