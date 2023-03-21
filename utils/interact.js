@@ -130,31 +130,31 @@ export const getisMintMP = async (main_stage) => {
 }
 
 
-export const getMaxNONMPAmountPerAcc = async (main_stage) => {
-  if (main_stage === 4 && NORMAL_ST.indexOf(stage) > -1) {
+export const getMaxNONMPAmountPerAcc = async (stage) => {
+  if (stage === 4 && NORMAL_ST.indexOf(stage) > -1) {
     return await VipslandContract.methods.MAX_PRT_AMOUNT_PER_ACC().call();
   }
 
-  if (main_stage === 2 && INT_ST.indexOf(stage) > -1) {
+  if (stage === 2 && INT_ST.indexOf(stage) > -1) {
     return await VipslandContract.methods.MAX_PRT_AMOUNT_PER_ACC_INTERNAL().call();
   }
 
-  if (main_stage === 1 && AIR_ST.indexOf(stage) > -1) {
+  if (stage === 1 && AIR_ST.indexOf(stage) > -1) {
     return await VipslandContract.methods.MAX_PRT_AMOUNT_PER_ACC_AIRDROP().call();
   }
 }
 
-export const getMaxNONMPAmountPerAccPerTransaction = async (main_stage) => {
+export const getMaxNONMPAmountPerAccPerTransaction = async (stage) => {
 
-  if (main_stage === 4 && NORMAL_ST.indexOf(stage) > -1) {
+  if (stage === 4 && NORMAL_ST.indexOf(stage) > -1) {
     return await VipslandContract.methods.MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION().call();
   }
 
-  if (main_stage === 2 && INT_ST.indexOf(stage) > -1) {
+  if (stage === 2 && INT_ST.indexOf(stage) > -1) {
     return await VipslandContract.methods.MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION_INTERNAL().call();
   }
 
-  if (main_stage === 1 && AIR_ST.indexOf(stage) > -1) {
+  if (stage === 1 && AIR_ST.indexOf(stage) > -1) {
     return await VipslandContract.methods.MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION_AIRDROP().call();
   }
 

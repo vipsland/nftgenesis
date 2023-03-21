@@ -1,5 +1,4 @@
-require('@nomiclabs/hardhat-ethers')
-require('@nomiclabs/hardhat-waffle');
+require("@nomicfoundation/hardhat-toolbox");
 require('hardhat-contract-sizer');
 require('solidity-coverage');
 require("dotenv").config();
@@ -18,7 +17,7 @@ module.exports = {
     }
   },
   networks: {
-   
+
 
     goerli: {
       url: GOERLI_RPC_URL,

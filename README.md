@@ -28,6 +28,9 @@ https://hardhat.org/hardhat-runner/docs/guides/verifying
 #verified latest code
 https://goerli.etherscan.io/address/0x2fb7Ac8fe35C3B42fDeFe47d605ef7b21242210a#code
 
+
+npx hardhat verify --network goerli --constructor-args arguments.js 0x81ccA6cE5169C6BC4858587F1852238D32c8cA54
+
 ```
 
 # Hadrhad
