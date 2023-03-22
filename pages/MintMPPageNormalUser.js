@@ -125,7 +125,7 @@ export default function MintMPPageNormalUser() {
       <div className="border-t border-gray-800 flex flex-col items-center mt-10 py-2 w-full">
 
         {wallet && isMintMP && listMPs?.length === 0 ? <span className="text-brand-yellow font-default">Sorry! You did not win MP NFT.</span> : null}
-        {wallet && isMintMP && listMPs?.length > 0 ? <span className="text-brand-yellow font-default">Congratulations! You are a winner. Your MP Tokens: {listMPs?.join(',')}</span> : null}
+        {wallet && isMintMP && listMPs?.length > 0 ? <span className="text-brand-yellow font-default">Congratulations! You are a winner. Your MP Tokens: {listMPs?.join(', ')}. Check OpenSea. </span> : null}
 
 
         {wallet && isMintMP && listMPs?.length > 0 ?
@@ -133,11 +133,13 @@ export default function MintMPPageNormalUser() {
           <>
 
 
+            {/* <a href={`https://testnets.opensea.io/assets/goerli/${getContractAddress}/${id}.gif`}></a> */}
+
             <div className="grid grid-cols-3 gap-4 place-items-start mt-10">
-              <div><img width="100" src={`https://ipfs.vipsland.com/nft/collections/genesis/${'50007'}.gif`} className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /></div>
-              <div><img src={`https://ipfs.vipsland.com/nft/collections/genesis/${'50007'}.gif`} className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /></div>
-              <div><img src={`https://ipfs.vipsland.com/nft/collections/genesis/${'50007'}.gif`} className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /></div>
-              <div><img src={`https://ipfs.vipsland.com/nft/collections/genesis/${'50007'}.gif`} className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /></div>
+              {listMPs.map(id => {
+                return <div><img width="100" src={`https://ipfs.vipsland.com/nft/collections/genesis/${id}.gif`} className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /></div>
+              })}
+
             </div>
 
 
