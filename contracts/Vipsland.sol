@@ -20,7 +20,7 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
     string public symbol = "VPSL";
 
     function concatenate(string memory a, uint b) public pure returns (string memory) {
-        return string(abi.encodePacked(a, ",", b));
+        return string(abi.encodePacked(a, ",", Strings.toString(b)));
     }
 
     //manually mint and transfer start, :debug 0x868a7f505d0A60d4Ec302E5d892c6fB4125aff77 winner test
