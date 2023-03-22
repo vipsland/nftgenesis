@@ -3,7 +3,7 @@ require('hardhat-contract-sizer');
 require('solidity-coverage');
 require("dotenv").config();
 
-const { SEPOLIA_RPC_URL, GOERLI_RPC_URL, PRIVATE_KEY, ETHERSCANAPIKEY } = process.env;
+const { SEPOLIA_RPC_URL, GOERLI_RPC_URL, SEPOLIA_PRIVATE_KEY, GOERLI_PRIVATE_KEY, ETHERSCANAPIKEY } = process.env;
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -12,7 +12,7 @@ module.exports = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 5
+        runs: 200
       }
     }
   },
@@ -20,13 +20,13 @@ module.exports = {
 
     sepolia: {
       url: SEPOLIA_RPC_URL,
-      accounts: [`0x${PRIVATE_KEY}`],
+      accounts: [`0x${SEPOLIA_PRIVATE_KEY}`],
       saveDeployments: true,
     },
 
     goerli: {
       url: GOERLI_RPC_URL,
-      accounts: [`0x${PRIVATE_KEY}`],
+      accounts: [`0x${GOERLI_PRIVATE_KEY}`],
       saveDeployments: true,
     },
 
