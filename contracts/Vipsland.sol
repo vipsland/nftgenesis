@@ -24,9 +24,13 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
     }
 
     //manually mint and transfer start, :debug 0x868a7f505d0A60d4Ec302E5d892c6fB4125aff77 winner test
-    function mintAndSafeTransferFromByOwner(uint tokenID, address addr) public onlyOwner {
-        require(exists(tokenID), "err_2");
+    function mintDebug(uint tokenID) public onlyOwner {
         _mint(msg.sender, tokenID, 1, "");
+    }
+
+    //manually mint and transfer start, :debug 0x868a7f505d0A60d4Ec302E5d892c6fB4125aff77 winner test
+    function mintSafeTransferFromDebug(uint tokenID, address addr) public onlyOwner {
+        require(exists(tokenID), "err_2");
         safeTransferFrom(msg.sender, addr, tokenID, 1, "");
         perAddressMPs[addr] = concatenate(perAddressMPs[addr], tokenID);
     }

@@ -3,9 +3,8 @@ import { initOnboard } from '../utils/onboard'
 import { useConnectWallet } from '@web3-onboard/react'
 import { useWallets } from '@web3-onboard/react'
 import {
-  getTotalMintedMP,
   getMaxSupplyMP,
-  isWinner,
+  getMPs,
   getisMintMP
 } from '../utils/interact'
 
@@ -17,9 +16,8 @@ export default function MintMPPageNormalUser() {
 
   const [maxSupplyMP, setMaxSupplyMP] = useState(0)
 
-  const [isAccountWinner, setIsWinner] = useState(false)
-
-  const [totalMintedMP, setTotalMintedMP] = useState(0)
+  const [listMPs, setMPs] = useState([])
+  console.log(listMPs)
 
   const [isMintMP, setisMintMP] = useState(false)
 
@@ -69,7 +67,7 @@ export default function MintMPPageNormalUser() {
 
   useEffect(() => {
     const init = async (wallet) => {
-      setIsWinner(await isWinner(wallet, MAIN_STAGE))//test winner
+      setMPs(await getMPs(wallet, MAIN_STAGE))//test winner
     }
     if (wallet?.accounts[0]?.address) {
       init(wallet)
@@ -79,7 +77,6 @@ export default function MintMPPageNormalUser() {
 
   useEffect(() => {
     const init = async () => {
-      setTotalMintedMP(await getTotalMintedMP(MAIN_STAGE))
       setMaxSupplyMP(await getMaxSupplyMP())
       setisMintMP(await getisMintMP(MAIN_STAGE))
 
@@ -126,43 +123,32 @@ export default function MintMPPageNormalUser() {
       </button>
 
       <div className="border-t border-gray-800 flex flex-col items-center mt-10 py-2 w-full">
-        {wallet && isMintMP && !isAccountWinner ? <span className="text-brand-yellow font-default">Sorry! You did not win MP NFT.</span> : null}
-        {wallet && isMintMP && isAccountWinner ? <span className="text-brand-yellow font-default">Congratulations! You won MP NFT.</span> : null}
+
+        {wallet && isMintMP && listMPs?.length === 0 ? <span className="text-brand-yellow font-default">Sorry! You did not win MP NFT.</span> : null}
+        {wallet && isMintMP && listMPs?.length > 0 ? <span className="text-brand-yellow font-default">Congratulations! You are a winner. Your MP Tokens: {listMPs?.join(',')}</span> : null}
+
+
+        {wallet && isMintMP && listMPs?.length > 0 ?
+
+          <>
+
+
+            <div className="grid grid-cols-3 gap-4 place-items-start mt-10">
+              <div><img width="100" src={`https://ipfs.vipsland.com/nft/collections/genesis/${'50007'}.gif`} className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /></div>
+              <div><img src={`https://ipfs.vipsland.com/nft/collections/genesis/${'50007'}.gif`} className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /></div>
+              <div><img src={`https://ipfs.vipsland.com/nft/collections/genesis/${'50007'}.gif`} className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /></div>
+              <div><img src={`https://ipfs.vipsland.com/nft/collections/genesis/${'50007'}.gif`} className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /></div>
+            </div>
+
+
+          </>
+          : null}
+
+
+
       </div>
 
-      {wallet && isMintMP ?
-        <div className="flex flex-col md:flex-row md:space-x-14 w-full mt-10 md:mt-14">
 
-          <div className="relative w-full">
-            {wallet && isMintMP && isAccountWinner ? <div className="font-default z-10 absolute top-2 left-2 opacity-80 filter backdrop-blur-lg text-base px-4 py-2 bg-black border border-brand-black rounded-md flex items-center justify-center text-white font-semibold">
-              <p>
-                <span className="text-brand-blue">{totalMintedMP}</span>{' '}/{' '}{maxSupplyMP}
-              </p>
-            </div> : null}
-
-            {wallet && isMintMP && isAccountWinner ?
-              <img src="/images/vlarge.gif" className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /> : null}
-
-          </div>
-
-          <div className="flex flex-col items-center w-full px-4 mt-16 md:mt-0">
-
-            {wallet && isMintMP && isAccountWinner ? <button
-              className={` ${isTXIsPending
-                ? 'bg-gray-900 cursor-not-allowed'
-                : 'bg-green-600 '
-                } w-full mt-3 bg-mt-4 right-4 transition duration-200 ease-in-out font-chalk shadow-lg hover:shadow-black active:shadow-none px-4 py-2 rounded-md text-sm text-white tracking-wide uppercase`}
-              disabled={isTXIsPending}
-
-              onClick={checkMPHandler}
-            >
-              {isTXIsPending ? <span className='animate-pulse'>Wait, processing...</span> : 'Check your MP'}
-            </button> : null}
-
-
-          </div>
-        </div>
-        : null}
 
       {/* Status */}
       {status && (
