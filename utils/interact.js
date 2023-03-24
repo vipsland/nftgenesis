@@ -2,21 +2,23 @@ const { createAlchemyWeb3 } = require('@alch/alchemy-web3')
 import { Network, Alchemy, Utils } from 'alchemy-sdk';
 import getRevertReason from 'eth-revert-reason';
 import { ethers } from "ethers";
-const SEPOLIA_API_KEY = 'APHYuD5d3CUhp4yJTdpRQm1Q8rkAljG7';
-const MAX_SUPPLY_MP = 20000;
 
-const eth_sepolia_settings = {
-  apiKey: `${SEPOLIA_API_KEY}`,
-  network: Network.ETH_SEPOLIA,
+const GOERLI_ALCHEMY_API_KEY = "gQs6zSH0_WBwObftQm0qFnAqFQdhKtfw"
+const NETWORK = 'goerli'
+
+const eth_goerli_settings = {
+  apiKey: `${GOERLI_ALCHEMY_API_KEY}`,
+  network: Network.ETH_GOERLI,
 
 };
-const alchemy = new Alchemy(eth_sepolia_settings);
+const alchemy = new Alchemy(eth_goerli_settings);
 
 /** @type import('hardhat/config').HardhatUserConfig */
-const SEPOLIA_RPC_URL = `https://eth-sepolia.g.alchemy.com/v2/${eth_sepolia_settings.apiKey}`
-console.log({ SEPOLIA_RPC_URL })
+const GOERLI_RPC_URL = "https://eth-goerli.g.alchemy.com/v2/da4QudLrjNs6-NR8EurK-N0ikxP6ZTVR"
 
-const web3 = createAlchemyWeb3(SEPOLIA_RPC_URL)
+console.log({ GOERLI_RPC_URL })
+
+const web3 = createAlchemyWeb3(GOERLI_RPC_URL)
 
 import { config } from '../dapp.config'
 
@@ -244,8 +246,8 @@ export const getListNONMPs = async (wallet, main_stage) => {
   }
 
 
-  const nfts = await await alchemy.nft.getNftsForOwner(wallet?.accounts[0]?.address, { contractAddresses: [config.contractAddress] });
-  console.log({ nfts, address: wallet?.accounts[0]?.address, config: config.contractAddress })
+  const { ownedNfts = [] } = await alchemy.nft.getNftsForOwner(wallet?.accounts[0]?.address, { contractAddresses: [config.contractAddress] }) || {};
+
   // Access the Alchemy NFT API
   const res = await alchemy.nft.getNftsForOwner(wallet?.accounts[0]?.address).then(console.log);
   console.log({ res })
@@ -348,7 +350,7 @@ export const mintNONMP = async ({ prtAmount, wallet, main_stage }) => {
     const isSuccess = res?.status === 1
 
     if (!isSuccess) {
-      const reason = await getRevertReason(txHash, 'sepolia', res?.blockNumber)
+      const reason = await getRevertReason(txHash, NETWORK, res?.blockNumber)
       return {
         success: false,
         status: '😞 Transaction is reverted:' + reason + (txHash ? `. https://sepolia.etherscan.io/tx/${txHash}` : '')
