@@ -4,8 +4,9 @@ import { useConnectWallet } from '@web3-onboard/react'
 import { useWallets } from '@web3-onboard/react'
 import {
   getMaxSupplyMP,
-  getMPs,
-  getisMintMP
+  getListMPs,
+  getisMintMP,
+  getListNONMPs
 } from '../utils/interact'
 
 const MAIN_STAGE = 4;//normal user
@@ -16,8 +17,11 @@ export default function MintMPPageNormalUser() {
 
   const [maxSupplyMP, setMaxSupplyMP] = useState(0)
 
-  const [listMPs, setMPs] = useState([])
-  console.log(listMPs)
+  const [listMPs, setListMPs] = useState([])
+
+  const [listNONMPs, setListNONMPs] = useState([])
+
+
 
   const [isMintMP, setisMintMP] = useState(false)
 
@@ -67,7 +71,8 @@ export default function MintMPPageNormalUser() {
 
   useEffect(() => {
     const init = async (wallet) => {
-      setMPs(await getMPs(wallet, MAIN_STAGE))//test winner
+      setListMPs(await getListMPs(wallet, MAIN_STAGE))//test winner
+      setListNONMPs(await getListNONMPs(wallet, MAIN_STAGE))//test winner
     }
     if (wallet?.accounts[0]?.address) {
       init(wallet)
@@ -104,7 +109,8 @@ export default function MintMPPageNormalUser() {
 
     <div className="relative z-1 md:max-w-3xl w-full bg-gray-900/90 filter py-4 rounded-md px-2 pt-10 pb-10 pr-10 pl-10 flex flex-col items-center">
       <h1 className="font-default uppercase font-bold text-3xl md:text-4xl bg-gradient-to-br  bg-clip-text text-white mt-3 mb-3">
-        {isMintMP ? 'Check your lucky MP' : null}
+        {isMintMP && wallet?.accounts[0]?.address ? 'Check your membership pass' : null}
+        {isMintMP && !wallet?.accounts[0]?.address ? 'Check info' : null}
       </h1>
       <h3 className="text-sm text-white tracking-widest">
         {wallet?.accounts[0]?.address
@@ -122,34 +128,63 @@ export default function MintMPPageNormalUser() {
         {connecting ? 'connecting' : wallet ? 'disconnect wallet' : 'connect wallet'}
       </button>
 
-      <div className="border-t border-gray-800 flex flex-col items-center mt-10 py-2 w-full">
+      {wallet?.accounts[0]?.address ? <>
 
-        {wallet && isMintMP && listMPs?.length === 0 ? <span className="text-brand-yellow font-default">Sorry! You did not win MP NFT.</span> : null}
-        {wallet && isMintMP && listMPs?.length > 0 ? <span className="text-brand-yellow font-default">Congratulations! You are a winner. Your MP Tokens: {listMPs?.join(', ')}. Check OpenSea. </span> : null}
+        <div className="border-t border-gray-800 flex flex-col items-center mt-10 py-2 pt-10 w-full">
 
-
-        {wallet && isMintMP && listMPs?.length > 0 ?
-
-          <>
+          {wallet && isMintMP && listMPs?.length === 0 ? <span className="text-brand-yellow font-default">Sorry! You did not win MP NFT.</span> : null}
+          {wallet && isMintMP && listMPs?.length > 0 ? <span className="text-brand-yellow font-default">Congratulations! You are a winner. Your Membership Pass(es): {listMPs?.join(', ')}. Check OpenSea. </span> : null}
 
 
-            {/* <a href={`https://testnets.opensea.io/assets/goerli/${getContractAddress}/${id}.gif`}></a> */}
+          {wallet && isMintMP && listMPs?.length > 0 ?
 
-            <div className="grid grid-cols-3 gap-4 place-items-start mt-10">
-              {listMPs.map(id => {
-                return <div><img width="100" src={`https://ipfs.vipsland.com/nft/collections/genesis/${id}.gif`} className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /></div>
-              })}
-
-            </div>
+            <>
 
 
-          </>
-          : null}
+              {/* <a href={`https://testnets.opensea.io/assets/goerli/${getContractAddress}/${id}.gif`}></a> */}
+
+              <div className="grid grid-cols-3 gap-4 place-items-start mt-10">
+                {listMPs.map(id => {
+                  return <div key={id}><img width="100" src={`https://ipfs.vipsland.com/nft/collections/genesis/${id}.gif`} className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /></div>
+                })}
+
+              </div>
+
+
+            </>
+            : null}
 
 
 
-      </div>
+        </div>
 
+
+        <div className="border-t border-gray-800 flex flex-col items-center mt-10 pt-10 py-2 w-full">
+
+          {wallet ? <span className="text-white font-default">These are your Normal Pass(es): {listNONMPs?.join(', ')}. Check OpenSea. </span> : null}
+
+
+          {wallet && isMintMP && listMPs?.length > 0 ?
+
+            <>
+
+              {/* <a href={`https://testnets.opensea.io/assets/goerli/${getContractAddress}/${id}.gif`}></a> */}
+
+              <div className="grid grid-cols-3 gap-4 place-items-start mt-10">
+                {listMPs.map(id => {
+                  return <div key={id}><img width="100" src={`https://ipfs.vipsland.com/nft/collections/genesis/${id}.gif`} className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /></div>
+                })}
+
+              </div>
+
+
+            </>
+            : null}
+
+
+
+        </div>
+      </> : null}
 
 
       {/* Status */}

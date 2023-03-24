@@ -29,6 +29,10 @@ const NORMAL_ST = '4,5,6,7';
 const INT_ST = '2,3,6,7';
 const AIR_ST = '1,3,5,7';
 
+async function delay(mls) {
+  return new Promise(resolve => { setTimeout(() => resolve(), mls) })
+}
+
 
 export const getTotalMintedNONMP = async (main_stage) => {
   const stage = Number(await VipslandContract.methods.presalePRT().call());
@@ -209,7 +213,7 @@ export const getPerAccountMintedNONMPs = async (wallet) => {
   return await VipslandContract.methods.userNONMPs(wallet?.accounts[0]?.address).call();
 }
 
-export const getMPs = async (wallet, main_stage) => {
+export const getListMPs = async (wallet, main_stage) => {
   if (!wallet?.accounts[0]?.address) {
     return false
   }
@@ -227,8 +231,26 @@ export const getMPs = async (wallet, main_stage) => {
 
 }
 
-async function delay(mls) {
-  return new Promise(resolve => { setTimeout(() => resolve(), mls) })
+
+export const getListNONMPs = async (wallet, main_stage) => {
+  if (!wallet?.accounts[0]?.address) {
+    return false
+  }
+
+  const isMintMP = await getisMintMP(main_stage)
+
+  if (!isMintMP) {
+    return false
+  }
+
+
+  const nfts = await await alchemy.nft.getNftsForOwner(wallet?.accounts[0]?.address, { contractAddresses: [config.contractAddress] });
+  console.log({ nfts, address: wallet?.accounts[0]?.address, config: config.contractAddress })
+  // Access the Alchemy NFT API
+  const res = await alchemy.nft.getNftsForOwner(wallet?.accounts[0]?.address).then(console.log);
+  console.log({ res })
+  return [];
+
 }
 
 
