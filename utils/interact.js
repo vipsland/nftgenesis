@@ -215,43 +215,44 @@ export const getPerAccountMintedNONMPs = async (wallet) => {
   return await VipslandContract.methods.userNONMPs(wallet?.accounts[0]?.address).call();
 }
 
-export const getListMPs = async (wallet, main_stage) => {
+
+export const getListNONMPsAndMPs = async (wallet, main_stage) => {
+
+  const defaultValue = { ownedNftsNONMP: [], ownedNftsMP: [] }
+
   if (!wallet?.accounts[0]?.address) {
-    return false
+    return defaultValue
   }
 
   const isMintMP = await getisMintMP(main_stage)
 
   if (!isMintMP) {
-    return false
+    return defaultValue
   }
 
-  const str = await VipslandContract.methods.perAddressMPs(wallet?.accounts[0]?.address).call() || '';
-  const mps_amount = str.split(',')?.filter(i => i) || []
-
-  return mps_amount;
-
-}
-
-
-export const getListNONMPs = async (wallet, main_stage) => {
-  if (!wallet?.accounts[0]?.address) {
-    return false
-  }
-
-  const isMintMP = await getisMintMP(main_stage)
-
-  if (!isMintMP) {
-    return false
-  }
-
+  const _MAX_SUPPLY_MP = await getMaxSupplyMP()
+  console.log({ _MAX_SUPPLY_MP })
 
   const { ownedNfts = [] } = await alchemy.nft.getNftsForOwner(wallet?.accounts[0]?.address, { contractAddresses: [config.contractAddress] }) || {};
+  const resp = ownedNfts.reduce((acc, t) => {
 
+    if (Number(t.tokenId) <= _MAX_SUPPLY_MP) {
+      acc.ownedNftsMP = [].concat(acc.ownedNftsMP, t)
+    } else {
+      acc.ownedNftsNONMP = [].concat(acc.ownedNftsNONMP, t)
+    }
+    return acc
+
+  }, defaultValue)
+
+
+  // console.log({ resp })
+  //ownedNftsNONMP, ownedNftsMP
   // Access the Alchemy NFT API
-  const res = await alchemy.nft.getNftsForOwner(wallet?.accounts[0]?.address).then(console.log);
-  console.log({ res })
-  return [];
+  // const res = await alchemy.nft.getNftsForOwner(wallet?.accounts[0]?.address).then(console.log);
+
+  console.log({ resp })
+  return resp;
 
 }
 

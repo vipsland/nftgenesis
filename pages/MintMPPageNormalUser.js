@@ -4,12 +4,17 @@ import { useConnectWallet } from '@web3-onboard/react'
 import { useWallets } from '@web3-onboard/react'
 import {
   getMaxSupplyMP,
-  getListMPs,
   getisMintMP,
-  getListNONMPs
+  getListNONMPsAndMPs,
 } from '../utils/interact'
 
 const MAIN_STAGE = 4;//normal user
+
+import { config } from '../dapp.config'
+
+
+const contractAddress = config.contractAddress
+
 
 export default function MintMPPageNormalUser() {
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet()
@@ -17,10 +22,7 @@ export default function MintMPPageNormalUser() {
 
   const [maxSupplyMP, setMaxSupplyMP] = useState(0)
 
-  const [listMPs, setListMPs] = useState([])
-
-  const [listNONMPs, setListNONMPs] = useState([])
-
+  const [listNONMPsAndMPs, setListNONMPsAndMPs] = useState({ ownedNftsNONMP: [], ownedNftsMP: [] })
 
 
   const [isMintMP, setisMintMP] = useState(false)
@@ -71,8 +73,7 @@ export default function MintMPPageNormalUser() {
 
   useEffect(() => {
     const init = async (wallet) => {
-      setListMPs(await getListMPs(wallet, MAIN_STAGE))//test winner
-      setListNONMPs(await getListNONMPs(wallet, MAIN_STAGE))//test winner
+      setListNONMPsAndMPs(await getListNONMPsAndMPs(wallet, MAIN_STAGE))//test winner
     }
     if (wallet?.accounts[0]?.address) {
       init(wallet)
@@ -132,11 +133,11 @@ export default function MintMPPageNormalUser() {
 
         <div className="border-t border-gray-800 flex flex-col items-center mt-10 py-2 pt-10 w-full">
 
-          {wallet && isMintMP && listMPs?.length === 0 ? <span className="text-brand-yellow font-default">Sorry! You did not win MP NFT.</span> : null}
-          {wallet && isMintMP && listMPs?.length > 0 ? <span className="text-brand-yellow font-default">Congratulations! You are a winner. Your Membership Pass(es): {listMPs?.join(', ')}. Check OpenSea. </span> : null}
+          {wallet && isMintMP && listNONMPsAndMPs?.ownedNftsMP?.length === 0 ? <span className="text-brand-yellow font-default">Sorry! You did not win MP NFT.</span> : null}
+          {wallet && isMintMP && listNONMPsAndMPs?.ownedNftsMP?.length > 0 ? <span className="text-brand-yellow font-default">Congratulations! You are a winner. Your Membership Pass(es): {listNONMPsAndMPs?.ownedNftsMP.map(({ tokenId }) => tokenId)?.join(', ')}. Check <a href={`https://testnets.opensea.io/assets/goerli/${contractAddress}`} target={`_blank`}>OpenSea</a>. </span> : null}
 
 
-          {wallet && isMintMP && listMPs?.length > 0 ?
+          {wallet && isMintMP && listNONMPsAndMPs?.ownedNftsMP?.length > 0 ?
 
             <>
 
@@ -144,8 +145,8 @@ export default function MintMPPageNormalUser() {
               {/* <a href={`https://testnets.opensea.io/assets/goerli/${getContractAddress}/${id}.gif`}></a> */}
 
               <div className="grid grid-cols-3 gap-4 place-items-start mt-10">
-                {listMPs.map(id => {
-                  return <div key={id}><img width="100" src={`https://ipfs.vipsland.com/nft/collections/genesis/${id}.gif`} className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /></div>
+                {listNONMPsAndMPs?.ownedNftsMP.map(({ tokenId }) => {
+                  return <div key={tokenId}><a href={`https://testnets.opensea.io/assets/goerli/${contractAddress}/${tokenId}`} target={`_blank`}><img width="100" src={`https://ipfs.vipsland.com/nft/collections/genesis/${tokenId}.gif`} className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /></a></div>
                 })}
 
               </div>
@@ -161,18 +162,18 @@ export default function MintMPPageNormalUser() {
 
         <div className="border-t border-gray-800 flex flex-col items-center mt-10 pt-10 py-2 w-full">
 
-          {wallet ? <span className="text-white font-default">These are your Normal Pass(es): {listNONMPs?.join(', ')}. Check OpenSea. </span> : null}
+          {wallet && isMintMP && listNONMPsAndMPs?.ownedNftsNONMP.length > 0 ? <span className="text-white font-default">These are your Normal Pass(es): {listNONMPsAndMPs?.ownedNftsNONMP?.map(({ tokenId }) => tokenId).join(', ')}. Check <a href={`https://testnets.opensea.io/assets/goerli/${contractAddress}`} target={`_blank`}>OpenSea</a>. </span> : null}
 
 
-          {wallet && isMintMP && listMPs?.length > 0 ?
+          {wallet && isMintMP && listNONMPsAndMPs?.ownedNftsNONMP.length > 0 ?
 
             <>
 
               {/* <a href={`https://testnets.opensea.io/assets/goerli/${getContractAddress}/${id}.gif`}></a> */}
 
               <div className="grid grid-cols-3 gap-4 place-items-start mt-10">
-                {listMPs.map(id => {
-                  return <div key={id}><img width="100" src={`https://ipfs.vipsland.com/nft/collections/genesis/${id}.gif`} className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /></div>
+                {listNONMPsAndMPs?.ownedNftsNONMP?.map(({ tokenId }) => {
+                  return <div key={tokenId}><a href={`https://testnets.opensea.io/assets/goerli/${contractAddress}/${tokenId}`} target={`_blank`}><img width="100" src={`https://ipfs.vipsland.com/nft/collections/genesis/${tokenId}.gif`} className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /></a></div>
                 })}
 
               </div>
