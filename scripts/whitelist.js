@@ -5,7 +5,8 @@
  *  if you add a new user address to the whitelist or remove an existing user address from the whitelist,
  *  you must change the merkleroot in the contract. For this reason, I created a new script to update the merkleroot
  *  in the contract. You can find it in `scripts/setMerkleRoot.js`.
- */
+
+*/
 
 module.exports = [
   '0xe72A5822248a49E1C7E4b9B0e3c2e5FCaEEeBcc0',

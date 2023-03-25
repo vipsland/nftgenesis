@@ -16,3 +16,4 @@ output/
 filename.txt
 nonmpnormaluser.txt
 arguments.js
+scripts/whitelist.js
