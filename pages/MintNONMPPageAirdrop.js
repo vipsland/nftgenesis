@@ -9,7 +9,7 @@ import {
   getPerAccountMintedNONMPs,
   getMaxNONMPAmountPerAcc,
   getMaxNONMPAmountPerAccPerTransaction,
-  mintNONMP,
+  mintNONMPForAIRDROP,
   getPriceNONMPETH,
   // getStageNONMP
 } from '../utils/interact'
@@ -124,11 +124,11 @@ export default function MintNONMPPageAirdrop() {
     }
   }
 
-  const mintNONMPHandler = async () => {
+  const mintNONMPForAIRDROPHandler = async () => {
     setStatus(null)
     setTXIsPending(true)
 
-    const { success, status: message } = await mintNONMP({ prtAmount, wallet, main_stage: MAIN_STAGE })
+    const { success, status: message } = await mintNONMPForAIRDROP({ prtAmount, wallet, main_stage: MAIN_STAGE })
 
     setStatus({
       success,
@@ -146,7 +146,7 @@ export default function MintNONMPPageAirdrop() {
 
     <div className="relative z-1 md:max-w-3xl w-full bg-gray-900/90 filter py-4 rounded-md px-2 pt-10 pb-10 pr-10 pl-10 flex flex-col items-center">
       <h1 className="font-default uppercase font-bold text-3xl md:text-4xl bg-gradient-to-br  bg-clip-text text-white mt-3 mb-3">
-        {isMintNONMP ? `Mint Normal Pass` : null}
+        {isMintNONMP ? `Mint Airdrop Normal Pass` : null}
       </h1>
       <h3 className="text-sm text-white tracking-widest">
         {wallet?.accounts[0]?.address
@@ -270,13 +270,13 @@ export default function MintNONMPPageAirdrop() {
             {isMintNONMP && wallet ? <button
 
               className={` ${isTXIsPending || remainingNONMP === 0
-                ? 'bg-gray-900 cursor-not-allowed'
+                ? 'bg-gray-400 cursor-not-allowed'
                 : 'bg-green-600 '
                 } w-full mt-3 bg-mt-4 right-4 transition duration-200 ease-in-out font-chalk shadow-lg hover:shadow-black active:shadow-none px-4 py-2 rounded-md text-sm text-white tracking-wide uppercase`}
               disabled={isTXIsPending || remainingNONMP === 0}
-              onClick={mintNONMPHandler}
+              onClick={mintNONMPForAIRDROPHandler}
             >
-              {isTXIsPending ? <span className='animate-pulse'>Wait, tx is pending...</span> : 'Mint Normal Pass'}
+              {isTXIsPending ? <span className='animate-pulse'>Wait, tx is pending...</span> : 'Mint Airdrop'}
             </button> : null}
 
 

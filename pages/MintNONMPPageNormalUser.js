@@ -270,7 +270,7 @@ export default function MintNONMPPageNormalUser() {
             {isMintNONMP && wallet ? <button
 
               className={` ${isTXIsPending || remainingNONMP === 0
-                ? 'bg-gray-900 cursor-not-allowed'
+                ? 'bg-gray-400 cursor-not-allowed'
                 : 'bg-green-600 '
                 } w-full mt-3 bg-mt-4 right-4 transition duration-200 ease-in-out font-chalk shadow-lg hover:shadow-black active:shadow-none px-4 py-2 rounded-md text-sm text-white tracking-wide uppercase`}
               disabled={isTXIsPending || remainingNONMP === 0}
