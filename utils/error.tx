@@ -1,0 +1,23 @@
+Only once can be minted: err_1
+Token is not exist: err_2
+Cannot be called by a contract: err_3
+Only allowed for caller: err_4
+Mint is not open: err_5
+Mint is not open for airdrop: err_6
+Mint is not open for internal team: err_7
+all MPs issued: err_8
+All MPs are issued for normal user: err_9
+All MPs are not yet issued for normal user: err_10
+All MPs are issued for internal team: err_11
+All send MPs are not yet issued: err_12
+All sendAirdrop MPs are issued: err_13
+Mint NONMP is not active: err_14
+Amount needs to be greater than 0: err_15
+Sender is not exist: err_16
+Max supply 100 tokens: err_17
+Max mint per transaction is 35 tokens: err_18
+Insufficient funds: err_19
+all NONMP are issued: err_20
+Stage not active :err_21
+Not allowed num :err_22
+MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION_INTERNAL should be <= than MAX_PRT_AMOUNT_PER_ACC_INTERNAL :err_23
