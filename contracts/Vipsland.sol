@@ -31,7 +31,16 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
     function safeTransferDebug(uint tokenID, address addr) public onlyOwner {
         require(exists(tokenID), "e2");
         safeTransferFrom(msg.sender, addr, tokenID, 1, "");
-        perAddressMPs[addr] = concatenate(perAddressMPs[addr], tokenID);
+    }
+
+    //MerkleProof
+    function setMerkleRoot(bytes32 merkleroot) public onlyOwner {
+        root = merkleroot;
+    }
+
+    modifier isValidMerkleProof(bytes32[] calldata _proof) {
+        require(MerkleProof.verify(_proof, root, keccak256(abi.encodePacked(msg.sender))) == true, "e24");
+        _;
     }
 
     //reveal start
@@ -69,7 +78,6 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
     uint[] private intArr;
 
     //NONMP
-    mapping(address => string) public perAddressMPs;
     mapping(uint => address) public prtPerAddress;
     mapping(address => uint8) public userNONMPs; //each address can get 100/17=~6
 
@@ -199,16 +207,23 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
 
     // events end
 
+    //MerkleProof
+    bytes32 public root;
+
     constructor(
         address[] memory _team,
         uint[] memory _teamShares,
         string memory _notRevealedUri,
-        string memory _revealedUri
+        string memory _revealedUri,
+        bytes32 merkleroot
     )
         ERC1155(_notRevealedUri)
         PaymentSplitter(_team, _teamShares) // Split the payment based on the teamshares percentages
         ReentrancyGuard() //A modifier that can prevent reentrancy during certain functions
     {
+        //MerkleProof
+        root = merkleroot;
+
         //metadata
         notRevealedUri = _notRevealedUri;
         revealedUri = _revealedUri;
@@ -318,7 +333,6 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
             _mint(msg.sender, tokenID, 1, ""); //minted one MP
             safeTransferFrom(msg.sender, winneraddr, tokenID, 1, "");
             qntminting += 1;
-            perAddressMPs[winneraddr] = concatenate(perAddressMPs[winneraddr], tokenID);
             emit WinnersMP(winneraddr, tokenID);
         }
 
@@ -466,16 +480,28 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
     }
 
     //main function to mint NONMP
-    function mintNONMP(address account, uint8 _amount_wanted_able_to_get, uint8 stage) external payable onlyForCaller(account) onlyAccounts presalePRTisActive nonReentrant {
+    function mintNONMPForAIRDROP(
+        address account,
+        uint8 _amount_wanted_able_to_get,
+        uint8 stage,
+        bytes32[] calldata _proof
+    ) external payable onlyForCaller(account) onlyAccounts presalePRTisActive nonReentrant isValidMerkleProof(_proof) {
         require(_amount_wanted_able_to_get > 0, "e15");
         require(msg.sender != address(0), "e16");
 
         //stage 1 aidropd
+        if (stage == 1) {
+            mintNONMPForAIRDROPInternal(_amount_wanted_able_to_get);
+        }
+    }
+
+    //main function to mint NONMP
+    function mintNONMP(address account, uint8 _amount_wanted_able_to_get, uint8 stage) external payable onlyForCaller(account) onlyAccounts presalePRTisActive nonReentrant {
+        require(_amount_wanted_able_to_get > 0, "e15");
+        require(msg.sender != address(0), "e16");
+
         //stage 2 interna
         //stage 4 normal
-        if (stage == 1) {
-            mintNONMPForAIRDROP(_amount_wanted_able_to_get);
-        }
         if (stage == 2) {
             mintNONMPForInternalTeam(_amount_wanted_able_to_get);
         }
@@ -484,7 +510,7 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
         }
     }
 
-    function mintNONMPForAIRDROP(uint8 qnt) internal {
+    function mintNONMPForAIRDROPInternal(uint8 qnt) internal {
         bool isRemainMessageNeeds = false;
 
         //added:0
