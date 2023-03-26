@@ -1,10 +1,8 @@
 const config = {
   title: 'Vipsland Dapp',
   description: 'Buy PRTs and Mint NFT',
-  contractAddress: '0x76BB82DC49899B6a22F49E2838179080989Da484',//goerli
-  maxMintAmount: 1,
-  presaleMaxPRTAmount: 100,
-  price: 0.01
+  contractAddress: '0xDeA6e1bCBEBC753524F2f9752f45527a3Ed05257',
+  ownerContract: '0x18DC07CDBa57c63c8f2c1f2CBEBcdd4dc5cE638A',
 }
 
 export { config }

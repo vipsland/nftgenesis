@@ -10,7 +10,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        coiny: ['Coiny', ...defaultTheme.fontFamily.sans]
+        default: ['Inter', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen-Sans', 'Ubuntu', 'Cantarell', "Helvetica Neue", ...defaultTheme.fontFamily.sans]
       },
       colors: {
         'brand-purple': 'var(--clr-purple)',
@@ -28,4 +28,3 @@ module.exports = {
   },
   plugins: []
 }
- 

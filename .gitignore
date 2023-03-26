@@ -1,6 +1,5 @@
 cache/solidity-files-cache.json
 artifacts
-secrets.json
 node_modules
 .todo
 cache
@@ -12,3 +11,9 @@ coverage.json
 contracts/scenario.json
 accounts-ganache-cli
 contracts/example.sol
+.env
+output/
+filename.txt
+nonmpnormaluser.txt
+arguments.js
+scripts/whitelist.js

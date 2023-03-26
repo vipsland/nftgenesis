@@ -1,12 +1,14 @@
-
 # Docus
+
 https://hardhat.org/hardhat-runner/docs/guides/compile-contracts
 
 # Deploy
+
 npx hardhat run --network goerli ./scripts/deploy.js
 
 # Console Debug Hardhat
-npx hardhat console --network goerli 
+
+npx hardhat console --network goerli
 
 ```
 
@@ -18,15 +20,21 @@ https://docs.ethers.io/v5/
 # Verify
 
 ```
-npx hardhat run  ./scripts/verifyContract.js --network goerli 
+# for remix abi endcoded for sontructor can use https://abi.hashex.org/
+
+npx hardhat run  ./scripts/verifyContract.js --network goerli
 https://hardhat.org/hardhat-runner/docs/guides/verifying
 
-#verified latest code 
+#verified latest code
 https://goerli.etherscan.io/address/0x2fb7Ac8fe35C3B42fDeFe47d605ef7b21242210a#code
+
+
+npx hardhat verify --network goerli --constructor-args arguments.js 0x81ccA6cE5169C6BC4858587F1852238D32c8cA54
 
 ```
 
 # Hadrhad
+
 ```
 ###Try running some of the following tasks:
 npx hardhat node
@@ -35,40 +43,53 @@ npx hardhat help
 ```
 
 # Test
+
 ```
 
 yarn
 npx hardhat compile
 
-#check accounts 
+#check accounts
 npx hardhat accounts
 
 # with coveage
-npx hardhat coverage --network hardhat     
-open coverage/index.html 
+npx hardhat coverage --network hardhat
+open coverage/index.html
 
 #with clean /output
 yarn clean && npx hardhat test --network hardhat
 
-
-#with goerli
 npx hardhat test --network hardhat
+#one file
+npx hardhat test --network hardhat ./test/Vipsland.js
 
+#with write log from console to file
+npx hardhat test --network hardhat ./test/Vipsland.js &> output.txt     
 ```
 
 # Faucet
+
 ## Metamask goerli how to faucet
+
 https://faucets.chain.link/goerli
 
 ## Metamask Goerli how to faucet
+
 https://goerlifaucet.com/
 
-
 # Remix cli
+
+```
+http://remix.ethereum.org/
+
 https://www.npmjs.com/package/@remix-project/remixd
 
+npx remixd -s . --remix-ide https://remix.ethereum.org
+
+```
 
 # How to use it.each with hardhat provided in example
+
 ```
    forEach([
             [1, 0, 999 ],
@@ -84,7 +105,9 @@ https://www.npmjs.com/package/@remix-project/remixd
           ]).it(`expected: %d, %d, %d`, async (expectedCnt, expectedF, expectedL) => {
 
 ```
-# Fullstack Client 
+
+# Fullstack Client
+
 ```bash
 
 
@@ -98,19 +121,49 @@ https://www.npmjs.com/package/@remix-project/remixd
 
 **Server:** Alchemy, NextJS, Hardhat
 
-
 # Ganache CLI
 
 ```
 HD Wallet
 ==================
-Mnemonic:      party south hazard person adult praise agree direct artefact foot breeze prefer
+Mnemonic:      ***
 Base HD Path:  m/44'/60'/0'/0/{account_index}
 
 
-npx ganache-cli --deterministic --mnemonic "party south hazard person adult praise agree direct artefact foot breeze prefer"
+npx ganache-cli --deterministic --mnemonic ""
 
 
 ```
 
+## Reveal NFTs
 
+https://www.youtube.com/watch?v=19SSvs32m8I
+
+## Test Mint Batch
+
+```
+
+#1
+npx hardhat test --network hardhat ./test/PRT_only_sendMP_and_save_logs.js
+
+#2
+get array of 10k generated ids
+
+#3
+node mint-nft.js
+
+#4 or mint batch
+node mint-nft-batch.js
+```
+
+## Lint and Prettier
+
+```
+
+#prettier
+yarn prettier:solidity
+
+#lint
+npx solhint -f table contracts/Vipsland.sol
+
+```

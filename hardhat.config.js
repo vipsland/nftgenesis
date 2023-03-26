@@ -1,55 +1,43 @@
-require('@nomiclabs/hardhat-ethers')
-require('@nomiclabs/hardhat-waffle');
+require("@nomicfoundation/hardhat-toolbox");
 require('hardhat-contract-sizer');
 require('solidity-coverage');
+require("dotenv").config();
 
-const {apiKey, PK, etherscanApiKey, mnemonic} = require('./secrets.json')
-
-const eth_goerli_settings = {
-  apiKey: "da4QudLrjNs6-NR8EurK-N0ikxP6ZTVR",
-};
-
+const { SEPOLIA_RPC_URL, GOERLI_RPC_URL, SEPOLIA_PRIVATE_KEY, GOERLI_PRIVATE_KEY, ETHERSCANAPIKEY } = process.env;
 
 /** @type import('hardhat/config').HardhatUserConfig */
-const GOERLI_RPC_URL = `https://eth-goerli.alchemyapi.io/v2/${eth_goerli_settings.apiKey}`
-
-
-/** @type import('hardhat/config').HardhatUserConfig */
-const RINKEBY_RPC_URL = `https://rinkeby.infura.io/v3/${apiKey}`
 module.exports = {
   solidity: {
-    version: '0.8.7',
+    version: '0.8.17',
     settings: {
       optimizer: {
         enabled: true,
-        runs: 5
+        runs: 200
       }
     }
   },
   networks: {
-    rinkeby: {
-      url: RINKEBY_RPC_URL,
-      accounts: [PK],
+
+    sepolia: {
+      url: SEPOLIA_RPC_URL,
+      accounts: [`0x${SEPOLIA_PRIVATE_KEY}`],
       saveDeployments: true,
-      blockGasLimit: 35000000,
     },
 
     goerli: {
       url: GOERLI_RPC_URL,
-      accounts: [PK],
+      accounts: [`0x${GOERLI_PRIVATE_KEY}`],
       saveDeployments: true,
-      blockGasLimit: 35000000,
     },
 
     hardhat: {
-      blockGasLimit: 35000000,
       accounts: {
-        mnemonic,
-        path: "m/44'/60'/0'/0/",
-        initialIndex: 0,
-        count: 1601,
+        // mnemonic: MNEMONIC,
+        // path: "m/44'/60'/0'/0/",
+        // initialIndex: 0,
+        count: 10,
       }
-  },
+    },
   },
   paths: {
     sources: './contracts',
@@ -62,8 +50,9 @@ module.exports = {
   },
   etherscan: {
     apiKey: {
-      rinkeby: etherscanApiKey,
-      goerli: etherscanApiKey
+      rinkeby: ETHERSCANAPIKEY,
+      goerli: ETHERSCANAPIKEY,
+      sepolia: ETHERSCANAPIKEY
     },
     customChains: [
       {
@@ -81,8 +70,17 @@ module.exports = {
           apiURL: "https://api-goerli.etherscan.io/api",
           browserURL: "https://goerli.etherscan.io"
         }
+      },
+      {
+        network: "sepolia",
+        chainId: 11155111,
+        urls: {
+          apiURL: "https://api-sepolia.etherscan.io/api",
+          browserURL: "https://sepolia.etherscan.io"
+        }
       }
     ]
+
   },
   contractSizer: {
     alphaSort: true,
@@ -97,7 +95,7 @@ task("accounts", "Prints the list of accounts", async () => {
   const accounts = await ethers.getSigners();
 
   for (const account of accounts) {
-    console.log(account.address);
+    console.log({ address: account.address, balance: account.balance });
   }
 });
 

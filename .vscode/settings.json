@@ -5,5 +5,7 @@
   "solidity.packageDefaultDependenciesDirectory": "node_modules",
   "solidity.packageDefaultDependenciesContractsDirectory": "",
   "solidity.linter": "solhint",
+  "solidity.prettier": true,
+  "editor.formatOnSave": true
   
 }
