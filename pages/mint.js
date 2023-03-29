@@ -31,12 +31,12 @@ export default function Mint() {
             (isMintMP === true || isMintNONMP === false) ?
 
               <div>
-                <h1 className="font-default uppercase font-bold text-3xl md:text-4xl bg-gradient-to-br  bg-clip-text text-white mt-3 mb-3">
+                <h1 className="text-center font-default uppercase font-bold text-3xl md:text-4xl bg-gradient-to-br  bg-clip-text text-white mt-3 mb-3">
                   {'MINT IS NOT AVAILABLE NOW.'}
                 </h1>
-                <div className="text-white">Visit <a href="https://vipsland.com/">vipsland.com</a> for more information.</div>
+                <div className="text-white text-center">Visit <a href="https://vipsland.com/">vipsland.com</a> for more information.</div>
               </div>
-              : <div className="text-white">Loading...</div>}
+              : <div className="text-white text-center">Loading...</div>}
         </div>
       </div>
     </div>
