@@ -16,4 +16,5 @@ output/
 filename.txt
 nonmpnormaluser.txt
 arguments.js
-scripts/whitelist.js
+allowlist_airdrop.js
+allowlist_internal.js
