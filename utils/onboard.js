@@ -55,6 +55,14 @@ const initOnboard = init({
     // }
   ],
 
+  appMetadata: {
+    name: 'VIPSLAND',
+    icon: 'https://ipfs.vipsland.com/nft/collections/genesis/moolahlisa.svg',
+    logo: 'https://ipfs.vipsland.com/nft/collections/genesis/moolahlisa.svg',
+    description: 'BLOCKCHAIN PFP NFT'
+  }
+
+
 })
 
 export { initOnboard }

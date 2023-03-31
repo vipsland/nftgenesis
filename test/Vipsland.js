@@ -130,6 +130,7 @@ describe("Vipslad contract deploy", function () {
 
     });
 
+    //stage 2
     it(`${i++} setPreSalePRT for internal user, main stage 2, {2,3,6,7}`, async function () {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);
@@ -193,6 +194,7 @@ describe("Vipslad contract deploy", function () {
 
     });
 
+    //stage 1
     it.only(`${i++} setPreSalePRT for airdrop user, main stage 1, {1,3,5,7}`, async function () {
 
       const { hardhatVipslad, owner, addrs } = await loadFixture(deployVipslandFixture);

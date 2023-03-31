@@ -9,14 +9,14 @@ import {
   getPerAccountMintedNONMPs,
   getMaxNONMPAmountPerAcc,
   getMaxNONMPAmountPerAccPerTransaction,
-  mintNONMPForNormalUser,
+  mintNONMPForInternal,
   getPriceNONMPETH,
   // getStageNONMP
 } from '../utils/interact'
 
-const MAIN_STAGE = 4;//normal user
+const MAIN_STAGE = 2;//internal
 
-export default function MintNONMPPageNormalUser() {
+export default function MintNONMPPageInternal() {
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet()
   const connectedWallets = useWallets()
 
@@ -124,11 +124,11 @@ export default function MintNONMPPageNormalUser() {
     }
   }
 
-  const mintNONMPHandler = async () => {
+  const mintNONMPForInternalHandler = async () => {
     setStatus(null)
     setTXIsPending(true)
 
-    const { success, status: message } = await mintNONMPForNormalUser({ prtAmount, wallet, main_stage: MAIN_STAGE })
+    const { success, status: message } = await mintNONMPForInternal({ prtAmount, wallet, main_stage: MAIN_STAGE })
 
     setStatus({
       success,
@@ -146,7 +146,7 @@ export default function MintNONMPPageNormalUser() {
 
     <div className="relative z-1 md:max-w-3xl w-full bg-gray-900/90 filter py-4 rounded-md px-2 pt-10 pb-10 pr-10 pl-10 flex flex-col items-center">
       <h1 className="font-default uppercase font-bold text-3xl md:text-4xl bg-gradient-to-br  bg-clip-text text-white mt-3 mb-3">
-        {isMintNONMP ? `Mint Normal Pass` : null}
+        {isMintNONMP ? `Mint Internal Team Pass` : null}
       </h1>
       <h3 className="text-sm text-white tracking-widest">
         {wallet?.accounts[0]?.address
@@ -274,9 +274,9 @@ export default function MintNONMPPageNormalUser() {
                 : 'bg-green-600 '
                 } w-full mt-3 bg-mt-4 right-4 transition duration-200 ease-in-out font-chalk shadow-lg hover:shadow-black active:shadow-none px-4 py-2 rounded-md text-sm text-white tracking-wide uppercase`}
               disabled={isTXIsPending || remainingNONMP === 0}
-              onClick={mintNONMPHandler}
+              onClick={mintNONMPForInternalHandler}
             >
-              {isTXIsPending ? <span className='animate-pulse'>Wait, transaction is pending...</span> : 'Mint Normal Pass'}
+              {isTXIsPending ? <span className='animate-pulse'>Wait, transaction is pending...</span> : 'Mint'}
             </button> : null}
 
 
