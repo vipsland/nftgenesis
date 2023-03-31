@@ -5,11 +5,24 @@ import { useWallets } from '@web3-onboard/react'
 import {
   getListNONMPsAndMPs,
 } from '../utils/interact'
-
+import Image from 'next/image'
 
 import { config } from '../dapp.config'
 
 const contractAddress = config?.contractAddress
+
+let settings = {
+  OPENSEA_URI: {
+    goerli: `https://testnets.opensea.io/assets/goerli/${contractAddress}`,
+    ethmain: `https://opensea.io/assets/ethereum/${contractAddress}`
+  },
+
+}
+
+
+const OPENSEA_URI = settings?.OPENSEA_URI[config?.network]
+
+
 
 export default function MintInfoPage() {
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet()
@@ -97,17 +110,14 @@ export default function MintInfoPage() {
         {listNONMPsAndMPs?.ownedNftsNONMP.length > 0 ? <div className="border-t border-gray-800 flex flex-col items-center mt-10 py-2 pt-10 w-full">
 
           {wallet?.accounts[0]?.address && listNONMPsAndMPs?.ownedNftsMP?.length === 0 ? <span className="text-brand-yellow font-default">Sorry! You did not win MP NFT.</span> : null}
-          {wallet?.accounts[0]?.address && listNONMPsAndMPs?.ownedNftsMP?.length > 0 ? <span className="text-brand-yellow font-default">Congratulations! You are a winner. Your Membership Pass(es): {listNONMPsAndMPs?.ownedNftsMP.map(({ tokenId }) => tokenId)?.join(', ')}. Check <a href={`https://testnets.opensea.io/assets/goerli/${contractAddress}`} target={`_blank`}>OpenSea</a>. </span> : null}
+          {wallet?.accounts[0]?.address && listNONMPsAndMPs?.ownedNftsMP?.length > 0 ? <span className="text-brand-yellow font-default">Congratulations! You are a winner. Your Membership Pass(es): {listNONMPsAndMPs?.ownedNftsMP.map(({ tokenId }) => tokenId)?.join(', ')}. Check <a href={`${OPENSEA_URI}`} target={`_blank`}>OpenSea</a>. </span> : null}
           {wallet?.accounts[0]?.address && listNONMPsAndMPs?.ownedNftsMP?.length > 0 ?
 
             <div>
 
-
-              {/* <a href={`https://testnets.opensea.io/assets/goerli/${getContractAddress}/${id}.gif`}></a> */}
-
               <div className="grid grid-cols-3 gap-4 place-items-start mt-10">
                 {listNONMPsAndMPs?.ownedNftsMP.map(({ tokenId }) => {
-                  return <div key={tokenId}><a href={`https://testnets.opensea.io/assets/goerli/${contractAddress}/${tokenId}`} target={`_blank`}><img width="100" src={`https://ipfs.vipsland.com/nft/collections/genesis/${tokenId}.gif`} className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /></a></div>
+                  return <div key={tokenId}><a href={`${OPENSEA_URI}/${tokenId}`} target={`_blank`}><Image alt={`${tokenId}`} width="100" src={`https://ipfs.vipsland.com/nft/collections/genesis/${tokenId}.gif`} className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /></a></div>
                 })}
 
               </div>
@@ -125,7 +135,7 @@ export default function MintInfoPage() {
 
         <div className="border-t border-gray-800 flex flex-col items-center mt-10 pt-10 py-2 w-full">
 
-          {wallet && listNONMPsAndMPs?.ownedNftsNONMP.length > 0 ? <span className="text-white font-default">These are your Normal Pass(es): {listNONMPsAndMPs?.ownedNftsNONMP?.map(({ tokenId }) => tokenId).join(', ')}. Check <a href={`https://testnets.opensea.io/assets/goerli/${contractAddress}`} target={`_blank`}>OpenSea</a>. </span> :
+          {wallet && listNONMPsAndMPs?.ownedNftsNONMP.length > 0 ? <span className="text-white font-default">These are your Normal Pass(es): {listNONMPsAndMPs?.ownedNftsNONMP?.map(({ tokenId }) => tokenId).join(', ')}. Check <a href={`${OPENSEA_URI}`} target={`_blank`}>OpenSea</a>. </span> :
             <span className="text-white font-default">
               No Membership Pass Bought Yet.
             </span>}
@@ -135,11 +145,9 @@ export default function MintInfoPage() {
 
             <div>
 
-              {/* <a href={`https://testnets.opensea.io/assets/goerli/${getContractAddress}/${id}.gif`}></a> */}
-
               <div className="grid grid-cols-3 gap-4 place-items-start mt-10">
                 {listNONMPsAndMPs?.ownedNftsNONMP?.map(({ tokenId }) => {
-                  return <div key={tokenId}><a href={`https://testnets.opensea.io/assets/goerli/${contractAddress}/${tokenId}`} target={`_blank`}><img width="100" src={`https://ipfs.vipsland.com/nft/collections/genesis/${tokenId}.gif`} className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /></a></div>
+                  return <div key={tokenId}><a href={`${OPENSEA_URI}/${tokenId}`} target={`_blank`}><Image alt={`${tokenId}`} width="100" src={`https://ipfs.vipsland.com/nft/collections/genesis/${tokenId}.gif`} className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /></a></div>
                 })}
 
               </div>

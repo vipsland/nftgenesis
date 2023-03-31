@@ -6,39 +6,67 @@ const { MerkleTree } = require('merkletreejs')
 const keccak256 = require('keccak256')
 const allowlist_airdrop = require('./allowlist_airdrop.js')
 const allowlist_internal = require('./allowlist_internal.js')
+import { config } from '../dapp.config'
+import Image from 'next/image'
+
+const GOERLI_ALCHEMY_API_KEY = 'da4QudLrjNs6-NR8EurK-N0ikxP6ZTVR'
+const ETHMAIN_ALCHEMY_API_KEY = 'k7Dy_53hGKxAHfb9_k7sEAWbvE2Z5Lgo'
+const ARTIFACTS = '../artifacts/contracts/Vipsland.sol/Vipsland.json'
+
+let settings = {
+  apiKeys: {
+    goerli: GOERLI_ALCHEMY_API_KEY,
+    ethmain: ETHMAIN_ALCHEMY_API_KEY
+  },
+  network: {
+    goerli: Network.ETH_GOERLI,
+    ethmain: Network.ETH_MAINNET
+  },
+  RPC_URL: {
+    goerli: `https://eth-goerli.g.alchemy.com/v2/${GOERLI_ALCHEMY_API_KEY}`,
+    ethmain: `https://eth-mainnet.g.alchemy.com/v2/${ETHMAIN_ALCHEMY_API_KEY}`
+  },
+  OPENSEA_URI: {
+    goerli: `https://testnets.opensea.io/assets/goerli/${config?.contractAddress}`,
+    ethmain: `https://opensea.io/assets/ethereum/${config?.contractAddress}`
+  },
+  txHashUri: {
+    goerli: `https://goerli.etherscan.io/tx`,
+    ethmain: `https://etherscan.io/tx`
+  },
+  IPFS_URI: {
+    goerli: `https://ipfs.vipsland.com/nft/collections/genesis`,
+    ethmain: `https://ipfs.vipsland.com/nft/collections/genesis`
+  }
 
 
 
-const GOERLI_ALCHEMY_API_KEY = "da4QudLrjNs6-NR8EurK-N0ikxP6ZTVR"
-const NETWORK = 'goerli'
-
-const eth_goerli_settings = {
-  apiKey: `${GOERLI_ALCHEMY_API_KEY}`,
-  network: Network.ETH_GOERLI,
-
-};
-const alchemy = new Alchemy(eth_goerli_settings);
+}
+const ALCHEMY_API_KEY = settings?.apiKeys[config?.network];
 
 /** @type import('hardhat/config').HardhatUserConfig */
-const GOERLI_RPC_URL = "https://eth-goerli.g.alchemy.com/v2/da4QudLrjNs6-NR8EurK-N0ikxP6ZTVR"
+const RPC_URL = settings?.RPC_URL[config?.network]
+const NETWORK = config?.network
+const OPENSEA_URI = settings?.OPENSEA_URI[config?.network]
+const TXHASHURI = settings?.txHashUri[config?.network]
+const IPFS_URI = settings?.IPFS_URI[config?.network]
 
-console.log({ GOERLI_RPC_URL })
+const alchemy_settings = {
+  apiKey: `${ALCHEMY_API_KEY}`,
+  network: settings?.network[config?.network],
+};
 
-const web3 = createAlchemyWeb3(GOERLI_RPC_URL)
-
-import { config } from '../dapp.config'
-
-console.log({ config })
-
+const alchemy = new Alchemy(alchemy_settings);
+const web3 = createAlchemyWeb3(RPC_URL)
 const contract = require('../artifacts/contracts/Vipsland.sol/Vipsland.json')
 const VipslandContract = new web3.eth.Contract(contract.abi, config?.contractAddress)
 
-// Calculate merkle root from the whitelist array
+// Calculate merkle root from the allowlist array airdrop
 const leafNodes_air = allowlist_airdrop.map((addr) => keccak256(addr))
 const merkleTree_air = new MerkleTree(leafNodes_air, keccak256, { sortPairs: true })
 const root_air = merkleTree_air.getRoot()
 
-
+// Calculate merkle root from the allowlist array internal team
 const leafNodes_int = allowlist_internal.map((addr) => keccak256(addr))
 const merkleTree_int = new MerkleTree(leafNodes_int, keccak256, { sortPairs: true })
 const root_int = merkleTree_int.getRoot()
@@ -262,31 +290,6 @@ export const getListNONMPsAndMPs = async (wallet) => {
 
 }
 
-
-// async function checkStatusTx(txHash) {
-//   let isPending = true;
-
-//   return new Promise(async (resolve, reject) => {
-//     while (isPending) {
-//       await delay(1000)
-
-
-//       const res = await alchemy.core.getTransaction(txHash)
-//       const { blockHash, blockNumber, transactionIndex } = res ?? {}
-//       isPending = blockHash === null && blockNumber === null && transactionIndex === null
-//       console.log(`delay`, { res });
-//     }
-
-
-//     if (!isPending) {
-//       const receipt = await alchemy.core.getTransactionReceipt(txHash)
-//       resolve(receipt)
-//     }
-
-//   });
-// }
-
-
 export const mintNONMPForInternal = async ({ prtAmount, wallet, main_stage }) => {
 
   const priceWei = await getPriceNONMPWEI(main_stage);
@@ -326,7 +329,7 @@ export const mintNONMPForInternal = async ({ prtAmount, wallet, main_stage }) =>
   );
 
 
-  console.log(`debug String(priceEth * prtAmount)`, String(priceEth * prtAmount));
+  console.log({ eth_price: String(priceEth * prtAmount) });
 
   const tx = {
     to: config?.contractAddress,
@@ -355,7 +358,7 @@ export const mintNONMPForInternal = async ({ prtAmount, wallet, main_stage }) =>
       .waitForTransaction(
         `${txHash}`
       )
-    console.log('waitForTransaction!!!', res)
+    console.log({ waitForTransaction: res })
 
     // const receipt = await alchemy.core.getTransactionReceipt(txHash)
 
@@ -365,7 +368,7 @@ export const mintNONMPForInternal = async ({ prtAmount, wallet, main_stage }) =>
         method: "alchemy_pendingTransactions",
         fromAddress: `${wallet?.accounts[0]?.address}`
       },
-      (res) => console.log(`alchemy_pendingTransactions`, { res })
+      (res) => console.log({ alchemy_pendingTransactions: res })
     );
 
     const isSuccess = res?.status === 1
@@ -374,22 +377,22 @@ export const mintNONMPForInternal = async ({ prtAmount, wallet, main_stage }) =>
       const reason = await getRevertReason(txHash, NETWORK, res?.blockNumber)
       return {
         success: false,
-        status: '😞 Transaction is reverted:' + reason + (txHash ? `. https://sepolia.etherscan.io/tx/${txHash}` : '')
+        status: '😞 Transaction is reverted:' + reason + (txHash ? `. ${TXHASHURI}/${txHash}` : '')
       }
     }
 
     // Get all the NFTs owned by an address
     const nfts = alchemy.nft.getNftsForOwner(`${wallet?.accounts[0]?.address}`);
-    console.log(`alchemy.nft.getNftsForOwner`, { nfts })
+    console.log({ nfts })
 
     // Get the latest block
     const latestBlock = alchemy.core.getBlockNumber();
-    console.log(`alchemy.core.getBlockNumber`, { latestBlock })
+    console.log({ latestBlock })
 
     // Get all outbound transfers for a provided address
     alchemy.core
       .getTokenBalances(`${wallet?.accounts[0]?.address}`)
-      .then((res) => console.log('alchemy.core.getTokenBalances', { res }));
+      .then((res) => console.log({ getTokenBalances: res }));
 
 
     let minted_amount, token_ids;
@@ -428,16 +431,16 @@ export const mintNONMPForInternal = async ({ prtAmount, wallet, main_stage }) =>
     return {
       success: true,
       status: (
-        <a href={`https://sepolia.etherscan.io/tx/${txHash}`} rel="noreferrer" target="_blank">
+        <a href={`${TXHASHURI}/${txHash}`} rel="noreferrer" target="_blank">
           <span>✅ Success, check out your transaction on Etherscan:</span><br />
-          <span>{`https://sepolia.etherscan.io/tx/${txHash}`}</span><br />
+          <span>{`${TXHASHURI}/${txHash}`}</span><br />
           {minted_amount ? <><span>Total minted NONMP: {minted_amount}</span><br /></> : null}
           {
             token_ids ? <span>Tokens minted per this transaction: {token_ids.join(', ')}
 
               <span className="grid grid-cols-3 gap-4 place-items-start mt-10">
                 {token_ids.map((tokenId) => {
-                  return <span key={tokenId}><a href={`https://testnets.opensea.io/assets/goerli/${config?.contractAddress}/${tokenId}`} target={`_blank`}><img width="100" src={`https://ipfs.vipsland.com/nft/collections/genesis/${tokenId}.gif`} className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /></a></span>
+                  return <span key={tokenId}><a href={`${OPENSEA_URI}/${tokenId}`} target={`_blank`}><img width="100" src={`https://ipfs.vipsland.com/nft/collections/genesis/${tokenId}.gif`} className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /></a></span>
                 })}
 
               </span>
@@ -454,7 +457,7 @@ export const mintNONMPForInternal = async ({ prtAmount, wallet, main_stage }) =>
   } catch (error) {
     return {
       success: false,
-      status: ('😞 Smth went wrong: ') + error?.message + (txHash ? `. https://sepolia.etherscan.io/tx/${txHash}` : '')
+      status: ('😞 Smth went wrong: ') + error?.message + (txHash ? `. ${TXHASHURI}/${txHash}` : '')
     }
   }
 }
@@ -495,11 +498,11 @@ export const mintNONMPForAIRDROP = async ({ prtAmount, wallet, main_stage }) => 
 
   const nonce = await web3.eth.getTransactionCount(
     wallet?.accounts[0]?.address,
-    "latest"
+    'latest'
   );
 
 
-  console.log(`debug String(priceEth * prtAmount)`, String(priceEth * prtAmount));
+  console.log({ eth_price: String(priceEth * prtAmount) });
 
   const tx = {
     to: config?.contractAddress,
@@ -527,7 +530,7 @@ export const mintNONMPForAIRDROP = async ({ prtAmount, wallet, main_stage }) => 
       .waitForTransaction(
         `${txHash}`
       )
-    console.log('waitForTransaction!!!', res)
+    console.log({ waitForTransaction: res })
 
     // const receipt = await alchemy.core.getTransactionReceipt(txHash)
 
@@ -537,7 +540,7 @@ export const mintNONMPForAIRDROP = async ({ prtAmount, wallet, main_stage }) => 
         method: "alchemy_pendingTransactions",
         fromAddress: `${wallet?.accounts[0]?.address}`
       },
-      (res) => console.log(`alchemy_pendingTransactions`, { res })
+      (res) => console.log({ pendingTransactions: res })
     );
 
     const isSuccess = res?.status === 1
@@ -546,22 +549,22 @@ export const mintNONMPForAIRDROP = async ({ prtAmount, wallet, main_stage }) => 
       const reason = await getRevertReason(txHash, NETWORK, res?.blockNumber)
       return {
         success: false,
-        status: '😞 Transaction is reverted:' + reason + (txHash ? `. https://sepolia.etherscan.io/tx/${txHash}` : '')
+        status: '😞 Transaction is reverted:' + reason + (txHash ? `. ${TXHASHURI}/${txHash}` : '')
       }
     }
 
     // Get all the NFTs owned by an address
     const nfts = alchemy.nft.getNftsForOwner(`${wallet?.accounts[0]?.address}`);
-    console.log(`alchemy.nft.getNftsForOwner`, { nfts })
+    console.log({ nfts })
 
     // Get the latest block
     const latestBlock = alchemy.core.getBlockNumber();
-    console.log(`alchemy.core.getBlockNumber`, { latestBlock })
+    console.log({ latestBlock })
 
     // Get all outbound transfers for a provided address
     alchemy.core
       .getTokenBalances(`${wallet?.accounts[0]?.address}`)
-      .then((res) => console.log('alchemy.core.getTokenBalances', { res }));
+      .then((res) => console.log({ getTokenBalances: res }));
 
 
     let minted_amount, token_ids;
@@ -600,16 +603,16 @@ export const mintNONMPForAIRDROP = async ({ prtAmount, wallet, main_stage }) => 
     return {
       success: true,
       status: (
-        <a href={`https://sepolia.etherscan.io/tx/${txHash}`} rel="noreferrer" target="_blank">
+        <a href={`${TXHASHURI}/${txHash}`} rel="noreferrer" target="_blank">
           <span>✅ Success, check out your transaction on Etherscan:</span><br />
-          <span>{`https://sepolia.etherscan.io/tx/${txHash}`}</span><br />
+          <span>{`${TXHASHURI}/${txHash}`}</span><br />
           {minted_amount ? <><span>Total minted NONMP: {minted_amount}</span><br /></> : null}
           {
             token_ids ? <span>Tokens minted per this transaction: {token_ids.join(', ')}
 
               <span className="grid grid-cols-3 gap-4 place-items-start mt-10">
                 {token_ids.map((tokenId) => {
-                  return <span key={tokenId}><a href={`https://testnets.opensea.io/assets/goerli/${config?.contractAddress}/${tokenId}`} target={`_blank`}><img width="100" src={`https://ipfs.vipsland.com/nft/collections/genesis/${tokenId}.gif`} className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /></a></span>
+                  return <span key={tokenId}><a href={`${OPENSEA_URI}/${tokenId}`} target={`_blank`}><Image alt={`${tokenId}`} width="100" src={`${IPFS_URI}/${tokenId}.gif`} className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /></a></span>
                 })}
 
               </span>
@@ -626,7 +629,7 @@ export const mintNONMPForAIRDROP = async ({ prtAmount, wallet, main_stage }) => 
   } catch (error) {
     return {
       success: false,
-      status: ('😞 Smth went wrong: ') + error?.message + (txHash ? `. https://sepolia.etherscan.io/tx/${txHash}` : '')
+      status: ('😞 Smth went wrong: ') + error?.message + (txHash ? `. ${TXHASHURI}/${txHash}` : '')
     }
   }
 }
@@ -653,11 +656,11 @@ export const mintNONMPForNormalUser = async ({ prtAmount, wallet, main_stage }) 
 
   const nonce = await web3.eth.getTransactionCount(
     wallet?.accounts[0]?.address,
-    "latest"
+    'latest'
   );
 
 
-  console.log(`debug String(priceEth * prtAmount)`, String(priceEth * prtAmount));
+  console.log({ eth_price: String(priceEth * prtAmount) });
 
   const tx = {
     to: config?.contractAddress,
@@ -687,7 +690,7 @@ export const mintNONMPForNormalUser = async ({ prtAmount, wallet, main_stage }) 
       .waitForTransaction(
         `${txHash}`
       )
-    console.log('waitForTransaction!!!', res)
+    console.log({ waitForTransaction: res })
 
     // const receipt = await alchemy.core.getTransactionReceipt(txHash)
 
@@ -697,7 +700,7 @@ export const mintNONMPForNormalUser = async ({ prtAmount, wallet, main_stage }) 
         method: "alchemy_pendingTransactions",
         fromAddress: `${wallet?.accounts[0]?.address}`
       },
-      (res) => console.log(`alchemy_pendingTransactions`, { res })
+      (res) => console.log({ pendingTransactions: res })
     );
 
     const isSuccess = res?.status === 1
@@ -706,22 +709,22 @@ export const mintNONMPForNormalUser = async ({ prtAmount, wallet, main_stage }) 
       const reason = await getRevertReason(txHash, NETWORK, res?.blockNumber)
       return {
         success: false,
-        status: '😞 Transaction is reverted:' + reason + (txHash ? `. https://sepolia.etherscan.io/tx/${txHash}` : '')
+        status: '😞 Transaction is reverted:' + reason + (txHash ? `. ${TXHASHURI}/${txHash}` : '')
       }
     }
 
     // Get all the NFTs owned by an address
     const nfts = alchemy.nft.getNftsForOwner(`${wallet?.accounts[0]?.address}`);
-    console.log(`alchemy.nft.getNftsForOwner`, { nfts })
+    console.log({ nfts })
 
     // Get the latest block
     const latestBlock = alchemy.core.getBlockNumber();
-    console.log(`alchemy.core.getBlockNumber`, { latestBlock })
+    console.log({ latestBlock })
 
     // Get all outbound transfers for a provided address
     alchemy.core
       .getTokenBalances(`${wallet?.accounts[0]?.address}`)
-      .then((res) => console.log('alchemy.core.getTokenBalances', { res }));
+      .then((res) => console.log({ getTokenBalances: res }));
 
 
     let minted_amount, token_ids;
@@ -760,95 +763,21 @@ export const mintNONMPForNormalUser = async ({ prtAmount, wallet, main_stage }) 
     return {
       success: true,
       status: (
-        <a href={`https://sepolia.etherscan.io/tx/${txHash}`} rel="noreferrer" target="_blank">
-          <span>✅ Success, check out your transaction on Etherscan:</span><br />
-          <span>{`https://sepolia.etherscan.io/tx/${txHash}`}</span><br />
+        <a href={`${TXHASHURI}/${txHash}`} rel="noreferrer" target="_blank">
+          <span>✅ Transaction is successful:</span><br />
+          <span>{`${TXHASHURI}/${txHash}`}</span><br />
           {minted_amount ? <><span>Total minted NONMP: {minted_amount}</span><br /></> : null}
           {token_ids ? <span>Tokens minted per this transaction: {token_ids}</span> : null}
         </a>
       )
     }
 
-
-
   } catch (error) {
     return {
       success: false,
-      status: ('😞 Smth went wrong: ') + error?.message + (txHash ? `. https://sepolia.etherscan.io/tx/${txHash}` : '')
+      status: ('😞 Smth went wrong: ') + error?.message + (txHash ? `. ${TXHASHURI}/${txHash}` : '')
     }
   }
 }
-
-
-
-//   let isReverted = false;
-//   let txHash = '';
-//   try {
-//     txHash = await window.ethereum.request({
-//       method: 'eth_sendTransaction',
-//       params: [tx]
-//     })
-//     console.log({ txHash })
-//     const receipt = await checkStatusTx(txHash)
-//     console.log({ receipt });
-
-
-//     isReverted = receipt.status === 0
-//     if (isReverted) {
-//       const reason = await getRevertReason(txHash, 'sepolia', receipt?.blockNumber)
-//       console.log({ reason })
-//       return {
-//         success: false,
-//         status: '😞 Transaction is reverted:' + reason + (txHash ? `. https://sepolia.etherscan.io/tx/${txHash}` : '')
-//       }
-//     }
-
-//     let minterLogOutput = {}
-
-//     if (receipt?.logs?.length > 0) {
-
-//       const parced_logs = receipt?.logs.map(log => {
-//         const { data, topics } = log
-//         const iface = new ethers.utils.Interface(contract.abi)
-//         const parced = iface.parseLog({ data, topics });
-//         return parced
-//       });
-
-//       const arr = parced_logs?.filter(i => i?.name === 'Minter')
-//       const [log] = arr
-//       minterLogOutput.tokenID = log?.args?.tokenID?.toString()
-//       minterLogOutput.price = log?.args?.price?.toString()
-
-//       // alchemy.core.getLogs({
-//       //   address: config.contractAddress,
-//       //   topics: [
-//       //     ...log.topics
-//       //   ],
-//       //   blockHash: log.blockHash,
-//       // }).then((res) => console.log(`log?`, res));
-
-//     }
-
-
-//     return {
-//       success: true,
-//       status: (
-//         <a href={`https://sepolia.etherscan.io/tx/${txHash}`} rel="noreferrer" target="_blank">
-//           <span>✅ Success, check out your transaction on Etherscan:</span><br />
-//           <span>{`https://sepolia.etherscan.io/tx/${txHash}`}</span><br />
-//           <span>Minted NFT ID: {minterLogOutput?.tokenID}, price of NFT: {minterLogOutput?.price}</span>
-//         </a>
-//       )
-//     }
-
-
-
-//   } catch (error) {
-//     return {
-//       success: false,
-//       status: (isReverted ? '😞 Transaction is reverted: ' : '😞 Smth went wrong: ') + error.message + (txHash ? `. https://sepolia.etherscan.io/tx/${txHash}` : '')
-//     }
-//   }
-// }
 
 
