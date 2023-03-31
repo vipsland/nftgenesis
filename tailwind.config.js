@@ -10,7 +10,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        default: ['Inter', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen-Sans', 'Ubuntu', 'Cantarell', "Helvetica Neue", ...defaultTheme.fontFamily.sans]
+        default: ['Roboto', 'Inter', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen-Sans', 'Ubuntu', 'Cantarell', "Helvetica Neue", ...defaultTheme.fontFamily.sans]
       },
       colors: {
         'brand-purple': 'var(--clr-purple)',
