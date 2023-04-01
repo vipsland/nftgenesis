@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import MintNONMPPageAirdrop from './MintNONMPPageAirdrop'
+import Link from 'next/link'
 
 import {
   getisMintNONMP,
@@ -30,11 +31,16 @@ export default function Airdrop() {
           {(isMintMP === false && isMintNONMP === true) ? <MintNONMPPageAirdrop /> : (isMintMP === true || isMintNONMP === false) ?
 
             <div>
-              <h1 className="text-center font-default uppercase font-bold text-3xl md:text-4xl bg-gradient-to-br  bg-clip-text text-white mt-3 mb-3">
-                {'AIRDROP IS NOT AVAILABLE NOW.'}
+              <h1 className="text-center font-default uppercase font-bold text-3xl md:text-4xl bg-gradient-to-br  bg-clip-text text-black mt-3 mb-3">
+                {'AIRDROP IS NOT AVAILABLE NOW'}
               </h1>
-              <div className="text-white text-center">Visit <a href="https://vipsland.com/">vipsland.com</a> for more information.</div>
-            </div> : <div className="text-white text-center">Loading...</div>
+              <div className="text-black font-bold text-center">Visit <a href="https://vipsland.com/">vipsland.com</a> for more information</div>
+
+              <div className='pt-3 text-center'>
+                <Link href="/mint-info"><span className=" text-brand-pink font-bold cursor-pointer">Click here to check Mint Info</span></Link>
+              </div>
+
+            </div> : <div className="text-black text-center">Loading...</div>
 
           }
         </div>
