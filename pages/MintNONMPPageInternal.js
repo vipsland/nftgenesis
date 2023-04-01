@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { initOnboard } from '../utils/onboard'
 import { useConnectWallet } from '@web3-onboard/react'
 import { useWallets } from '@web3-onboard/react'
+import Link from 'next/link'
+
 import {
   getTotalMintedNONMP,
   getMaxSupplyNONMP,
@@ -41,7 +43,7 @@ export default function MintNONMPPageInternal() {
 
   const [status, setStatus] = useState(null)
 
-  const remainingNONMP = Number(maxNONMPAmountPerAcc - perAccountMintedNONMP);
+  const remainingNONMP = Number(maxNONMPAmountPerAcc - perAccountMintedNONMP) < 0 ? 0 : Number(maxNONMPAmountPerAcc - perAccountMintedNONMP);
 
   useEffect(() => {
     setOnboard(initOnboard)
@@ -144,10 +146,13 @@ export default function MintNONMPPageInternal() {
 
   return (
 
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center pt-10">
 
 
-      <img width="250" height="38" src="https://0.m01d.com/x/vipsland.com/c/u/_4/XK/FVeo-o/SGZuFwfXD3RHPCt8ze9XzPkAfgVnX3MTNjzAxI_NP5s/vipsland.webp" alt="" />
+      <a href="https://vipsland.com/" target="_blank" rel="noreferrer">
+        <img width="250" height="38" src="https://0.m01d.com/x/vipsland.com/c/u/_4/XK/FVeo-o/SGZuFwfXD3RHPCt8ze9XzPkAfgVnX3MTNjzAxI_NP5s/vipsland.webp" alt="" />
+      </a>
+
 
       <div className="mt-10 relative z-1 md:max-w-3xl w-full bg-gray-900/90 filter py-4 rounded-md px-2 pt-10 pb-10 pr-10 pl-10 flex flex-col items-center">
         <h1 className="font-default uppercase font-bold text-3xl md:text-4xl bg-gradient-to-br  bg-clip-text text-white mt-3 mb-3">
@@ -192,7 +197,7 @@ export default function MintNONMPPageInternal() {
 
                 <button
                   disabled={remainingNONMP === 0}
-                  className="w-14 h-10 md:w-16 md:h-12 flex items-center text-black justify-center text-brand-background hover:shadow-lg bg-gray-300 font-bold rounded-md"
+                  className={`w-14 h-10 md:w-16 md:h-12 flex items-center text-black justify-center text-brand-background hover:shadow-lg bg-gray-300 font-bold rounded-md ${remainingNONMP === 0 ? 'bg-gray-400 cursor-not-allowed' : ''}`}
                   onClick={decrementPRTAmount}
                 >
                   <svg
@@ -211,13 +216,13 @@ export default function MintNONMPPageInternal() {
                   </svg>
                 </button>
 
-                <p className="flex items-center justify-center flex-1 grow text-center font-bold text-brand-blue text-3xl md:text-4xl">
+                <p className={`flex items-center justify-center flex-1 grow text-center font-bold text-brand-blue text-3xl md:text-4xl ${remainingNONMP === 0 ? 'cursor-not-allowed' : ''}`}>
                   {remainingNONMP === 0 ? 0 : prtAmount}
                 </p>
 
                 <button
                   disabled={remainingNONMP === 0}
-                  className="w-14 h-10 md:w-16 md:h-12 flex items-center text-black justify-center text-brand-background hover:shadow-lg bg-gray-300 font-bold rounded-md"
+                  className={`w-14 h-10 md:w-16 md:h-12 flex items-center text-black justify-center text-brand-background hover:shadow-lg bg-gray-300 font-bold rounded-md ${remainingNONMP === 0 ? 'bg-gray-400 cursor-not-allowed' : ''}`}
                   onClick={incrementPRTAmount}
                 >
                   <svg
@@ -246,8 +251,9 @@ export default function MintNONMPPageInternal() {
 
                 {isMintNONMP && wallet ?
                   <>
-                    Remaining Pass: {remainingNONMP}<br />
-                    Total minted Pass: {perAccountMintedNONMP}
+                    {remainingNONMP === 0 ? <span className="text-brand-red">Total mint Internal Pass max {Number(maxNONMPAmountPerAcc)} tokens per address<br /></span> : null}
+                    Remaining Normal Pass: {remainingNONMP}<br />
+                    Total minted Normal Pass: {perAccountMintedNONMP}
                   </>
                   : null}
               </p>
@@ -286,6 +292,9 @@ export default function MintNONMPPageInternal() {
               >
                 {isTXIsPending ? <span className='animate-pulse'>Wait, transaction is pending...</span> : 'Mint'}
               </button> : null}
+              <div className='pt-3 '>
+                <Link href="/mint-info"><span className=" text-brand-yellow font-bold cursor-pointer">Click here to check Mint Info</span></Link>
+              </div>
 
 
             </div>

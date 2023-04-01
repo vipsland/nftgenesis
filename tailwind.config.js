@@ -15,6 +15,7 @@ module.exports = {
       colors: {
         'brand-purple': 'var(--clr-purple)',
         'brand-pink': 'var(--clr-pink)',
+        'brand-red': 'var(--clr-red)',
         'brand-yellow': 'var(--clr-yellow)',
         'brand-blue': 'var(--clr-blue)',
         'brand-green': 'var(--clr-green)',

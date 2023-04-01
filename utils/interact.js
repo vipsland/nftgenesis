@@ -7,11 +7,13 @@ const keccak256 = require('keccak256')
 const allowlist_airdrop = require('./allowlist_airdrop.js')
 const allowlist_internal = require('./allowlist_internal.js')
 import { config } from '../dapp.config'
+import { errors } from './errors'
 import Image from 'next/image'
 
 const GOERLI_ALCHEMY_API_KEY = 'da4QudLrjNs6-NR8EurK-N0ikxP6ZTVR'
 const ETHMAIN_ALCHEMY_API_KEY = 'k7Dy_53hGKxAHfb9_k7sEAWbvE2Z5Lgo'
-const ARTIFACTS = '../artifacts/contracts/Vipsland.sol/Vipsland.json'
+
+console.log({ errors })
 
 let settings = {
   apiKeys: {
@@ -79,6 +81,33 @@ async function delay(mls) {
   return new Promise(resolve => { setTimeout(() => resolve(), mls) })
 }
 
+const StatusSuccess = ({ txHash, minted_amount, token_ids = [] }) => {
+
+  return (
+    <div>
+
+      <span>✅ Success, check your transaction:</span><br />
+      <span> <a href={`${TXHASHURI}/${txHash}`} rel="noreferrer" target="_blank">{`${TXHASHURI}/${txHash}`}</a ></span><br />
+      {minted_amount ? <><span> You have {minted_amount} Normal Pass(es).</span><br /></> : null}
+      {
+        token_ids.length > 0 ? <span>Token(s) minted in this transaction: {token_ids.map(t => `#${t}`).join(', ')}
+
+          <span className="grid grid-cols-3 gap-4 place-items-start mt-10">
+            {token_ids.map((tokenId) => {
+              return <span key={tokenId}><a href={`${OPENSEA_URI}/${tokenId}`} target={`_blank`}><img width="100" src={`https://ipfs.vipsland.com/nft/collections/genesis/${tokenId}.gif`} className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /></a></span>
+            })}
+
+          </span>
+
+
+        </span> : null
+      }
+
+    </div>
+
+
+  )
+}
 
 export const getTotalMintedNONMP = async (main_stage) => {
   const stage = Number(await VipslandContract.methods.presalePRT().call());
@@ -395,7 +424,7 @@ export const mintNONMPForInternal = async ({ prtAmount, wallet, main_stage }) =>
       .then((res) => console.log({ getTokenBalances: res }));
 
 
-    let minted_amount, token_ids;
+    let minted_amount = 0, token_ids = [];
 
     if (res?.logs?.length > 0) {
 
@@ -428,28 +457,11 @@ export const mintNONMPForInternal = async ({ prtAmount, wallet, main_stage }) =>
     }
 
 
+    const params = { txHash, minted_amount, token_ids }
+
     return {
       success: true,
-      status: (
-        <a href={`${TXHASHURI}/${txHash}`} rel="noreferrer" target="_blank">
-          <span>✅ Success, check out your transaction on Etherscan:</span><br />
-          <span>{`${TXHASHURI}/${txHash}`}</span><br />
-          {minted_amount ? <><span>Total minted NONMP: {minted_amount}</span><br /></> : null}
-          {
-            token_ids ? <span>Tokens minted per this transaction: {token_ids.join(', ')}
-
-              <span className="grid grid-cols-3 gap-4 place-items-start mt-10">
-                {token_ids.map((tokenId) => {
-                  return <span key={tokenId}><a href={`${OPENSEA_URI}/${tokenId}`} target={`_blank`}><img width="100" src={`https://ipfs.vipsland.com/nft/collections/genesis/${tokenId}.gif`} className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /></a></span>
-                })}
-
-              </span>
-
-
-            </span> : null
-          }
-        </a >
-      )
+      status: <StatusSuccess {...params} />
     }
 
 
@@ -567,7 +579,7 @@ export const mintNONMPForAIRDROP = async ({ prtAmount, wallet, main_stage }) => 
       .then((res) => console.log({ getTokenBalances: res }));
 
 
-    let minted_amount, token_ids;
+    let minted_amount = 0, token_ids = [];
 
     if (res?.logs?.length > 0) {
 
@@ -599,31 +611,12 @@ export const mintNONMPForAIRDROP = async ({ prtAmount, wallet, main_stage }) => 
 
     }
 
+    const params = { txHash, minted_amount, token_ids }
 
     return {
       success: true,
-      status: (
-        <a href={`${TXHASHURI}/${txHash}`} rel="noreferrer" target="_blank">
-          <span>✅ Success, check out your transaction on Etherscan:</span><br />
-          <span>{`${TXHASHURI}/${txHash}`}</span><br />
-          {minted_amount ? <><span>Total minted NONMP: {minted_amount}</span><br /></> : null}
-          {
-            token_ids ? <span>Tokens minted per this transaction: {token_ids.join(', ')}
-
-              <span className="grid grid-cols-3 gap-4 place-items-start mt-10">
-                {token_ids.map((tokenId) => {
-                  return <span key={tokenId}><a href={`${OPENSEA_URI}/${tokenId}`} target={`_blank`}><Image alt={`${tokenId}`} width="100" src={`${IPFS_URI}/${tokenId}.gif`} className="object-cover w-full sm:h-[280px] md:w-[250px] rounded-md" /></a></span>
-                })}
-
-              </span>
-
-
-            </span> : null
-          }
-        </a >
-      )
+      status: <StatusSuccess {...params} />
     }
-
 
 
   } catch (error) {
@@ -714,7 +707,7 @@ export const mintNONMPForNormalUser = async ({ prtAmount, wallet, main_stage }) 
     }
 
     // Get all the NFTs owned by an address
-    const nfts = alchemy.nft.getNftsForOwner(`${wallet?.accounts[0]?.address}`);
+    const nfts = await alchemy.nft.getNftsForOwner(`${wallet?.accounts[0]?.address}`);
     console.log({ nfts })
 
     // Get the latest block
@@ -727,7 +720,7 @@ export const mintNONMPForNormalUser = async ({ prtAmount, wallet, main_stage }) 
       .then((res) => console.log({ getTokenBalances: res }));
 
 
-    let minted_amount, token_ids;
+    let minted_amount = 0, token_ids = [];
 
     if (res?.logs?.length > 0) {
 
@@ -742,7 +735,7 @@ export const mintNONMPForNormalUser = async ({ prtAmount, wallet, main_stage }) 
 
       const [transferBatch_log] = parced_logs?.filter(i => i?.name === 'TransferBatch') || [];
       if (transferBatch_log?.args?.ids?.length > 0) {
-        token_ids = transferBatch_log?.args?.ids.map(id => Number(id)).join(',')
+        token_ids = transferBatch_log?.args?.ids.map(id => Number(id)) || []
       }
 
       const [ditributePRTs_log] = parced_logs?.filter(i => i?.name === 'DitributePRTs') || [];
@@ -760,16 +753,11 @@ export const mintNONMPForNormalUser = async ({ prtAmount, wallet, main_stage }) 
     }
 
 
+    const params = { txHash, minted_amount, token_ids }
+
     return {
       success: true,
-      status: (
-        <a href={`${TXHASHURI}/${txHash}`} rel="noreferrer" target="_blank">
-          <span>✅ Transaction is successful:</span><br />
-          <span>{`${TXHASHURI}/${txHash}`}</span><br />
-          {minted_amount ? <><span>Total minted NONMP: {minted_amount}</span><br /></> : null}
-          {token_ids ? <span>Tokens minted per this transaction: {token_ids}</span> : null}
-        </a>
-      )
+      status: <StatusSuccess {...params} />
     }
 
   } catch (error) {
