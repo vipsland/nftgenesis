@@ -167,8 +167,8 @@ export default function MintNONMPPageAirdrop() {
         <h3 className="text-sm text-white tracking-widest">
           {wallet?.accounts[0]?.address
             ? wallet?.accounts[0]?.address.slice(0, 8) +
-              "..." +
-              wallet?.accounts[0]?.address.slice(-4)
+            "..." +
+            wallet?.accounts[0]?.address.slice(-4)
             : ""}
         </h3>
         <button
@@ -176,16 +176,16 @@ export default function MintNONMPPageAirdrop() {
           onClick={() =>
             wallet
               ? disconnect({
-                  label: wallet.label
-                })
+                label: wallet.label
+              })
               : connect()
           }
         >
           {connecting
             ? "connecting"
             : wallet
-            ? "disconnect wallet"
-            : "connect wallet"}
+              ? "disconnect wallet"
+              : "connect wallet"}
         </button>
 
         {wallet && isMintNONMP ? (
@@ -288,11 +288,10 @@ export default function MintNONMPPageAirdrop() {
 
               {isMintNONMP && wallet ? (
                 <button
-                  className={` ${
-                    isTXIsPending || remainingNONMP === 0
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-green-600 "
-                  } w-full mt-3 bg-mt-4 right-4 transition duration-200 ease-in-out font-chalk shadow-lg font-bold hover:shadow-black/50 active:shadow-none px-4 py-2 rounded-md text-sm text-white tracking-wide uppercase`}
+                  className={` ${isTXIsPending || remainingNONMP === 0
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-green-600 "
+                    } w-full mt-3 bg-mt-4 right-4 transition duration-200 ease-in-out font-chalk shadow-lg font-bold hover:shadow-black/50 active:shadow-none px-4 py-2 rounded-md text-sm text-white tracking-wide uppercase`}
                   disabled={isTXIsPending || remainingNONMP === 0}
                   onClick={mintNONMPForAIRDROPHandler}
                 >
@@ -312,9 +311,8 @@ export default function MintNONMPPageAirdrop() {
         {/* Status */}
         {status && (
           <div
-            className={`border ${
-              status.success ? "border-green-500" : "border-brand-pink-400 "
-            } rounded-md text-start h-full px-4 py-4 w-full mx-auto mt-8 md:mt-4"`}
+            className={`border ${status.success ? "border-green-500" : "border-brand-pink-400 "
+              } rounded-md text-start h-full px-4 py-4 w-full mx-auto mt-8 md:mt-4"`}
           >
             <p className="flex flex-col space-y-2 text-white text-sm md:text-base break-words ...">
               {status.message}
