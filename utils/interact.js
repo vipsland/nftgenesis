@@ -653,13 +653,23 @@ export const mintNONMPForNormalUser = async ({ prtAmount, wallet, main_stage }) 
   );
 
 
-  console.log({ eth_price: String(priceEth * prtAmount) });
+  let _priceEth = priceEth
+  console.log({ _priceEth })
+
+  if (prtAmount >= 5 && prtAmount <= 10) {
+    _priceEth = (priceEth * 4) / 5;
+  } else if (prtAmount > 10) {
+    _priceEth = (priceEth * 3) / 5;
+  }
+
+  let _value = _priceEth * prtAmount
+  console.log({ eth_price: _value });
 
   const tx = {
     to: config?.contractAddress,
     from: wallet?.accounts[0]?.address,
     value: parseInt(
-      web3.utils.toWei(`${priceEth * prtAmount}`, 'ether')
+      web3.utils.toWei(`${_value}`, 'ether')
     ).toString(16), // hex
     // value: Utils.parseEther(`${priceEth * prtAmount}`),
     data: VipslandContract.methods

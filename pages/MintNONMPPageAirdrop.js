@@ -153,7 +153,7 @@ export default function MintNONMPPageAirdrop() {
       </a>
 
 
-      <div className="mt-10 relative z-1 md:max-w-3xl w-full bg-gray-900/90 filter py-4 rounded-md px-2 pt-10 pb-10 pr-10 pl-10 flex flex-col items-center">
+      <div style={{ minWidth: '660px', minHeight: '460px' }} className="mb-10 mt-10 relative z-1 md:max-w-3xl w-full bg-gray-900/90 filter py-4 rounded-md px-2 pt-10 pb-10 pr-10 pl-10 flex flex-col items-center">
         <h1 className="font-default uppercase font-bold text-3xl md:text-4xl bg-gradient-to-br  bg-clip-text text-white mt-3 mb-3">
           {isMintNONMP ? `Mint Airdrop Normal Pass` : null}
         </h1>
@@ -305,9 +305,9 @@ export default function MintNONMPPageAirdrop() {
             className={`border ${status.success ? 'border-green-500' : 'border-brand-pink-400 '
               } rounded-md text-start h-full px-4 py-4 w-full mx-auto mt-8 md:mt-4"`}
           >
-            <p className="flex flex-col space-y-2 text-white text-sm md:text-base break-words ...">
+            <div className="flex flex-col space-y-2 text-white text-sm md:text-base break-words ...">
               {status.message}
-            </p>
+            </div>
           </div>
         )}
 

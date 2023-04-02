@@ -23,7 +23,6 @@ export default function Airdrop() {
     init();
   }, [])//when no need wallet pub key details with stage
 
-  console.log({ isMintMP, isMintNONMP })
   return (
     <div className="min-h-screen h-full w-full overflow-hidden flex flex-col items-center justify-center bg-brand-background ">
       <div className="relative w-full h-full flex flex-col items-center justify-center">
