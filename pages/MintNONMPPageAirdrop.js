@@ -263,9 +263,7 @@ export default function MintNONMPPageAirdrop() {
                   <div className="flex items-center space-x-3">
 
                     <>
-                      {Number.parseFloat(priceNONMP * prtAmount).toFixed(
-                        3
-                      )}{' '}
+                      {Number.parseFloat(priceNONMP * prtAmount).toFixed(4)}{' '}
                       <p>
                         ETH
                       </p>

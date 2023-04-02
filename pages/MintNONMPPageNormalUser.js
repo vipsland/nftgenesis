@@ -268,9 +268,9 @@ export default function MintNONMPPageNormalUser() {
 
                       {
 
-                        prtAmount >= 5 && prtAmount <= 10 ? Number.parseFloat(Number((Number(priceNONMP) * 4) / 5) * prtAmount).toFixed(3) :
-                          prtAmount > 10 ? Number.parseFloat(Number((Number(priceNONMP) * 3) / 5) * prtAmount).toFixed(3) :
-                            Number.parseFloat(priceNONMP * prtAmount).toFixed(3)
+                        prtAmount >= 5 && prtAmount <= 10 ? Number.parseFloat(Number((Number(priceNONMP) * 4) / 5) * prtAmount).toFixed(4) :
+                          prtAmount > 10 ? Number.parseFloat(Number((Number(priceNONMP) * 3) / 5) * prtAmount).toFixed(4) :
+                            Number.parseFloat(priceNONMP * prtAmount).toFixed(4)
                       }{' '}
                       <p>
                         ETH
