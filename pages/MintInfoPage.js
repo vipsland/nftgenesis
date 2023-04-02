@@ -91,7 +91,7 @@ export default function MintInfoPage() {
       </a>
 
 
-      <div className="mt-10 relative z-1 md:max-w-3xl w-full bg-gray-900/90 filter py-4 rounded-md px-2 pt-10 pb-10 pr-10 pl-10 flex flex-col items-center">
+      <div style={{ minWidth: '660px', minHeight: '460px' }} className="mb-10 mt-10 relative z-1 md:max-w-3xl w-full bg-gray-900/90 filter py-4 rounded-md px-2 pt-10 pb-10 pr-10 pl-10 flex flex-col items-center">
         <h1 className="font-default uppercase font-bold text-3xl md:text-4xl bg-gradient-to-br  bg-clip-text text-white mt-3 mb-3">
           {wallet?.accounts[0]?.address ? 'Check your membership pass' : null}
           {!wallet?.accounts[0]?.address ? 'Check info' : null}

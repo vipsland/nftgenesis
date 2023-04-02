@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import MintInfoPage from './MintInfoPage'
+import Footer from './Footer'
 
 // import {
 //     getisMintNONMP,
@@ -22,12 +23,16 @@ export default function MintInfo() {
 
 
     return (
-        <div className="min-h-screen h-full w-full overflow-hidden flex flex-col items-center justify-center bg-brand-background ">
-            <div className="relative w-full h-full flex flex-col items-center justify-center">
-                <div className="flex flex-col items-center justify-center h-full w-full px-2 md:px-10">
-                    <MintInfoPage />
+        <>
+            <div className="min-h-screen h-full w-full overflow-hidden flex flex-col items-center justify-center bg-brand-background ">
+                <div className="relative w-full h-full flex flex-col items-center justify-center">
+                    <div className="flex flex-col items-center justify-center h-full w-full px-2 md:px-10">
+                        <MintInfoPage />
+                    </div>
                 </div>
             </div>
-        </div>
+            <Footer />
+
+        </>
     )
 }
