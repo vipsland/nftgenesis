@@ -367,7 +367,7 @@ export const mintNONMPForInternal = async ({ prtAmount, wallet, main_stage }) =>
       web3.utils.toWei(`${priceEth * prtAmount}`, 'ether')
     ).toString(16), // hex
     data: VipslandContract.methods
-      .mintNONMPForInternalTeam(wallet?.accounts[0]?.address, prtAmount, main_stage, proof_int)
+      .mintNONMPForInternalTeam(wallet?.accounts[0]?.address, prtAmount, proof_int)
       .encodeABI(),
     nonce: nonce.toString(16),
     gasLimit: "21000",
@@ -404,6 +404,7 @@ export const mintNONMPForInternal = async ({ prtAmount, wallet, main_stage }) =>
 
     if (!isSuccess) {
       const reason = await getRevertReason(txHash, NETWORK, res?.blockNumber)
+      console.log({ reason })
       return {
         success: false,
         status: '😞 Transaction is reverted:' + reason + (txHash ? `. ${TXHASHURI}/${txHash}` : '')
@@ -523,7 +524,7 @@ export const mintNONMPForAIRDROP = async ({ prtAmount, wallet, main_stage }) => 
       web3.utils.toWei(`${priceEth * prtAmount}`, 'ether')
     ).toString(16),
     data: VipslandContract.methods
-      .mintNONMPForAIRDROP(wallet?.accounts[0]?.address, prtAmount, main_stage, proof_air)
+      .mintNONMPForAIRDROP(wallet?.accounts[0]?.address, prtAmount, proof_air)
       .encodeABI(),
     nonce: nonce.toString(16),
     gasLimit: "21000",
@@ -673,7 +674,7 @@ export const mintNONMPForNormalUser = async ({ prtAmount, wallet, main_stage }) 
     ).toString(16), // hex
     // value: Utils.parseEther(`${priceEth * prtAmount}`),
     data: VipslandContract.methods
-      .mintNONMPForNormalUser(wallet?.accounts[0]?.address, prtAmount, main_stage)
+      .mintNONMPForNormalUser(wallet?.accounts[0]?.address, prtAmount)
       .encodeABI(),
     nonce: nonce.toString(16),
     gasLimit: "21000",
