@@ -300,7 +300,7 @@ export default function MintNONMPPageInternal() {
           : null}
 
         {/* Status */}
-        {status && (
+        {wallet?.accounts[0]?.address && status && (
           <div
             className={`border ${status.success ? 'border-green-500' : 'border-brand-pink-400 '
               } rounded-md text-start h-full px-4 py-4 w-full mx-auto mt-8 md:mt-4"`}

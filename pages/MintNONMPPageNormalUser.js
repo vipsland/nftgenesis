@@ -177,6 +177,11 @@ export default function MintNONMPPageNormalUser() {
           {connecting ? 'connecting' : wallet ? 'disconnect wallet' : 'connect wallet'}
         </button>
 
+
+        {wallet?.accounts[0]?.address ? <p className="text-white mt-3">
+          Take advantage of these bulk purchase discounts to save on your NFT purchases
+        </p> : null}
+
         {wallet && isMintNONMP ?
           <div className="flex flex-col md:flex-row md:space-x-14 w-full mt-10 md:mt-14">
 
@@ -253,14 +258,23 @@ export default function MintNONMPPageNormalUser() {
                 {isMintNONMP && wallet ?
                   <>
                     Remaining Normal Pass: {remainingNONMP}<br />
-                    Total minted Normal Pass: {perAccountMintedNONMP}
+                    Total minted Normal Pass: {perAccountMintedNONMP}<br />
+
                   </>
                   : null}
               </p>
 
-              {isMintNONMP && wallet ? <div className="border-t border-b py-4 mt-16 w-full">
+              <p className="text-sm mt-3 text-white">
+
+                <span className="text-brand-pink">{prtAmount >= 5 && prtAmount <= 10 ? '20% discount for bulk buy of 5 to 10 NFTs.' : prtAmount > 10 ? '40% discount for bulk buy of 11 NFTs and above.' : null}</span><br />
+
+
+              </p>
+
+              {isMintNONMP && wallet ? <div className="border-t border-b py-4 mt-4 w-full">
                 <div className="w-full text-md font-default flex items-center justify-between text-brand-yellow">
                   <p>Total</p>
+
 
                   <div className="flex items-center space-x-3">
 
@@ -275,6 +289,8 @@ export default function MintNONMPPageNormalUser() {
                       <p>
                         ETH
                       </p>
+
+
 
                     </div>
 
@@ -307,7 +323,7 @@ export default function MintNONMPPageNormalUser() {
           : null}
 
         {/* Status */}
-        {status && (
+        {wallet?.accounts[0]?.address && status && (
           <div
             className={`border ${status.success ? 'border-green-500' : 'border-brand-pink-400 '
               } rounded-md text-start h-full px-4 py-4 w-full mx-auto mt-8 md:mt-4"`}
