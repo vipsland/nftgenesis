@@ -23,16 +23,6 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
         return string(abi.encodePacked(a, ",", Strings.toString(b)));
     }
 
-    //manually mint and transfer start, :debug 0x868a7f505d0A60d4Ec302E5d892c6fB4125aff77 winner test
-    function mintDebug(uint tokenID) public onlyOwner {
-        _mint(msg.sender, tokenID, 1, "");
-    }
-
-    function safeTransferDebug(uint tokenID, address addr) public onlyOwner {
-        require(exists(tokenID), "e2");
-        safeTransferFrom(msg.sender, addr, tokenID, 1, "");
-    }
-
     //MerkleProof
     function setMerkleRoot(bytes32 merkleroot, uint8 stage) public onlyOwner {
         if (stage == 2) {
@@ -266,8 +256,7 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
     //toggle end
 
     // events start
-    event DitributePRTs(address indexed acc, uint minted_amount, uint last_minted_NONMPID);
-    event DebugMP(uint tokenMPID);
+    event DistributePRTs(address indexed acc, uint minted_amount, uint last_minted_NONMPID);
     event WinnersMP(address indexed acc, uint winnerTokenPRTID);
     event SelectedNONMPIDTokens(uint _winnerTokenNONMPID, uint max_nonmpid_minus_xrand);
     event MPAllDone(bool sendMPAllDone);
@@ -514,16 +503,12 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
     function mintNONMPForAIRDROP(
         address account,
         uint8 _amount_wanted_able_to_get,
-        uint8 stage,
         bytes32[] calldata _proof
     ) external payable onlyForCaller(account) onlyAccounts presalePRTisActive nonReentrant isValidMerkleProof(_proof, 1) {
         require(_amount_wanted_able_to_get > 0, "e15");
         require(msg.sender != address(0), "e16");
 
-        //stage 1 airdrop
-        if (stage == 1) {
-            _mintNONMPForAIRDROP(_amount_wanted_able_to_get);
-        }
+        _mintNONMPForAIRDROP(_amount_wanted_able_to_get);
     }
 
     function _mintNONMPForAIRDROP(uint8 qnt) internal {
@@ -593,7 +578,7 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
         }
 
         //added:9
-        emit DitributePRTs(msg.sender, userNONMPs[msg.sender], ids[_qnt - 1]);
+        emit DistributePRTs(msg.sender, userNONMPs[msg.sender], ids[_qnt - 1]);
         //show message to user mint only remaining quantity
         if (isRemainMessageNeeds) {
             emit RemainMessageNeeds(msg.sender, _qnt);
@@ -604,15 +589,12 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
     function mintNONMPForInternalTeam(
         address account,
         uint8 _amount_wanted_able_to_get,
-        uint8 stage,
         bytes32[] calldata _proof
     ) external payable onlyForCaller(account) onlyAccounts presalePRTisActive nonReentrant isValidMerkleProof(_proof, 2) {
         require(_amount_wanted_able_to_get > 0, "e15");
         require(msg.sender != address(0), "e16");
 
-        if (stage == 2) {
-            _mintNONMPForInternalTeam(_amount_wanted_able_to_get);
-        }
+        _mintNONMPForInternalTeam(_amount_wanted_able_to_get);
     }
 
     function _mintNONMPForInternalTeam(uint8 qnt) internal {
@@ -682,7 +664,7 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
         }
 
         //added:9
-        emit DitributePRTs(msg.sender, userNONMPs[msg.sender], ids[_qnt - 1]);
+        emit DistributePRTs(msg.sender, userNONMPs[msg.sender], ids[_qnt - 1]);
         if (isRemainMessageNeeds) {
             emit RemainMessageNeeds(msg.sender, _qnt);
         }
@@ -694,13 +676,11 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
     //witches will follow u everywhere until 
     //you get 10 people each to buy 1 NFT from us. 
     //You have been forewarned...:)
-    function mintNONMPForNormalUser(address account, uint8 _amount_wanted_able_to_get, uint8 stage) external payable onlyForCaller(account) onlyAccounts presalePRTisActive nonReentrant {
+    function mintNONMPForNormalUser(address account, uint8 _amount_wanted_able_to_get) external payable onlyForCaller(account) onlyAccounts presalePRTisActive nonReentrant {
         require(_amount_wanted_able_to_get > 0, "e15");
         require(msg.sender != address(0), "e16");
 
-        if (stage == 4) {
-            _mintNONMPForNormalUser(_amount_wanted_able_to_get);
-        }
+        _mintNONMPForNormalUser(_amount_wanted_able_to_get);
     }
 
 
@@ -776,7 +756,7 @@ contract Vipsland is ERC1155Supply, Ownable, PaymentSplitter, ReentrancyGuard {
             mintMPIsOpen = true;
         }
         //added:9
-        emit DitributePRTs(msg.sender, userNONMPs[msg.sender], ids[_qnt - 1]);
+        emit DistributePRTs(msg.sender, userNONMPs[msg.sender], ids[_qnt - 1]);
         //show message to user mint only remaining quantity
         if (isRemainMessageNeeds) {
             emit RemainMessageNeeds(msg.sender, _qnt);

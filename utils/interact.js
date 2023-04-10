@@ -1,6 +1,5 @@
 const { createAlchemyWeb3 } = require('@alch/alchemy-web3')
 import { Network, Alchemy, Utils } from 'alchemy-sdk';
-import getRevertReason from 'eth-revert-reason';
 import { ethers } from "ethers";
 const { MerkleTree } = require('merkletreejs')
 const keccak256 = require('keccak256')
@@ -13,7 +12,6 @@ import Image from 'next/image'
 const GOERLI_ALCHEMY_API_KEY = 'da4QudLrjNs6-NR8EurK-N0ikxP6ZTVR'
 const ETHMAIN_ALCHEMY_API_KEY = 'k7Dy_53hGKxAHfb9_k7sEAWbvE2Z5Lgo'
 
-console.log({ errors })
 
 let settings = {
   apiKeys: {
@@ -80,6 +78,56 @@ const AIR_ST = '1,3,5,7';
 async function delay(mls) {
   return new Promise(resolve => { setTimeout(() => resolve(), mls) })
 }
+
+const StatusError = ({ error, txHash }) => {
+  let message = error?.message;
+  if (error.message.includes("revert")) {
+    // The transaction was reverted, extract the revert reason
+    const code = error?.message?.replace("VM Exception while processing transaction: revert ", "");
+    console.log({ code })
+    errors[code] ? message = errors[code] : message = '😞 VM Exception while processing transaction. Transaction is reverted.';
+    message = `😞 Transaction reverted: ${message}.`
+  } else {
+    message = `😞 Smth went wrong. ${message}`
+    console.error(error);
+  }
+
+  message = message + (txHash ? `. ${TXHASHURI}/${txHash}` : ``)
+
+  return {
+    success: false,
+    status: message
+  }
+
+}
+
+const getRevertReason = async ({ txHash }) => {
+
+  try {
+    let reason = `Transaction ${txHash} had a problem. Please check etherscan.io`;
+
+    const txReceipt = await alchemyWeb3.eth.getTransactionReceipt(txHash);
+
+    const status = txReceipt?.status;
+
+    if (status === false && txReceipt?.logs[0]?.data) {
+      reason = web3.utils.hexToUtf8(txReceipt?.logs[0]?.data);
+      reason = `Transaction ${txHash} reverted with reason: ${reason}. Please check etherscan.io`;
+    }
+
+
+    return StatusError({ error: { message: reason }, txHash })
+
+
+  } catch (error) {
+
+    return StatusError({ error, txHash })
+
+  }
+
+
+}
+
 
 const StatusSuccess = ({ txHash, minted_amount, token_ids = [] }) => {
 
@@ -357,7 +405,6 @@ export const mintNONMPForInternal = async ({ prtAmount, wallet, main_stage }) =>
     "latest"
   );
 
-
   console.log({ eth_price: String(priceEth * prtAmount) });
 
   const tx = {
@@ -367,7 +414,7 @@ export const mintNONMPForInternal = async ({ prtAmount, wallet, main_stage }) =>
       web3.utils.toWei(`${priceEth * prtAmount}`, 'ether')
     ).toString(16), // hex
     data: VipslandContract.methods
-      .mintNONMPForInternalTeam(wallet?.accounts[0]?.address, prtAmount, main_stage, proof_int)
+      .mintNONMPForInternalTeam(wallet?.accounts[0]?.address, prtAmount, proof_int)
       .encodeABI(),
     nonce: nonce.toString(16),
     gasLimit: "21000",
@@ -383,13 +430,8 @@ export const mintNONMPForInternal = async ({ prtAmount, wallet, main_stage }) =>
     })
     console.log({ txHash })
 
-    const res = await alchemy.transact
-      .waitForTransaction(
-        `${txHash}`
-      )
+    const res = await alchemy.transact.waitForTransaction(`${txHash}`)
     console.log({ waitForTransaction: res })
-
-    // const receipt = await alchemy.core.getTransactionReceipt(txHash)
 
     // Listen to all new pending transactions
     alchemy.ws.on(
@@ -403,11 +445,7 @@ export const mintNONMPForInternal = async ({ prtAmount, wallet, main_stage }) =>
     const isSuccess = res?.status === 1
 
     if (!isSuccess) {
-      const reason = await getRevertReason(txHash, NETWORK, res?.blockNumber)
-      return {
-        success: false,
-        status: '😞 Transaction is reverted:' + reason + (txHash ? `. ${TXHASHURI}/${txHash}` : '')
-      }
+      await getRevertReason({ txHash });
     }
 
     // Get all the NFTs owned by an address
@@ -467,10 +505,7 @@ export const mintNONMPForInternal = async ({ prtAmount, wallet, main_stage }) =>
 
 
   } catch (error) {
-    return {
-      success: false,
-      status: ('😞 Smth went wrong: ') + error?.message + (txHash ? `. ${TXHASHURI}/${txHash}` : '')
-    }
+    return StatusError({ error })
   }
 }
 
@@ -523,7 +558,7 @@ export const mintNONMPForAIRDROP = async ({ prtAmount, wallet, main_stage }) => 
       web3.utils.toWei(`${priceEth * prtAmount}`, 'ether')
     ).toString(16),
     data: VipslandContract.methods
-      .mintNONMPForAIRDROP(wallet?.accounts[0]?.address, prtAmount, main_stage, proof_air)
+      .mintNONMPForAIRDROP(wallet?.accounts[0]?.address, prtAmount, proof_air)
       .encodeABI(),
     nonce: nonce.toString(16),
     gasLimit: "21000",
@@ -544,8 +579,6 @@ export const mintNONMPForAIRDROP = async ({ prtAmount, wallet, main_stage }) => 
       )
     console.log({ waitForTransaction: res })
 
-    // const receipt = await alchemy.core.getTransactionReceipt(txHash)
-
     // Listen to all new pending transactions
     alchemy.ws.on(
       {
@@ -558,11 +591,7 @@ export const mintNONMPForAIRDROP = async ({ prtAmount, wallet, main_stage }) => 
     const isSuccess = res?.status === 1
 
     if (!isSuccess) {
-      const reason = await getRevertReason(txHash, NETWORK, res?.blockNumber)
-      return {
-        success: false,
-        status: '😞 Transaction is reverted:' + reason + (txHash ? `. ${TXHASHURI}/${txHash}` : '')
-      }
+      await getRevertReason({ txHash });
     }
 
     // Get all the NFTs owned by an address
@@ -620,10 +649,7 @@ export const mintNONMPForAIRDROP = async ({ prtAmount, wallet, main_stage }) => 
 
 
   } catch (error) {
-    return {
-      success: false,
-      status: ('😞 Smth went wrong: ') + error?.message + (txHash ? `. ${TXHASHURI}/${txHash}` : '')
-    }
+    return StatusError({ error })
   }
 }
 
@@ -673,15 +699,14 @@ export const mintNONMPForNormalUser = async ({ prtAmount, wallet, main_stage }) 
     ).toString(16), // hex
     // value: Utils.parseEther(`${priceEth * prtAmount}`),
     data: VipslandContract.methods
-      .mintNONMPForNormalUser(wallet?.accounts[0]?.address, prtAmount, main_stage)
+      .mintNONMPForNormalUser(wallet?.accounts[0]?.address, prtAmount)
       .encodeABI(),
     nonce: nonce.toString(16),
     gasLimit: "21000",
 
   }
 
-
-  let isReverted = false, txHash;
+  let txHash;
   try {
     txHash = await window.ethereum.request({
       method: 'eth_sendTransaction',
@@ -695,8 +720,6 @@ export const mintNONMPForNormalUser = async ({ prtAmount, wallet, main_stage }) 
       )
     console.log({ waitForTransaction: res })
 
-    // const receipt = await alchemy.core.getTransactionReceipt(txHash)
-
     // Listen to all new pending transactions
     alchemy.ws.on(
       {
@@ -709,11 +732,7 @@ export const mintNONMPForNormalUser = async ({ prtAmount, wallet, main_stage }) 
     const isSuccess = res?.status === 1
 
     if (!isSuccess) {
-      const reason = await getRevertReason(txHash, NETWORK, res?.blockNumber)
-      return {
-        success: false,
-        status: '😞 Transaction is reverted:' + reason + (txHash ? `. ${TXHASHURI}/${txHash}` : '')
-      }
+      await getRevertReason({ txHash });
     }
 
     // Get all the NFTs owned by an address
@@ -771,10 +790,7 @@ export const mintNONMPForNormalUser = async ({ prtAmount, wallet, main_stage }) 
     }
 
   } catch (error) {
-    return {
-      success: false,
-      status: ('😞 Smth went wrong: ') + error?.message + (txHash ? `. ${TXHASHURI}/${txHash}` : '')
-    }
+    return StatusError({ error })
   }
 }
 
