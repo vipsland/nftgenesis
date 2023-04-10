@@ -106,20 +106,24 @@ const getRevertReason = async ({ txHash }) => {
   try {
     let reason = `Transaction ${txHash} had a problem. Please check etherscan.io`;
 
-    const txReceipt = await alchemyWeb3.eth.getTransactionReceipt(txHash);
+    const txReceipt = await web3.eth.getTransactionReceipt(txHash);
 
     const status = txReceipt?.status;
 
+    console.log({ txReceipt })
     if (status === false && txReceipt?.logs[0]?.data) {
       reason = web3.utils.hexToUtf8(txReceipt?.logs[0]?.data);
       reason = `Transaction ${txHash} reverted with reason: ${reason}. Please check etherscan.io`;
     }
 
+    console.log({ reason })
 
     return StatusError({ error: { message: reason }, txHash })
 
 
   } catch (error) {
+
+    console.log(`if catch`, { error })
 
     return StatusError({ error, txHash })
 
@@ -133,7 +137,9 @@ const StatusSuccess = ({ txHash, minted_amount, token_ids = [] }) => {
 
   return (
     <div>
-
+      <span>Unlock the exclusive NFT collection on OpenSea by helping us promote VIPSLAND GENESIS NFTs! </span>
+      <span>Encourage the community to secure all 140,000 Normal Passes for a grand reveal upon sellout. </span>
+      <span>Spread the word across platforms and be part of the excitement. Thank you!</span><br /><br />
       <span>✅ Success, check your transaction:</span><br />
       <span> <a href={`${TXHASHURI}/${txHash}`} rel="noreferrer" target="_blank">{`${TXHASHURI}/${txHash}`}</a ></span><br />
       {minted_amount ? <><span> You have {minted_amount} Normal Pass(es).</span><br /></> : null}
@@ -445,7 +451,7 @@ export const mintNONMPForInternal = async ({ prtAmount, wallet, main_stage }) =>
     const isSuccess = res?.status === 1
 
     if (!isSuccess) {
-      await getRevertReason({ txHash });
+      return await getRevertReason({ txHash });
     }
 
     // Get all the NFTs owned by an address
@@ -591,7 +597,7 @@ export const mintNONMPForAIRDROP = async ({ prtAmount, wallet, main_stage }) => 
     const isSuccess = res?.status === 1
 
     if (!isSuccess) {
-      await getRevertReason({ txHash });
+      return await getRevertReason({ txHash });
     }
 
     // Get all the NFTs owned by an address
@@ -732,7 +738,7 @@ export const mintNONMPForNormalUser = async ({ prtAmount, wallet, main_stage }) 
     const isSuccess = res?.status === 1
 
     if (!isSuccess) {
-      await getRevertReason({ txHash });
+      return await getRevertReason({ txHash });
     }
 
     // Get all the NFTs owned by an address
