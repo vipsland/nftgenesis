@@ -183,20 +183,20 @@ export const getTotalMintedNONMP = async (main_stage) => {
   return 0;
 }
 
-
 export const getTotalMintedMP = async (main_stage) => {
   const stage = Number(await VipslandContract.methods.presalePRT().call());
+  const { qntmintmp } = await VipslandContract.methods.statetoken().call() || {}
 
   if (main_stage === 4 && NORMAL_ST.indexOf(stage) > -1) {
-    return await VipslandContract.methods.qntmintmpfornormaluser().call()
+    return qntmintmp?.normaluser
   }
 
   if (main_stage === 2 && INT_ST.indexOf(stage) > -1) {
-    return await VipslandContract.methods.qntmintmpforinternalteam().call()
+    return qntmintmp?.internal
   }
 
   if (main_stage === 1 && AIR_ST.indexOf(stage) > -1) {
-    return await VipslandContract.methods.qntmintmpforairdrop().call()
+    return qntmintmp?.airdrop
   }
 
   return 0;
@@ -223,8 +223,10 @@ export const getMaxSupplyNONMP = async (main_stage) => {
 }
 
 export const getMaxSupplyMP = async () => {
+  const { MAX_SUPPLY_MP } = await VipslandContract.methods.prtSettings().call() || {};
+  console.log({ MAX_SUPPLY_MP })
 
-  return await VipslandContract.methods.MAX_SUPPLY_MP().call()
+  return MAX_SUPPLY_MP;
 }
 
 export const getisMintNONMP = async (main_stage) => {
@@ -270,18 +272,18 @@ export const getisMintMP = async (main_stage) => {
 
 
 export const getMaxNONMPAmountPerAcc = async (stage) => {
+  const { limitsmint } = await VipslandContract.methods.prtSettings().call() || {};
+
   if (stage === 4 && NORMAL_ST.indexOf(stage) > -1) {//normal
-    const res = await VipslandContract.methods.statetoken().call();
-    console.log({ res })
-    return false
+    return limitsmint?.normaluser;
   }
 
   if (stage === 2 && INT_ST.indexOf(stage) > -1) {//internal
-    return await VipslandContract.methods.statetoken().call();
+    return limitsmint?.internalteam;
   }
 
   if (stage === 1 && AIR_ST.indexOf(stage) > -1) {//airdrop
-    return await VipslandContract.methods.MAX_PRT_AMOUNT_PER_ACC_AIRDROP().call();
+    return limitsmint?.airdrop;
   }
 }
 
@@ -335,10 +337,12 @@ export const getPriceNONMPETH = async (main_stage) => {
 
 export const getPriceNONMPWEI = async (main_stage) => {
   const stage = Number(await VipslandContract.methods.presalePRT().call());
+  const { PRICE } = await VipslandContract.methods.prtSettings().call() || {};
 
-  if (main_stage === 4 && NORMAL_ST.indexOf(stage) > -1) return await VipslandContract.methods.PRICE_PRT().call()
-  if (main_stage === 2 && INT_ST.indexOf(stage) > -1) return await VipslandContract.methods.PRICE_PRT_INTERNALTEAM().call()
-  if (main_stage === 1 && AIR_ST.indexOf(stage) > -1) return await VipslandContract.methods.PRICE_PRT_AIRDROP().call()
+
+  if (main_stage === 4 && NORMAL_ST.indexOf(stage) > -1) return Number(PRICE?.normaluser)
+  if (main_stage === 2 && INT_ST.indexOf(stage) > -1) return Number(PRICE?.internal)
+  if (main_stage === 1 && AIR_ST.indexOf(stage) > -1) return Number(PRICE?.airdrop)
 
   return 0;
 }
