@@ -415,7 +415,7 @@ export const mintNONMPForInternal = async ({ prtAmount, wallet, main_stage }) =>
   if (!isValid_int) {
     return {
       success: false,
-      status: 'You are not on the whitelist'
+      status: 'You are not on the allow list'
     }
   }
 
@@ -558,7 +558,7 @@ export const mintNONMPForAIRDROP = async ({ prtAmount, wallet, main_stage }) => 
   if (!isValid_air) {
     return {
       success: false,
-      status: 'You are not on the whitelist'
+      status: 'You are not on the allow list'
     }
   }
 
