@@ -253,7 +253,7 @@ export default function MintNONMPPageNormalUser() {
                 : null}
 
 
-              <p className="text-sm text-white mt-3">
+              <p className="text-sm text-white mt-3" style={{ width: '200px' }}>
 
                 {isMintNONMP && wallet ?
                   <>
@@ -264,7 +264,7 @@ export default function MintNONMPPageNormalUser() {
                   : null}
               </p>
 
-              <p className="text-sm mt-3 text-white">
+              <p className="text-sm mt-3 text-white" style={{ width: '200px' }}>
 
                 <span className="text-brand-pink">{prtAmount >= 5 && prtAmount <= 10 ? '20% discount for bulk buy of 5 to 10 NFTs.' : prtAmount > 10 ? '40% discount for bulk buy of 11 NFTs and above.' : null}</span><br />
 
