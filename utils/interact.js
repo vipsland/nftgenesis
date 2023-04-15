@@ -172,7 +172,7 @@ export const getTotalMintedNONMP = async (main_stage) => {
   }
 
   if (main_stage === 2 && INT_ST.indexOf(stage) > -1) {
-    return qntmintnonmp?.internal
+    return qntmintnonmp?.internalteam
   }
 
   if (main_stage === 1 && AIR_ST.indexOf(stage) > -1) {
@@ -192,7 +192,7 @@ export const getTotalMintedMP = async (main_stage) => {
   }
 
   if (main_stage === 2 && INT_ST.indexOf(stage) > -1) {
-    return qntmintmp?.internal
+    return qntmintmp?.internalteam
   }
 
   if (main_stage === 1 && AIR_ST.indexOf(stage) > -1) {
@@ -260,7 +260,7 @@ export const getisMintMP = async (main_stage) => {
   }
 
   if (main_stage === 2 && INT_ST.indexOf(stage) > -1) {
-    return Boolean(mintMPIsOpen?.internal);
+    return Boolean(mintMPIsOpen?.internalteam);
   }
 
   if (main_stage === 1 && AIR_ST.indexOf(stage) > -1) {
@@ -318,7 +318,7 @@ export const getPriceNONMPETH = async (main_stage) => {
   }
 
   if (main_stage === 2 && INT_ST.indexOf(stage) > -1) {
-    const priceWei = PRICE?.internal;
+    const priceWei = PRICE?.internalteam;
     const priceEth = web3.utils.fromWei(`${priceWei}`, 'ether');
 
     return priceEth;
@@ -341,7 +341,7 @@ export const getPriceNONMPWEI = async (main_stage) => {
 
 
   if (main_stage === 4 && NORMAL_ST.indexOf(stage) > -1) return Number(PRICE?.normaluser)
-  if (main_stage === 2 && INT_ST.indexOf(stage) > -1) return Number(PRICE?.internal)
+  if (main_stage === 2 && INT_ST.indexOf(stage) > -1) return Number(PRICE?.internalteam)
   if (main_stage === 1 && AIR_ST.indexOf(stage) > -1) return Number(PRICE?.airdrop)
 
   return 0;
