@@ -116,7 +116,7 @@ export default function MintInfoPage() {
 
           {listNONMPsAndMPs?.ownedNftsNONMP.length > 0 ? <div className="border-t border-gray-800 flex flex-col items-center mt-10 py-2 pt-10 w-full">
 
-            {wallet?.accounts[0]?.address && listNONMPsAndMPs?.ownedNftsMP?.length === 0 ? <span className="text-brand-yellow font-default">Sorry! You did not win MP NFT.</span> : null}
+            {wallet?.accounts[0]?.address && listNONMPsAndMPs?.ownedNftsMP?.length === 0 ? <span className="text-brand-yellow font-default">{`Please note that we haven't opened the Lucky MP distribution yet, but we'll make sure to notify you as soon as it becomes available. Thank you for your patience and understanding.`}</span> : null}
             {wallet?.accounts[0]?.address && listNONMPsAndMPs?.ownedNftsMP?.length > 0 ? <span className="text-brand-yellow font-default">Congratulations! You are a winner. Your Membership Pass(es): {listNONMPsAndMPs?.ownedNftsMP.map(({ tokenId }) => tokenId)?.join(', ')}. Check <a href={`${OPENSEA_URI}`} target={`_blank`}><span className="text-brand-yellow">OpenSea</span></a>. </span> : null}
             {wallet?.accounts[0]?.address && listNONMPsAndMPs?.ownedNftsMP?.length > 0 ?
 
