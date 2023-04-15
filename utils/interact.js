@@ -165,16 +165,19 @@ const StatusSuccess = ({ txHash, minted_amount, token_ids = [] }) => {
 
 export const getTotalMintedNONMP = async (main_stage) => {
   const stage = Number(await VipslandContract.methods.presalePRT().call());
+  const { qntmintnonmp } = await VipslandContract.methods.statetoken().call() || {}
+
   if (main_stage === 4 && NORMAL_ST.indexOf(stage) > -1) {
-    return await VipslandContract.methods.qntmintnonmpfornormaluser().call()
+    return qntmintnonmp?.normaluser
   }
 
   if (main_stage === 2 && INT_ST.indexOf(stage) > -1) {
-    return await VipslandContract.methods.qntmintnonmpforinternalteam().call()
+    return qntmintnonmp?.internal
   }
 
   if (main_stage === 1 && AIR_ST.indexOf(stage) > -1) {
-    return await VipslandContract.methods.qntmintnonmpforairdrop().call()
+    return qntmintnonmp?.airdrop
+
   }
 
   return 0;
@@ -202,16 +205,18 @@ export const getTotalMintedMP = async (main_stage) => {
 
 export const getMaxSupplyNONMP = async (main_stage) => {
   const stage = Number(await VipslandContract.methods.presalePRT().call());
+  const { MAX_SUPPLY_FOR_PRT } = await VipslandContract.methods.prtSettings().call() || {}
+
   if (main_stage === 4 && NORMAL_ST.indexOf(stage) > -1) {
-    return await VipslandContract.methods.MAX_SUPPLY_FOR_PRT_TOKEN().call()
+    return MAX_SUPPLY_FOR_PRT?.normaluser
   }
 
   if (main_stage === 2 && INT_ST.indexOf(stage) > -1) {
-    return await VipslandContract.methods.MAX_SUPPLY_FOR_INTERNALTEAM_TOKEN().call()
+    return MAX_SUPPLY_FOR_PRT?.internalteam
   }
 
   if (main_stage === 1 && AIR_ST.indexOf(stage) > -1) {
-    return await VipslandContract.methods.MAX_SUPPLY_FOR_AIRDROP_TOKEN().call()
+    return MAX_SUPPLY_FOR_PRT?.airdrop
   }
 
   return 0;
@@ -246,17 +251,18 @@ export const getStageNONMP = async () => {
 
 export const getisMintMP = async (main_stage) => {
   const stage = Number(await VipslandContract.methods.presalePRT().call());
+  const { mintMPIsOpen } = await VipslandContract.methods.statetoken().call() || {}
 
   if (main_stage === 4 && NORMAL_ST.indexOf(stage) > -1) {
-    return await VipslandContract.methods.mintMPIsOpen().call()
+    return Boolean(mintMPIsOpen?.normaluser);
   }
 
   if (main_stage === 2 && INT_ST.indexOf(stage) > -1) {
-    return await VipslandContract.methods.mintInternalTeamMPIsOpen().call()
+    return Boolean(mintMPIsOpen?.internal);
   }
 
   if (main_stage === 1 && AIR_ST.indexOf(stage) > -1) {
-    return await VipslandContract.methods.mintAirdropMPIsOpen().call()
+    return Boolean(mintMPIsOpen?.airdrop);
   }
 
   return false;
@@ -264,31 +270,34 @@ export const getisMintMP = async (main_stage) => {
 
 
 export const getMaxNONMPAmountPerAcc = async (stage) => {
-  if (stage === 4 && NORMAL_ST.indexOf(stage) > -1) {
-    return await VipslandContract.methods.MAX_PRT_AMOUNT_PER_ACC().call();
+  if (stage === 4 && NORMAL_ST.indexOf(stage) > -1) {//normal
+    const res = await VipslandContract.methods.statetoken().call();
+    console.log({ res })
+    return false
   }
 
-  if (stage === 2 && INT_ST.indexOf(stage) > -1) {
-    return await VipslandContract.methods.MAX_PRT_AMOUNT_PER_ACC_INTERNAL().call();
+  if (stage === 2 && INT_ST.indexOf(stage) > -1) {//internal
+    return await VipslandContract.methods.statetoken().call();
   }
 
-  if (stage === 1 && AIR_ST.indexOf(stage) > -1) {
+  if (stage === 1 && AIR_ST.indexOf(stage) > -1) {//airdrop
     return await VipslandContract.methods.MAX_PRT_AMOUNT_PER_ACC_AIRDROP().call();
   }
 }
 
 export const getMaxNONMPAmountPerAccPerTransaction = async (stage) => {
+  const { limitspertx } = await VipslandContract.methods.prtSettings().call() || {};
 
   if (stage === 4 && NORMAL_ST.indexOf(stage) > -1) {
-    return await VipslandContract.methods.MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION().call();
+    return limitspertx?.normaluser
   }
 
   if (stage === 2 && INT_ST.indexOf(stage) > -1) {
-    return await VipslandContract.methods.MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION_INTERNAL().call();
+    return limitspertx?.internalteam
   }
 
   if (stage === 1 && AIR_ST.indexOf(stage) > -1) {
-    return await VipslandContract.methods.MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION_AIRDROP().call();
+    return limitspertx?.airdrop
   }
 
 }
@@ -296,25 +305,25 @@ export const getMaxNONMPAmountPerAccPerTransaction = async (stage) => {
 
 export const getPriceNONMPETH = async (main_stage) => {
   const stage = Number(await VipslandContract.methods.presalePRT().call());
-
+  const { PRICE } = await VipslandContract.methods.prtSettings().call() || {};
 
   if (main_stage === 4 && NORMAL_ST.indexOf(stage) > -1) {
 
-    const priceWei = await VipslandContract.methods.PRICE_PRT().call();
+    const priceWei = PRICE?.normaluser;
     const priceEth = web3.utils.fromWei(`${priceWei}`, 'ether');
 
     return priceEth;
   }
 
   if (main_stage === 2 && INT_ST.indexOf(stage) > -1) {
-    const priceWei = await VipslandContract.methods.PRICE_PRT_INTERNALTEAM().call();
+    const priceWei = PRICE?.internal;
     const priceEth = web3.utils.fromWei(`${priceWei}`, 'ether');
 
     return priceEth;
   }
 
   if (main_stage === 1 && AIR_ST.indexOf(stage) > -1) {
-    const priceWei = await VipslandContract.methods.PRICE_PRT_AIRDROP().call();
+    const priceWei = PRICE?.airdrop;
     const priceEth = web3.utils.fromWei(`${priceWei}`, 'ether');
 
     return priceEth;

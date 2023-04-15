@@ -153,7 +153,7 @@ export default function MintNONMPPageNormalUser() {
 
 
       <a href="https://vipsland.com/" target="_blank" rel="noreferrer">
-        <img width="250" height="38" src="https://0.m01d.com/x/vipsland.com/c/u/_4/XK/FVeo-o/SGZuFwfXD3RHPCt8ze9XzPkAfgVnX3MTNjzAxI_NP5s/vipsland.webp" alt="" />
+        <img width="250" height="38" src="/images/vipsland.webp" alt="" />
       </a>
 
 

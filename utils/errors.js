@@ -22,7 +22,8 @@ const errors = {
     e21: 'This mint stage is currently inactive',
     e22: 'Value not allowed',
     e23: 'MAX_PRT_AMOUNT_PER_ACC_PER_TRANSACTION_INTERNAL should be <= than MAX_PRT_AMOUNT_PER_ACC_INTERNAL',
-    e24: 'Value entered is invalid'
+    e24: 'Value entered is invalid',
+    e25: 'Erorr'
 
 }
 
