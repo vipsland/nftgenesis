@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import MintInfoPage from './MintInfoPage'
-import Footer from './Footer'
+
 
 // import {
 //     getisMintNONMP,
@@ -31,7 +31,6 @@ export default function MintInfo() {
                     </div>
                 </div>
             </div>
-            <Footer />
 
         </>
     )

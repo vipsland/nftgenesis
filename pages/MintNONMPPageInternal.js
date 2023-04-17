@@ -3,6 +3,8 @@ import { initOnboard } from '../utils/onboard'
 import { useConnectWallet } from '@web3-onboard/react'
 import { useWallets } from '@web3-onboard/react'
 import Link from 'next/link'
+import Header from './Header'
+import Footer from './Footer'
 
 import {
   getTotalMintedNONMP,
@@ -148,16 +150,14 @@ export default function MintNONMPPageInternal() {
 
     <div className="flex flex-col items-center pt-10">
 
-
-      <a href="https://vipsland.com/" target="_blank" rel="noreferrer">
-        <img width="250" height="38" src="https://0.m01d.com/x/vipsland.com/c/u/_4/XK/FVeo-o/SGZuFwfXD3RHPCt8ze9XzPkAfgVnX3MTNjzAxI_NP5s/vipsland.webp" alt="" />
-      </a>
+      <Header />
 
 
-      <div style={{ minWidth: '660px', minHeight: '460px' }} className="mb-10 mt-10 relative z-1 md:max-w-3xl w-full bg-gray-900/90 filter py-4 rounded-md px-2 pt-10 pb-10 pr-10 pl-10 flex flex-col items-center">
-        <h1 className="font-default uppercase font-bold text-3xl md:text-4xl bg-gradient-to-br  bg-clip-text text-white mt-3 mb-3">
-          {isMintNONMP ? `Mint Internal Team Pass` : null}
-        </h1>
+      <div style={{ minWidth: '660px', minHeight: 'auto' }} className="mt-10 relative z-1 md:max-w-3xl w-full bg-gray-900/90 filter py-4 rounded-md px-2 pt-10 pb-10 pr-10 pl-10 flex flex-col items-center">
+
+        {wallet?.accounts[0]?.address ? <code className="md:text-4xl font-bold text-white mb-5">Mint Internal Team Pass</code> : null}
+        {!wallet?.accounts[0]?.address ? <code className="md:text-4xl font-bold text-white">Check info</code> : null}
+
         <h3 className="text-sm text-white tracking-widest">
           {wallet?.accounts[0]?.address
             ? wallet?.accounts[0]?.address.slice(0, 8) +
@@ -313,6 +313,7 @@ export default function MintNONMPPageInternal() {
 
       </div>
 
+      <Footer />
     </div>
 
 

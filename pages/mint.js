@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import MintNONMPPageNormalUser from './MintNONMPPageNormalUser'
 import Link from 'next/link'
-import Footer from './Footer'
+import Loader from './Loader'
+
+
 
 import {
   getisMintNONMP,
@@ -44,12 +46,11 @@ export default function Mint() {
                   </div>
 
                 </div>
-                : <div className="text-black text-center">Loading...</div>}
+                : <Loader />}
           </div>
         </div>
       </div>
 
-      {(isMintMP === false && isMintNONMP === true) ? <Footer /> : null}
 
 
     </>

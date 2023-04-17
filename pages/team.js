@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import MintNONMPPageInternal from './MintNONMPPageInternal'
 import Link from 'next/link'
-import Footer from './Footer'
+import Loader from './Loader'
 
 import {
   getisMintNONMP,
@@ -40,12 +40,10 @@ export default function Team() {
                 </div>
 
               </div>
-              : <div className="text-black text-center">Loading...</div>}
+              : <Loader />}
           </div>
         </div>
       </div>
-
-      {(isMintMP === false && isMintNONMP === true) ? <Footer /> : null}
 
     </>
   )
