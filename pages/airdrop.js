@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import MintNONMPPageAirdrop from './MintNONMPPageAirdrop'
 import Link from 'next/link'
-import Footer from './Footer'
+import Loader from './Loader'
 
 import {
   getisMintNONMP,
@@ -41,13 +41,12 @@ export default function Airdrop() {
                   <Link href="/mint-info"><span className=" text-brand-pink font-bold cursor-pointer">Click here to check Mint Info</span></Link>
                 </div>
 
-              </div> : <div className="text-black text-center">Loading...</div>
+              </div> : <Loader />
 
             }
           </div>
         </div>
       </div>
-      {(isMintMP === false && isMintNONMP === true) ? <Footer /> : null}
 
     </>
   )

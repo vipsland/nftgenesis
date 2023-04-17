@@ -84,7 +84,6 @@ const StatusError = ({ error, txHash }) => {
   if (error.message.includes("revert")) {
     // The transaction was reverted, extract the revert reason
     const code = error?.message?.replace("VM Exception while processing transaction: revert ", "");
-    console.log({ code })
     errors[code] ? message = errors[code] : message = '😞 VM Exception while processing transaction. Transaction is reverted.';
     message = `😞 Transaction reverted: ${message}.`
   } else {
@@ -110,20 +109,16 @@ const getRevertReason = async ({ txHash }) => {
 
     const status = txReceipt?.status;
 
-    console.log({ txReceipt })
     if (status === false && txReceipt?.logs[0]?.data) {
       reason = web3.utils.hexToUtf8(txReceipt?.logs[0]?.data);
       reason = `Transaction ${txHash} reverted with reason: ${reason}. Please check etherscan.io`;
     }
 
-    console.log({ reason })
 
     return StatusError({ error: { message: reason }, txHash })
 
 
   } catch (error) {
-
-    console.log(`if catch`, { error })
 
     return StatusError({ error, txHash })
 
@@ -224,7 +219,6 @@ export const getMaxSupplyNONMP = async (main_stage) => {
 
 export const getMaxSupplyMP = async () => {
   const { MAX_SUPPLY_MP } = await VipslandContract.methods.prtSettings().call() || {};
-  console.log({ MAX_SUPPLY_MP })
 
   return MAX_SUPPLY_MP;
 }
@@ -424,7 +418,6 @@ export const mintNONMPForInternal = async ({ prtAmount, wallet, main_stage }) =>
     "latest"
   );
 
-  console.log({ eth_price: String(priceEth * prtAmount) });
 
   const tx = {
     to: config?.contractAddress,
@@ -447,10 +440,8 @@ export const mintNONMPForInternal = async ({ prtAmount, wallet, main_stage }) =>
       method: 'eth_sendTransaction',
       params: [tx]
     })
-    console.log({ txHash })
 
     const res = await alchemy.transact.waitForTransaction(`${txHash}`)
-    console.log({ waitForTransaction: res })
 
     // Listen to all new pending transactions
     alchemy.ws.on(
@@ -458,7 +449,9 @@ export const mintNONMPForInternal = async ({ prtAmount, wallet, main_stage }) =>
         method: "alchemy_pendingTransactions",
         fromAddress: `${wallet?.accounts[0]?.address}`
       },
-      (res) => console.log({ alchemy_pendingTransactions: res })
+      (res) => {
+        // console.log({ alchemy_pendingTransactions: res })
+      }
     );
 
     const isSuccess = res?.status === 1
@@ -469,16 +462,18 @@ export const mintNONMPForInternal = async ({ prtAmount, wallet, main_stage }) =>
 
     // Get all the NFTs owned by an address
     const nfts = alchemy.nft.getNftsForOwner(`${wallet?.accounts[0]?.address}`);
-    console.log({ nfts })
 
     // Get the latest block
     const latestBlock = alchemy.core.getBlockNumber();
-    console.log({ latestBlock })
 
     // Get all outbound transfers for a provided address
     alchemy.core
       .getTokenBalances(`${wallet?.accounts[0]?.address}`)
-      .then((res) => console.log({ getTokenBalances: res }));
+      .then((res) => {
+
+        // console.log({ getTokenBalances: res })
+
+      });
 
 
     let minted_amount = 0, token_ids = [];
@@ -492,7 +487,6 @@ export const mintNONMPForInternal = async ({ prtAmount, wallet, main_stage }) =>
         return parced
       });
 
-      console.log({ parced_logs });
 
       const [transferBatch_log] = parced_logs?.filter(i => i?.name === 'TransferBatch') || [];
       if (transferBatch_log?.args?.ids?.length > 0) {
@@ -509,7 +503,6 @@ export const mintNONMPForInternal = async ({ prtAmount, wallet, main_stage }) =>
         minted_amount = Number(remain_message_needs?.args?._qnt);
       }
 
-      console.log({ token_ids, minted_amount })
 
     }
 
@@ -568,7 +561,6 @@ export const mintNONMPForAIRDROP = async ({ prtAmount, wallet, main_stage }) => 
   );
 
 
-  console.log({ eth_price: String(priceEth * prtAmount) });
 
   const tx = {
     to: config?.contractAddress,
@@ -590,13 +582,11 @@ export const mintNONMPForAIRDROP = async ({ prtAmount, wallet, main_stage }) => 
       method: 'eth_sendTransaction',
       params: [tx]
     })
-    console.log({ txHash })
 
     const res = await alchemy.transact
       .waitForTransaction(
         `${txHash}`
       )
-    console.log({ waitForTransaction: res })
 
     // Listen to all new pending transactions
     alchemy.ws.on(
@@ -604,7 +594,9 @@ export const mintNONMPForAIRDROP = async ({ prtAmount, wallet, main_stage }) => 
         method: "alchemy_pendingTransactions",
         fromAddress: `${wallet?.accounts[0]?.address}`
       },
-      (res) => console.log({ pendingTransactions: res })
+      (res) => {
+        // console.log({ pendingTransactions: res })
+      }
     );
 
     const isSuccess = res?.status === 1
@@ -615,16 +607,18 @@ export const mintNONMPForAIRDROP = async ({ prtAmount, wallet, main_stage }) => 
 
     // Get all the NFTs owned by an address
     const nfts = alchemy.nft.getNftsForOwner(`${wallet?.accounts[0]?.address}`);
-    console.log({ nfts })
 
     // Get the latest block
     const latestBlock = alchemy.core.getBlockNumber();
-    console.log({ latestBlock })
 
     // Get all outbound transfers for a provided address
     alchemy.core
       .getTokenBalances(`${wallet?.accounts[0]?.address}`)
-      .then((res) => console.log({ getTokenBalances: res }));
+      .then((res) => {
+
+        // console.log({ getTokenBalances: res })
+
+      });
 
 
     let minted_amount = 0, token_ids = [];
@@ -638,7 +632,6 @@ export const mintNONMPForAIRDROP = async ({ prtAmount, wallet, main_stage }) => 
         return parced
       });
 
-      console.log({ parced_logs });
 
       const [transferBatch_log] = parced_logs?.filter(i => i?.name === 'TransferBatch') || [];
       if (transferBatch_log?.args?.ids?.length > 0) {
@@ -655,7 +648,6 @@ export const mintNONMPForAIRDROP = async ({ prtAmount, wallet, main_stage }) => 
         minted_amount = Number(remain_message_needs?.args?._qnt);
       }
 
-      console.log({ token_ids, minted_amount })
 
     }
 
@@ -699,7 +691,6 @@ export const mintNONMPForNormalUser = async ({ prtAmount, wallet, main_stage }) 
 
 
   let _priceEth = priceEth
-  console.log({ _priceEth })
 
   if (prtAmount >= 5 && prtAmount <= 10) {
     _priceEth = (priceEth * 4) / 5;
@@ -708,7 +699,6 @@ export const mintNONMPForNormalUser = async ({ prtAmount, wallet, main_stage }) 
   }
 
   let _value = _priceEth * prtAmount
-  console.log({ eth_price: _value });
 
   const tx = {
     to: config?.contractAddress,
@@ -731,13 +721,11 @@ export const mintNONMPForNormalUser = async ({ prtAmount, wallet, main_stage }) 
       method: 'eth_sendTransaction',
       params: [tx]
     })
-    console.log({ txHash })
 
     const res = await alchemy.transact
       .waitForTransaction(
         `${txHash}`
       )
-    console.log({ waitForTransaction: res })
 
     // Listen to all new pending transactions
     alchemy.ws.on(
@@ -745,7 +733,11 @@ export const mintNONMPForNormalUser = async ({ prtAmount, wallet, main_stage }) 
         method: "alchemy_pendingTransactions",
         fromAddress: `${wallet?.accounts[0]?.address}`
       },
-      (res) => console.log({ pendingTransactions: res })
+      (res) => {
+
+        // console.log({ pendingTransactions: res })
+
+      }
     );
 
     const isSuccess = res?.status === 1
@@ -756,16 +748,18 @@ export const mintNONMPForNormalUser = async ({ prtAmount, wallet, main_stage }) 
 
     // Get all the NFTs owned by an address
     const nfts = await alchemy.nft.getNftsForOwner(`${wallet?.accounts[0]?.address}`);
-    console.log({ nfts })
 
     // Get the latest block
     const latestBlock = alchemy.core.getBlockNumber();
-    console.log({ latestBlock })
 
     // Get all outbound transfers for a provided address
     alchemy.core
       .getTokenBalances(`${wallet?.accounts[0]?.address}`)
-      .then((res) => console.log({ getTokenBalances: res }));
+      .then((res) => {
+
+        // console.log({ getTokenBalances: res })
+
+      });
 
 
     let minted_amount = 0, token_ids = [];
@@ -779,7 +773,6 @@ export const mintNONMPForNormalUser = async ({ prtAmount, wallet, main_stage }) 
         return parced
       });
 
-      console.log({ parced_logs });
 
       const [transferBatch_log] = parced_logs?.filter(i => i?.name === 'TransferBatch') || [];
       if (transferBatch_log?.args?.ids?.length > 0) {
@@ -796,7 +789,6 @@ export const mintNONMPForNormalUser = async ({ prtAmount, wallet, main_stage }) 
         minted_amount = Number(remain_message_needs?.args?._qnt);
       }
 
-      console.log({ token_ids, minted_amount })
 
     }
 
