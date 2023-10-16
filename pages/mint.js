@@ -16,6 +16,7 @@ export default function Mint() {
 
   const [isMintNONMP, setisMintNONMP] = useState(undefined)
   const [isMintMP, setisMintMP] = useState(undefined)
+  console.log({ isMintNONMP, isMintMP })
 
   useEffect(() => {
     const init = async () => {

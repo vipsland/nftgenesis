@@ -1,9 +1,9 @@
 const config = {
   title: 'Vipsland Dapp',
   description: 'Buy PRTs and Mint NFT',
-  contractAddress: '0x8f6451715b549c30777331e552f53C9a7E5CB97C',
-  ownerContract: '0x03b850C66bbB0F7B1b1cBCDbFf2bFc9D7dE6eD4F',
-  network: 'ethmain'//ethmain or goerli
+  contractAddress: '0x7a3fbd8266b760e1e9cB2A5795942509C8fF42ae',
+  ownerContract: '0x18DC07CDBa57c63c8f2c1f2CBEBcdd4dc5cE638A',
+  network: 'goerli'
 }
 
 export { config }

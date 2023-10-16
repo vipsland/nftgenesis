@@ -45,14 +45,14 @@ npx hardhat help
 # Test
 
 ```
-
+#to generate  artifacst 
 yarn
 npx hardhat compile
 
 #check accounts
 npx hardhat accounts
 
-# with coveage
+# with coverage
 npx hardhat coverage --network hardhat
 open coverage/index.html
 

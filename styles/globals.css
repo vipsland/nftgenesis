@@ -71,3 +71,21 @@ html {
   background: var(--clr-selection-bg);
   color: var(--clr-selection-text);
 }
+
+/* custom.css */
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* custom.css */
+.animate-pulse {
+  animation: blink 1.5s infinite;
+}
