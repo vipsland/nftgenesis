@@ -250,6 +250,7 @@ export const getisMintMP = async (main_stage) => {
   const { mintMPIsOpen } = await VipslandContract.methods.statetoken().call() || {}
 
   if (main_stage === 4 && NORMAL_ST.indexOf(stage) > -1) {
+    console.log('test?', { mintMPIsOpen })
     return Boolean(mintMPIsOpen?.normaluser);
   }
 

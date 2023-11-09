@@ -4,6 +4,7 @@ import { useConnectWallet } from '@web3-onboard/react'
 import { useWallets } from '@web3-onboard/react'
 import Header from './Header'
 import Footer from './Footer'
+import ParameterForm from './ParameterForm'
 
 import Link from 'next/link'
 import {
@@ -183,6 +184,10 @@ export default function MintNONMPPageNormalUser() {
         {wallet?.accounts[0]?.address ? <p className="text-white mt-3">
           Take advantage of these bulk purchase discounts to save on your NFT purchases
         </p> : null}
+
+
+        {/* search */}
+        <ParameterForm />
 
         {wallet && isMintNONMP ?
           <div className="flex flex-col md:flex-row md:space-x-14 w-full mt-10 md:mt-14">
